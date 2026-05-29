@@ -6,6 +6,10 @@
   gap: 24px;
 }
 
+.is-hidden {
+  display: none !important;
+}
+
 .admin-panel {
   background: var(--blanco);
   border: 1px solid var(--borde);
