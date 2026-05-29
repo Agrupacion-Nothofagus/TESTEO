@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Correo electrónico">
+  <circle cx="256" cy="256" r="256" fill="#13251b"/>
+  <path fill="#ffffff" d="M96 155h320v222H96V155zm35 52v128h250V207L256 303 131 207zm16-17 109 84 109-84H147z"/>
+  <text x="256" y="272" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="118" font-weight="700" fill="#ffffff">@</text>
+</svg>

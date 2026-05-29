@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Instagram">
+  <circle cx="256" cy="256" r="256" fill="#13251b"/>
+  <path fill="#ffffff" d="M172 73h168c55 0 99 44 99 99v168c0 55-44 99-99 99H172c-55 0-99-44-99-99V172c0-55 44-99 99-99zm0 33c-36 0-66 30-66 66v168c0 36 30 66 66 66h168c36 0 66-30 66-66V172c0-36-30-66-66-66H172z"/>
+  <path fill="#ffffff" d="M256 161a95 95 0 1 1 0 190 95 95 0 0 1 0-190zm0 33a62 62 0 1 0 0 124 62 62 0 0 0 0-124z"/>
+  <circle cx="356" cy="151" r="22" fill="#ffffff"/>
+</svg>

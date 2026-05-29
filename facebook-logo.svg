@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Facebook">
+  <circle cx="256" cy="256" r="256" fill="#13251b"/>
+  <circle cx="256" cy="256" r="192" fill="#ffffff"/>
+  <path fill="#13251b" d="M292 166h46v-70h-58c-70 0-109 42-109 113v51h-50v72h50v124h78V332h62l14-72h-76v-43c0-35 13-51 43-51z"/>
+</svg>

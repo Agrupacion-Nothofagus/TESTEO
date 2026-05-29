@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Favicon Agrupación Nothofagus">
+  <circle cx="256" cy="256" r="256" fill="#213f42"/>
+  <g fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 454V166"/>
+    <path d="M256 62C197 116 180 170 190 220C201 274 237 297 256 299C275 297 311 274 322 220C332 170 315 116 256 62Z"/>
+    <path d="M256 358C201 267 126 262 55 278C62 357 91 411 149 423C196 433 233 402 256 358Z"/>
+    <path d="M256 358C311 267 386 262 457 278C450 357 421 411 363 423C316 433 279 402 256 358Z"/>
+    <path d="M135 337L256 431"/>
+    <path d="M377 337L256 431"/>
+  </g>
+</svg>
