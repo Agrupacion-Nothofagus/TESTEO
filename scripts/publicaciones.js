@@ -7,7 +7,8 @@ async function cargarPublicaciones() {
   if (!contenedor) return;
 
   try {
-    const publicaciones = await obtenerPublicaciones();
+    const respuesta = await fetch('content/publicaciones.json', { cache: 'no-store' });
+    const publicaciones = await respuesta.json();
     const visibles = publicaciones.filter((item) => item.estado === 'publicado');
 
     if (!visibles.length) {
@@ -64,17 +65,6 @@ async function cargarPublicaciones() {
   } catch (error) {
     contenedor.innerHTML = '<p class="slider-empty">No fue posible cargar las publicaciones.</p>';
     console.error('Error al cargar publicaciones:', error);
-  }
-}
-
-async function obtenerPublicaciones() {
-  try {
-    const respuestaAPI = await fetch('/api/publicaciones', { cache: 'no-store' });
-    if (respuestaAPI.ok) return await respuestaAPI.json();
-    throw new Error('API no disponible');
-  } catch (_) {
-    const respuestaJSON = await fetch('content/publicaciones.json', { cache: 'no-store' });
-    return await respuestaJSON.json();
   }
 }
 
