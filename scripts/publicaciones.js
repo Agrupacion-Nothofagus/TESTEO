@@ -1,3 +1,11 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import {
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  SUPABASE_TABLE_PUBLICACIONES,
+  supabaseConfigurado
+} from './supabase-config.js';
+
 async function cargarPublicaciones() {
   const contenedor = document.querySelector('[data-publicaciones-slider]');
   const indicador = document.querySelector('[data-publicaciones-indicador]');
@@ -7,8 +15,7 @@ async function cargarPublicaciones() {
   if (!contenedor) return;
 
   try {
-    const respuesta = await fetch('content/publicaciones.json', { cache: 'no-store' });
-    const publicaciones = await respuesta.json();
+    const publicaciones = await obtenerPublicaciones();
     const visibles = publicaciones.filter((item) => item.estado === 'publicado');
 
     if (!visibles.length) {
@@ -20,8 +27,9 @@ async function cargarPublicaciones() {
 
     function renderizarSlide(indice) {
       const publicacion = visibles[indice];
-      const imagenHTML = publicacion.imagen
-        ? `<img src="${escaparAtributo(publicacion.imagen)}" alt="${escaparAtributo(publicacion.titulo)}" class="publication-image">`
+      const imagen = publicacion.imagen_url || publicacion.imagen || '';
+      const imagenHTML = imagen
+        ? `<img src="${escaparAtributo(imagen)}" alt="${escaparAtributo(publicacion.titulo)}" class="publication-image">`
         : `<div class="publication-image publication-placeholder">Nothofagus</div>`;
 
       contenedor.innerHTML = `
@@ -66,6 +74,27 @@ async function cargarPublicaciones() {
     contenedor.innerHTML = '<p class="slider-empty">No fue posible cargar las publicaciones.</p>';
     console.error('Error al cargar publicaciones:', error);
   }
+}
+
+async function obtenerPublicaciones() {
+  if (supabaseConfigurado()) {
+    try {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data, error } = await supabase
+        .from(SUPABASE_TABLE_PUBLICACIONES)
+        .select('*')
+        .eq('estado', 'publicado')
+        .order('fecha', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.warn('Supabase no disponible. Se usará JSON local.', error);
+    }
+  }
+
+  const respuesta = await fetch('content/publicaciones.json', { cache: 'no-store' });
+  return await respuesta.json();
 }
 
 function formatearFecha(fechaISO) {
