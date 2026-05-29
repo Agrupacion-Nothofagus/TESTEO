@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS de prueba | Agrupación Nothofagus</title>
+  <title>Gestor de publicaciones | Agrupación Nothofagus</title>
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -12,28 +12,58 @@
     <section class="admin-panel admin-wide-panel">
       <div class="admin-topbar">
         <div>
-          <p class="section-tag">Fase 1 · Sitio estable</p>
-          <h1>CMS de prueba</h1>
+          <p class="section-tag">Panel institucional</p>
+          <h1>Gestor de publicaciones</h1>
         </div>
         <a href="../index.html#publicaciones" class="admin-link">Volver al sitio</a>
       </div>
       <p>
-        Este panel permite redactar una publicación y generar el bloque JSON que debe agregarse manualmente en <code>content/publicaciones.json</code>. En esta fase no usa API, base de datos ni autenticación dinámica, para asegurar un despliegue estable.
+        Este panel se conecta a Supabase para iniciar sesión y administrar publicaciones. Si Supabase aún no está configurado, el sitio público seguirá usando el respaldo JSON.
       </p>
     </section>
 
-    <section class="admin-panel">
-      <h2>Nueva publicación</h2>
-      <p>
-        Completa los campos y copia el resultado generado. Las publicaciones con estado “publicado” aparecerán en el carrusel del sitio.
-      </p>
+    <section class="admin-panel" id="login-panel">
+      <h2>Ingreso</h2>
+      <p>Ingresa con una cuenta autorizada para administrar publicaciones.</p>
+
+      <form id="login-form" class="admin-form compact-form">
+        <label>
+          Correo
+          <input id="login-email" type="email" placeholder="nombre@agrupacionnothofagus.cl" autocomplete="email" required>
+        </label>
+        <label>
+          Contraseña
+          <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="join-button">Ingresar</button>
+      </form>
+
+      <p id="login-status" class="admin-status"></p>
+    </section>
+
+    <section class="admin-panel admin-wide-panel is-hidden" id="session-panel">
+      <div class="admin-topbar compact">
+        <div>
+          <h2>Sesión activa</h2>
+          <p id="session-email">—</p>
+        </div>
+        <button type="button" id="logout-button" class="secondary-admin-button">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <section class="admin-panel is-hidden" id="editor-panel">
+      <h2 id="form-title">Nueva publicación</h2>
+      <p>Completa los campos y guarda la publicación en Supabase.</p>
 
       <form id="publication-form" class="admin-form">
+        <input id="publicacion-id" type="hidden">
+
         <label>
           Estado
           <select id="estado">
             <option value="publicado">Publicado</option>
             <option value="borrador">Borrador</option>
+            <option value="archivado">Archivado</option>
           </select>
         </label>
 
@@ -58,8 +88,13 @@
         </label>
 
         <label>
+          Contenido extendido opcional
+          <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
+        </label>
+
+        <label>
           URL de imagen opcional
-          <input id="imagen" type="text" placeholder="assets/imagen.jpg o URL externa">
+          <input id="imagen" type="text" placeholder="https://...">
         </label>
 
         <label>
@@ -68,19 +103,25 @@
         </label>
 
         <div class="admin-actions">
-          <button type="submit" class="join-button">Generar publicación</button>
+          <button type="submit" class="join-button">Guardar publicación</button>
           <button type="button" id="reset-form" class="secondary-admin-button">Limpiar</button>
         </div>
       </form>
+
+      <p id="form-status" class="admin-status"></p>
     </section>
 
-    <section class="admin-panel">
-      <h2>Resultado JSON</h2>
-      <p>Copia este bloque y pégalo dentro del arreglo de <code>content/publicaciones.json</code>.</p>
-      <pre id="resultado" class="json-output">Completa el formulario para generar una publicación.</pre>
+    <section class="admin-panel is-hidden" id="posts-panel">
+      <div class="admin-topbar compact">
+        <h2>Publicaciones existentes</h2>
+        <button type="button" id="reload-posts" class="secondary-admin-button">Actualizar</button>
+      </div>
+      <div id="posts-list" class="posts-list">
+        <p class="admin-status">Cargando publicaciones...</p>
+      </div>
     </section>
   </main>
 
-  <script src="admin.js"></script>
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
