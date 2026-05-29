@@ -1,0 +1,8 @@
+name = "agrupacion-nothofagus-web"
+compatibility_date = "2026-05-29"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nothofagus_cms"
+database_id = "REEMPLAZAR_CON_DATABASE_ID_DE_CLOUDFLARE"
