@@ -7,8 +7,7 @@ async function cargarPublicaciones() {
   if (!contenedor) return;
 
   try {
-    const respuesta = await fetch('content/publicaciones.json', { cache: 'no-store' });
-    const publicaciones = await respuesta.json();
+    const publicaciones = await obtenerPublicaciones();
     const visibles = publicaciones.filter((item) => item.estado === 'publicado');
 
     if (!visibles.length) {
@@ -21,19 +20,19 @@ async function cargarPublicaciones() {
     function renderizarSlide(indice) {
       const publicacion = visibles[indice];
       const imagenHTML = publicacion.imagen
-        ? `<img src="${publicacion.imagen}" alt="${publicacion.titulo}" class="publication-image">`
+        ? `<img src="${escaparAtributo(publicacion.imagen)}" alt="${escaparAtributo(publicacion.titulo)}" class="publication-image">`
         : `<div class="publication-image publication-placeholder">Nothofagus</div>`;
 
       contenedor.innerHTML = `
         <article class="publication-slide">
           ${imagenHTML}
           <div class="publication-content">
-            <span class="publication-category">${publicacion.categoria}</span>
-            <h3>${publicacion.titulo}</h3>
-            <p>${publicacion.resumen}</p>
+            <span class="publication-category">${escaparHTML(publicacion.categoria || 'Institucional')}</span>
+            <h3>${escaparHTML(publicacion.titulo)}</h3>
+            <p>${escaparHTML(publicacion.resumen)}</p>
             <div class="publication-meta">
-              <time datetime="${publicacion.fecha}">${formatearFecha(publicacion.fecha)}</time>
-              ${publicacion.enlace && publicacion.enlace !== '#' ? `<a href="${publicacion.enlace}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ''}
+              <time datetime="${escaparAtributo(publicacion.fecha)}">${formatearFecha(publicacion.fecha)}</time>
+              ${publicacion.enlace && publicacion.enlace !== '#' ? `<a href="${escaparAtributo(publicacion.enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>` : ''}
             </div>
           </div>
         </article>
@@ -68,6 +67,17 @@ async function cargarPublicaciones() {
   }
 }
 
+async function obtenerPublicaciones() {
+  try {
+    const respuestaAPI = await fetch('/api/publicaciones', { cache: 'no-store' });
+    if (respuestaAPI.ok) return await respuestaAPI.json();
+    throw new Error('API no disponible');
+  } catch (_) {
+    const respuestaJSON = await fetch('content/publicaciones.json', { cache: 'no-store' });
+    return await respuestaJSON.json();
+  }
+}
+
 function formatearFecha(fechaISO) {
   const fecha = new Date(`${fechaISO}T12:00:00`);
   return new Intl.DateTimeFormat('es-CL', {
@@ -75,6 +85,19 @@ function formatearFecha(fechaISO) {
     month: 'long',
     year: 'numeric'
   }).format(fecha);
+}
+
+function escaparHTML(valor) {
+  return String(valor || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escaparAtributo(valor) {
+  return escaparHTML(valor);
 }
 
 cargarPublicaciones();
