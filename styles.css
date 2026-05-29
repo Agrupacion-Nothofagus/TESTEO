@@ -56,7 +56,7 @@ body {
   justify-content: center;
   align-items: center;
   width: auto;
-  max-width: min(920px, 92%);
+  max-width: min(980px, 94%);
   padding: 0;
 }
 
@@ -80,10 +80,10 @@ body {
   display: inline-block;
   color: var(--blanco);
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   line-height: 1;
-  padding: 11px 15px;
+  padding: 11px 13px;
   border-radius: 999px;
   opacity: 0.95;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
@@ -266,6 +266,141 @@ main {
   font-size: 0.96rem;
 }
 
+/* Publicaciones */
+
+.publications-section {
+  overflow: hidden;
+}
+
+.publications-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.admin-access {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.publications-slider-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: stretch;
+  margin-top: 28px;
+}
+
+.publications-slider {
+  min-height: 330px;
+}
+
+.publication-slide {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 0;
+  min-height: 330px;
+  background: var(--beige-claro);
+  border: 1px solid var(--borde);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.publication-image {
+  width: 100%;
+  height: 100%;
+  min-height: 330px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--verde-profundo), var(--verde-hoja));
+}
+
+.publication-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--beige);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.publication-content {
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.publication-category {
+  color: var(--verde-hoja);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 1.2px;
+}
+
+.publication-content h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.18;
+  color: var(--verde-bosque);
+}
+
+.publication-content p {
+  color: var(--texto-suave);
+}
+
+.publication-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: var(--texto-suave);
+}
+
+.publication-meta a {
+  color: var(--verde-bosque);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.slider-control {
+  width: 46px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.slider-control:hover {
+  background: var(--verde-profundo);
+  transform: translateY(-2px);
+}
+
+.slider-indicator,
+.slider-empty {
+  text-align: center;
+  margin-top: 18px !important;
+  color: var(--texto-suave);
+  font-weight: 700;
+}
+
 /* Documentos */
 
 .documents-list {
@@ -357,6 +492,7 @@ main {
   display: inline-block;
   margin-top: 30px;
   padding: 16px 38px;
+  border: 0;
   border-radius: 999px;
   background: var(--beige);
   color: var(--verde-profundo);
@@ -366,6 +502,7 @@ main {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
   animation: pulseJoin 2.4s ease-in-out infinite;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .join-button:hover {
@@ -429,8 +566,8 @@ footer {
   }
 
   .nav-links a {
-    font-size: 0.86rem;
-    padding: 9px 11px;
+    font-size: 0.8rem;
+    padding: 9px 10px;
   }
 
   .cards-grid {
@@ -441,6 +578,19 @@ footer {
   .card:nth-child(4),
   .card:nth-child(5) {
     grid-column: auto;
+  }
+
+  .publication-slide {
+    grid-template-columns: 1fr;
+  }
+
+  .publication-image {
+    min-height: 220px;
+  }
+
+  .publications-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .documents-list {
@@ -462,12 +612,12 @@ footer {
   }
 
   .nav-links a {
-    font-size: 0.76rem;
-    padding: 8px 9px;
+    font-size: 0.72rem;
+    padding: 8px 8px;
   }
 
   .hero-content {
-    padding: 126px 20px 60px;
+    padding: 148px 20px 60px;
   }
 
   .logo-principal {
@@ -496,6 +646,19 @@ footer {
   .btn {
     width: 100%;
     text-align: center;
+  }
+
+  .publications-slider-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-control {
+    width: 100%;
+    height: 48px;
+  }
+
+  .publication-content {
+    padding: 24px;
   }
 
   .contact-grid {
