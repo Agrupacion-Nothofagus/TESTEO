@@ -1,0 +1,8 @@
+name = "testeo"
+compatibility_date = "2026-05-29"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nothofagus_cms"
+database_id = "d87966e7-b742-4d47-8d97-b0bcf9baf57c"
