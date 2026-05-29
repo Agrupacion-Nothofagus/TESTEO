@@ -1,0 +1,77 @@
+.admin-shell {
+  width: min(1100px, 92%);
+  margin: 48px auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+}
+
+.admin-panel {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 22px;
+  box-shadow: var(--sombra);
+  padding: 32px;
+}
+
+.admin-panel h1,
+.admin-panel h2 {
+  margin: 0 0 14px;
+  color: var(--verde-bosque);
+}
+
+.admin-panel p {
+  color: var(--texto-suave);
+}
+
+.admin-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  width: 100%;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font: inherit;
+  background: var(--beige-claro);
+  color: var(--texto);
+}
+
+.admin-form textarea {
+  resize: vertical;
+}
+
+.json-output {
+  min-height: 320px;
+  padding: 18px;
+  background: var(--verde-profundo);
+  color: var(--beige-claro);
+  border-radius: 16px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.admin-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-weight: 800;
+  color: var(--verde-bosque);
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+}
