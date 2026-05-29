@@ -32,6 +32,7 @@
         <li><a href="#quienes-somos">Quiénes somos</a></li>
         <li><a href="#proposito">Propósito</a></li>
         <li><a href="#areas">Áreas</a></li>
+        <li><a href="#publicaciones">Publicaciones</a></li>
         <li><a href="#contacto">Contacto</a></li>
       </ul>
     </nav>
@@ -152,6 +153,30 @@
       </div>
     </section>
 
+    <section class="section publications-section" id="publicaciones">
+      <div class="section-header publications-header">
+        <div>
+          <span class="section-tag">Contenido institucional</span>
+          <h2>Publicaciones</h2>
+        </div>
+        <a class="admin-access" href="admin/" target="_blank" rel="noopener noreferrer">Abrir CMS</a>
+      </div>
+
+      <p>
+        Revisa comunicados, actividades, convocatorias y contenidos destacados de Agrupación Nothofagus.
+      </p>
+
+      <div class="publications-slider-wrap">
+        <button class="slider-control" type="button" data-publicaciones-prev aria-label="Publicación anterior">‹</button>
+        <div class="publications-slider" data-publicaciones-slider>
+          <p class="slider-empty">Cargando publicaciones...</p>
+        </div>
+        <button class="slider-control" type="button" data-publicaciones-next aria-label="Publicación siguiente">›</button>
+      </div>
+
+      <p class="slider-indicator" data-publicaciones-indicador>—</p>
+    </section>
+
     <section class="section contact-section" id="contacto">
       <div class="section-header">
         <span class="section-tag">Contacto y redes sociales</span>
@@ -206,5 +231,6 @@
     </div>
   </footer>
 
+  <script src="scripts/publicaciones.js"></script>
 </body>
 </html>
