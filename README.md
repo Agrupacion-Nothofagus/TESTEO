@@ -1,6 +1,6 @@
 # Agrupación Nothofagus Web
 
-Sitio web institucional de Agrupación Nothofagus con sección dinámica de publicaciones y panel administrativo.
+Sitio web institucional de Agrupación Nothofagus con sección de publicaciones, panel administrativo y preparación para Cloudflare Pages Functions.
 
 ## Estructura principal
 
@@ -15,22 +15,23 @@ schema.sql
 wrangler.toml.example
 ```
 
-## Funcionalidades
+## Estado actual
 
 - Página institucional pública.
 - Carrusel de publicaciones.
 - Panel administrativo en `/admin/`.
-- API para listar, crear, editar y eliminar publicaciones.
+- API preparada para listar, crear, editar y eliminar publicaciones.
 - Base de datos preparada para Cloudflare D1.
 - Autorización mediante variable secreta `ADMIN_TOKEN`.
 
-## Configuración en Cloudflare Pages
+## Configuración recomendada en Cloudflare Pages
 
 1. Crear o conectar el proyecto desde este repositorio.
 2. Usar la rama `main`.
 3. Framework preset: `None`.
-4. Build command: dejar vacío.
-5. Build output directory: `/`.
+4. Build command: dejar vacío o usar `exit 0` si Cloudflare exige un comando.
+5. Build output directory: `.`
+6. Root directory: dejar vacío.
 
 ## Configurar Cloudflare D1
 
@@ -50,7 +51,7 @@ para crear la tabla `publicaciones`.
 
 ## Variables y bindings requeridos
 
-En Cloudflare Pages, agregar el binding D1:
+En Cloudflare Pages, agregar el binding D1 manualmente desde el panel:
 
 ```text
 Binding name: DB
@@ -64,6 +65,10 @@ ADMIN_TOKEN = valor_privado_definido_por_la_organizacion
 ```
 
 El token se ingresa desde el panel `/admin/` para poder crear, editar o eliminar publicaciones.
+
+## Nota sobre wrangler.toml
+
+No usar `wrangler.toml` real por ahora. Se retiró para evitar errores de despliegue en Cloudflare Pages. El archivo `wrangler.toml.example` queda solo como referencia futura.
 
 ## Seguridad recomendada
 
