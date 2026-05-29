@@ -3,21 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS | Agrupación Nothofagus</title>
+  <title>Gestor de publicaciones | Agrupación Nothofagus</title>
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <main class="admin-shell">
-    <section class="admin-panel">
-      <p class="section-tag">CMS de prueba</p>
-      <h1>Gestor de publicaciones</h1>
+    <section class="admin-panel admin-wide-panel">
+      <div class="admin-topbar">
+        <div>
+          <p class="section-tag">Panel institucional</p>
+          <h1>Gestor de publicaciones</h1>
+        </div>
+        <a href="../index.html#publicaciones" class="admin-link">Volver al sitio</a>
+      </div>
       <p>
-        Este panel permite redactar una publicación y generar el bloque JSON que debe agregarse en
-        <code>content/publicaciones.json</code>. En esta etapa de prueba no guarda automáticamente en GitHub.
+        Administra comunicados, actividades, convocatorias y contenidos destacados. Para operar este panel debes configurar el token administrativo como variable secreta en Cloudflare Pages.
+      </p>
+    </section>
+
+    <section class="admin-panel">
+      <h2>Acceso administrativo</h2>
+      <p>Ingresa el token temporal configurado en Cloudflare. No se guarda en el repositorio.</p>
+
+      <form id="token-form" class="admin-form compact-form">
+        <label>
+          Token administrativo
+          <input id="admin-token" type="password" placeholder="Token privado de administración" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="join-button">Activar panel</button>
+      </form>
+
+      <p id="token-status" class="admin-status"></p>
+    </section>
+
+    <section class="admin-panel">
+      <h2 id="form-title">Nueva publicación</h2>
+      <p>
+        Completa los campos para crear una publicación. Las publicaciones en estado “publicado” aparecerán en el carrusel del sitio.
       </p>
 
       <form id="publication-form" class="admin-form">
+        <input id="publicacion-id" type="hidden">
+
         <label>
           Estado
           <select id="estado">
@@ -47,6 +75,11 @@
         </label>
 
         <label>
+          Contenido extendido opcional
+          <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
+        </label>
+
+        <label>
           URL de imagen opcional
           <input id="imagen" type="text" placeholder="assets/imagen.jpg o URL externa">
         </label>
@@ -56,15 +89,23 @@
           <input id="enlace" type="text" placeholder="https://...">
         </label>
 
-        <button type="submit" class="join-button">Generar publicación</button>
+        <div class="admin-actions">
+          <button type="submit" class="join-button">Guardar publicación</button>
+          <button type="button" id="reset-form" class="secondary-admin-button">Limpiar</button>
+        </div>
       </form>
+
+      <p id="form-status" class="admin-status"></p>
     </section>
 
     <section class="admin-panel">
-      <h2>Resultado JSON</h2>
-      <p>Copia este bloque y pégalo dentro del arreglo de <code>content/publicaciones.json</code>.</p>
-      <pre id="resultado" class="json-output">Completa el formulario para generar una publicación.</pre>
-      <a href="../index.html#publicaciones" class="admin-link">Volver al sitio</a>
+      <div class="admin-topbar compact">
+        <h2>Publicaciones existentes</h2>
+        <button type="button" id="reload-posts" class="secondary-admin-button">Actualizar</button>
+      </div>
+      <div id="posts-list" class="posts-list">
+        <p class="admin-status">Activa el panel para cargar publicaciones.</p>
+      </div>
     </section>
   </main>
 
