@@ -1,0 +1,12 @@
+.nav-links .nav-access {
+  background: var(--beige);
+  color: var(--verde-profundo);
+  text-shadow: none;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.nav-links .nav-access:hover {
+  background: var(--blanco);
+  color: var(--verde-profundo);
+}
