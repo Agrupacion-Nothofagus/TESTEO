@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS | Agrupación Nothofagus</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="admin-panel">
+      <p class="section-tag">CMS de prueba</p>
+      <h1>Gestor de publicaciones</h1>
+      <p>
+        Este panel permite redactar una publicación y generar el bloque JSON que debe agregarse en
+        <code>content/publicaciones.json</code>. En esta etapa de prueba no guarda automáticamente en GitHub.
+      </p>
+
+      <form id="publication-form" class="admin-form">
+        <label>
+          Estado
+          <select id="estado">
+            <option value="publicado">Publicado</option>
+            <option value="borrador">Borrador</option>
+          </select>
+        </label>
+
+        <label>
+          Fecha
+          <input id="fecha" type="date" required>
+        </label>
+
+        <label>
+          Categoría
+          <input id="categoria" type="text" placeholder="Institucional, Actividad, Comunicado..." required>
+        </label>
+
+        <label>
+          Título
+          <input id="titulo" type="text" required>
+        </label>
+
+        <label>
+          Resumen
+          <textarea id="resumen" rows="5" required></textarea>
+        </label>
+
+        <label>
+          URL de imagen opcional
+          <input id="imagen" type="text" placeholder="assets/imagen.jpg o URL externa">
+        </label>
+
+        <label>
+          Enlace opcional
+          <input id="enlace" type="text" placeholder="https://...">
+        </label>
+
+        <button type="submit" class="join-button">Generar publicación</button>
+      </form>
+    </section>
+
+    <section class="admin-panel">
+      <h2>Resultado JSON</h2>
+      <p>Copia este bloque y pégalo dentro del arreglo de <code>content/publicaciones.json</code>.</p>
+      <pre id="resultado" class="json-output">Completa el formulario para generar una publicación.</pre>
+      <a href="../index.html#publicaciones" class="admin-link">Volver al sitio</a>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
