@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bienvenida-sitio-prueba",
+    "estado": "publicado",
+    "fecha": "2026-05-29",
+    "categoria": "Institucional",
+    "titulo": "Sitio web institucional en etapa de prueba",
+    "resumen": "Iniciamos una versión preliminar del sitio web de Agrupación Nothofagus para validar estructura, contenidos y canales de contacto.",
+    "imagen": "",
+    "enlace": "#"
+  },
+  {
+    "id": "lineas-de-trabajo",
+    "estado": "publicado",
+    "fecha": "2026-05-29",
+    "categoria": "Líneas de trabajo",
+    "titulo": "Ámbitos de acción comunitaria y territorial",
+    "resumen": "La agrupación proyecta acciones vinculadas al estudio, la formación, la cultura, el medioambiente, la participación comunitaria y la vinculación territorial.",
+    "imagen": "",
+    "enlace": "#areas"
+  },
+  {
+    "id": "solicitud-de-ingreso",
+    "estado": "publicado",
+    "fecha": "2026-05-29",
+    "categoria": "Participación",
+    "titulo": "Solicitud de ingreso como socio o socia",
+    "resumen": "Ya se encuentra disponible el formulario de solicitud de ingreso para quienes deseen participar formalmente en la organización.",
+    "imagen": "",
+    "enlace": "https://forms.gle/9Q1FwpiemfF4ykNu8"
+  }
+]
