@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso | Agrupación Nothofagus</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <main class="login-page">
+    <section class="login-card">
+      <a class="login-back" href="../index.html">← Volver al sitio</a>
+
+      <img src="../logo.png" alt="Logo Agrupación Nothofagus" class="login-logo">
+
+      <p class="section-tag">Acceso institucional</p>
+      <h1>Panel de ingreso</h1>
+      <p>
+        Ingresa con una cuenta autorizada para acceder al gestor de publicaciones de Agrupación Nothofagus.
+      </p>
+
+      <form id="login-form" class="login-form">
+        <label>
+          Correo electrónico
+          <input id="login-email" type="email" placeholder="nombre@agrupacionnothofagus.cl" autocomplete="email" required>
+        </label>
+
+        <label>
+          Contraseña
+          <input id="login-password" type="password" placeholder="Ingresa tu contraseña" autocomplete="current-password" required>
+        </label>
+
+        <button type="submit" class="login-button">Ingresar</button>
+      </form>
+
+      <p id="login-status" class="login-status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script type="module" src="login.js"></script>
+</body>
+</html>
