@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestor de publicaciones | Agrupación Nothofagus</title>
+  <title>Panel administrativo | Agrupación Nothofagus</title>
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -18,27 +18,9 @@
         <a href="../index.html#publicaciones" class="admin-link">Volver al sitio</a>
       </div>
       <p>
-        Este panel se conecta a Supabase para iniciar sesión y administrar publicaciones. Si Supabase aún no está configurado, el sitio público seguirá usando el respaldo JSON.
+        Administra publicaciones, comunicados, actividades y contenidos destacados. El acceso a este panel requiere una sesión iniciada desde la página de ingreso institucional.
       </p>
-    </section>
-
-    <section class="admin-panel" id="login-panel">
-      <h2>Ingreso</h2>
-      <p>Ingresa con una cuenta autorizada para administrar publicaciones.</p>
-
-      <form id="login-form" class="admin-form compact-form">
-        <label>
-          Correo
-          <input id="login-email" type="email" placeholder="nombre@agrupacionnothofagus.cl" autocomplete="email" required>
-        </label>
-        <label>
-          Contraseña
-          <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" required>
-        </label>
-        <button type="submit" class="join-button">Ingresar</button>
-      </form>
-
-      <p id="login-status" class="admin-status"></p>
+      <p id="admin-status" class="admin-status">Verificando sesión...</p>
     </section>
 
     <section class="admin-panel admin-wide-panel is-hidden" id="session-panel">
