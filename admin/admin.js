@@ -6,12 +6,10 @@ import {
   supabaseConfigurado
 } from '../scripts/supabase-config.js';
 
-const loginPanel = document.querySelector('#login-panel');
+const adminStatus = document.querySelector('#admin-status');
 const sessionPanel = document.querySelector('#session-panel');
 const editorPanel = document.querySelector('#editor-panel');
 const postsPanel = document.querySelector('#posts-panel');
-const loginForm = document.querySelector('#login-form');
-const loginStatus = document.querySelector('#login-status');
 const sessionEmail = document.querySelector('#session-email');
 const logoutButton = document.querySelector('#logout-button');
 const formulario = document.querySelector('#publication-form');
@@ -28,7 +26,7 @@ let publicaciones = [];
 if (fecha) fecha.valueAsDate = new Date();
 
 if (!supabaseConfigurado()) {
-  setStatus(loginStatus, 'Supabase aún no está configurado. Edita scripts/supabase-config.js con la URL y la anon key del proyecto.', false);
+  setStatus(adminStatus, 'Supabase aún no está configurado. Revisa scripts/supabase-config.js.', false);
 } else {
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   iniciarPanel();
@@ -36,38 +34,19 @@ if (!supabaseConfigurado()) {
 
 async function iniciarPanel() {
   const { data } = await supabase.auth.getSession();
-  if (data.session) {
-    mostrarPanel(data.session.user.email);
-    await cargarPublicacionesAdmin();
-  }
-}
 
-loginForm.addEventListener('submit', async (evento) => {
-  evento.preventDefault();
-
-  if (!supabase) {
-    setStatus(loginStatus, 'Supabase no está configurado.', false);
+  if (!data.session) {
+    window.location.href = '../login/';
     return;
   }
 
-  const email = document.querySelector('#login-email').value.trim();
-  const password = document.querySelector('#login-password').value;
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-
-    mostrarPanel(data.user.email);
-    setStatus(loginStatus, 'Ingreso correcto.', true);
-    await cargarPublicacionesAdmin();
-  } catch (error) {
-    setStatus(loginStatus, error.message || 'No fue posible ingresar.', false);
-  }
-});
+  mostrarPanel(data.session.user.email);
+  await cargarPublicacionesAdmin();
+}
 
 logoutButton.addEventListener('click', async () => {
   if (supabase) await supabase.auth.signOut();
-  ocultarPanel();
+  window.location.href = '../login/';
 });
 
 formulario.addEventListener('submit', async (evento) => {
@@ -211,20 +190,11 @@ function limpiarFormulario() {
 }
 
 function mostrarPanel(email) {
-  loginPanel.classList.add('is-hidden');
   sessionPanel.classList.remove('is-hidden');
   editorPanel.classList.remove('is-hidden');
   postsPanel.classList.remove('is-hidden');
   sessionEmail.textContent = email || 'Sesión activa';
-}
-
-function ocultarPanel() {
-  loginPanel.classList.remove('is-hidden');
-  sessionPanel.classList.add('is-hidden');
-  editorPanel.classList.add('is-hidden');
-  postsPanel.classList.add('is-hidden');
-  sessionEmail.textContent = '—';
-  publicaciones = [];
+  setStatus(adminStatus, 'Sesión verificada. Panel administrativo disponible.', true);
 }
 
 function setStatus(elemento, mensaje, success) {
