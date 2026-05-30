@@ -1,0 +1,130 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(19, 37, 27, 0.72), rgba(19, 37, 27, 0.72)),
+    url("../fondo.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.login-page {
+  width: min(520px, 92%);
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.login-card {
+  width: 100%;
+  background: rgba(250, 248, 242, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 28px;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.32);
+  padding: 38px;
+  backdrop-filter: blur(12px);
+}
+
+.login-back {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: var(--verde-bosque);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-logo {
+  width: 110px;
+  display: block;
+  margin: 0 auto 22px;
+  filter: drop-shadow(0 10px 18px rgba(31, 61, 43, 0.18));
+}
+
+.login-card h1 {
+  margin: 0 0 14px;
+  color: var(--verde-bosque);
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  text-align: center;
+}
+
+.login-card .section-tag {
+  display: block;
+  text-align: center;
+}
+
+.login-card p {
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.login-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--texto);
+  font-weight: 800;
+}
+
+.login-form input {
+  width: 100%;
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 14px 16px;
+  font: inherit;
+  background: var(--blanco);
+  color: var(--texto);
+}
+
+.login-form input:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.18);
+  border-color: var(--verde-hoja);
+}
+
+.login-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 15px 24px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.login-button:hover {
+  background: var(--verde-profundo);
+  transform: translateY(-2px);
+}
+
+.login-status {
+  min-height: 24px;
+  margin-top: 18px;
+  font-weight: 800;
+}
+
+.login-status.success {
+  color: var(--verde-bosque);
+}
+
+.login-status.error {
+  color: #9b2c2c;
+}
+
+@media (max-width: 600px) {
+  .login-card {
+    padding: 28px;
+  }
+}
