@@ -79,7 +79,7 @@
           <div class="panel-heading">
             <p class="section-tag">Editor de contenido</p>
             <h3 id="form-title">Nueva publicación</h3>
-            <p>Completa los campos y guarda la publicación en Supabase.</p>
+            <p>Completa los campos, sube una imagen JPG/PNG opcional y guarda la publicación en Supabase.</p>
           </div>
 
           <form id="publication-form" class="admin-form">
@@ -121,9 +121,20 @@
               <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
             </label>
 
+            <div class="image-upload-box">
+              <label>
+                Imagen de publicación JPG/PNG
+                <input id="imagen-file" type="file" accept="image/jpeg,image/png">
+              </label>
+              <p>Máximo recomendado: 5 MB. La imagen se guardará en Supabase Storage.</p>
+              <div class="image-preview is-hidden" id="image-preview-wrap">
+                <img id="image-preview" alt="Vista previa de imagen de publicación">
+              </div>
+            </div>
+
             <label>
               URL de imagen opcional
-              <input id="imagen" type="text" placeholder="https://...">
+              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen">
             </label>
 
             <label>
