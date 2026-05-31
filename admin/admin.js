@@ -3,6 +3,7 @@ import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   SUPABASE_TABLE_PUBLICACIONES,
+  SUPABASE_BUCKET_PUBLICACIONES,
   supabaseConfigurado
 } from '../scripts/supabase-config.js';
 
@@ -24,6 +25,13 @@ const sidebarLinks = document.querySelectorAll('[data-admin-view]');
 const adminViews = document.querySelectorAll('.admin-view');
 const viewTitle = document.querySelector('#admin-view-title');
 const viewDescription = document.querySelector('#admin-view-description');
+const imagenFile = document.querySelector('#imagen-file');
+const imagenInput = document.querySelector('#imagen');
+const imagePreviewWrap = document.querySelector('#image-preview-wrap');
+const imagePreview = document.querySelector('#image-preview');
+
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
 
 let supabase = null;
 let publicaciones = [];
@@ -32,6 +40,27 @@ if (fecha) fecha.valueAsDate = new Date();
 
 sidebarLinks.forEach((button) => {
   button.addEventListener('click', () => cambiarVista(button.dataset.adminView));
+});
+
+imagenFile.addEventListener('change', () => {
+  const file = imagenFile.files?.[0];
+
+  if (!file) {
+    ocultarPreviewImagen();
+    return;
+  }
+
+  const validacion = validarImagen(file);
+  if (!validacion.ok) {
+    setStatus(resultado, validacion.mensaje, false);
+    imagenFile.value = '';
+    ocultarPreviewImagen();
+    return;
+  }
+
+  imagePreview.src = URL.createObjectURL(file);
+  imagePreviewWrap.classList.remove('is-hidden');
+  setStatus(resultado, 'Imagen seleccionada. Se subirá al guardar la publicación.', true);
 });
 
 if (!supabaseConfigurado()) {
@@ -67,9 +96,16 @@ formulario.addEventListener('submit', async (evento) => {
   }
 
   const id = document.querySelector('#publicacion-id').value.trim();
-  const publicacion = obtenerDatosFormulario();
 
   try {
+    setStatus(resultado, 'Guardando publicación...', true);
+
+    const nuevaImagenURL = await subirImagenSiExiste();
+    if (nuevaImagenURL) {
+      imagenInput.value = nuevaImagenURL;
+    }
+
+    const publicacion = obtenerDatosFormulario();
     let respuesta;
 
     if (id) {
@@ -101,6 +137,59 @@ formulario.addEventListener('submit', async (evento) => {
 reloadButton.addEventListener('click', cargarPublicacionesAdmin);
 resetButton.addEventListener('click', limpiarFormulario);
 
+async function subirImagenSiExiste() {
+  const file = imagenFile.files?.[0];
+  if (!file) return '';
+
+  const validacion = validarImagen(file);
+  if (!validacion.ok) throw new Error(validacion.mensaje);
+
+  const extension = file.type === 'image/png' ? 'png' : 'jpg';
+  const nombreSeguro = crearSlug(document.querySelector('#titulo').value || 'publicacion');
+  const timestamp = Date.now();
+  const rutaArchivo = `publicaciones/${nombreSeguro}-${timestamp}.${extension}`;
+
+  setStatus(resultado, 'Subiendo imagen...', true);
+
+  const { error: uploadError } = await supabase
+    .storage
+    .from(SUPABASE_BUCKET_PUBLICACIONES)
+    .upload(rutaArchivo, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase
+    .storage
+    .from(SUPABASE_BUCKET_PUBLICACIONES)
+    .getPublicUrl(rutaArchivo);
+
+  if (!data?.publicUrl) throw new Error('No fue posible obtener la URL pública de la imagen.');
+
+  return data.publicUrl;
+}
+
+function validarImagen(file) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return {
+      ok: false,
+      mensaje: 'Formato no permitido. Solo se aceptan imágenes JPG o PNG.'
+    };
+  }
+
+  if (file.size > MAX_IMAGE_SIZE_BYTES) {
+    return {
+      ok: false,
+      mensaje: 'La imagen supera los 5 MB. Usa una imagen más liviana.'
+    };
+  }
+
+  return { ok: true, mensaje: '' };
+}
+
 async function cargarPublicacionesAdmin() {
   postsList.innerHTML = '<p class="admin-status">Cargando publicaciones...</p>';
 
@@ -127,6 +216,7 @@ function renderizarListado() {
 
   postsList.innerHTML = publicaciones.map((item) => `
     <article class="post-admin-card">
+      ${item.imagen_url ? `<img class="post-admin-thumb" src="${escaparAtributo(item.imagen_url)}" alt="Imagen de ${escaparAtributo(item.titulo)}">` : ''}
       <div>
         <span class="post-admin-state ${item.estado === 'publicado' ? 'published' : 'draft'}">${escaparHTML(item.estado)}</span>
         <h3>${escaparHTML(item.titulo)}</h3>
@@ -152,9 +242,17 @@ window.editarPublicacion = function editarPublicacion(id) {
   document.querySelector('#titulo').value = item.titulo || '';
   document.querySelector('#resumen').value = item.resumen || '';
   document.querySelector('#contenido').value = item.contenido || '';
-  document.querySelector('#imagen').value = item.imagen_url || '';
+  imagenInput.value = item.imagen_url || '';
   document.querySelector('#enlace').value = item.enlace || '';
   formTitle.textContent = 'Editar publicación';
+
+  if (item.imagen_url) {
+    imagePreview.src = item.imagen_url;
+    imagePreviewWrap.classList.remove('is-hidden');
+  } else {
+    ocultarPreviewImagen();
+  }
+
   cambiarVista('nueva-view');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -187,7 +285,7 @@ function obtenerDatosFormulario() {
     titulo: document.querySelector('#titulo').value.trim(),
     resumen: document.querySelector('#resumen').value.trim(),
     contenido: document.querySelector('#contenido').value.trim(),
-    imagen_url: document.querySelector('#imagen').value.trim(),
+    imagen_url: imagenInput.value.trim(),
     enlace: document.querySelector('#enlace').value.trim()
   };
 }
@@ -198,6 +296,12 @@ function limpiarFormulario() {
   fecha.valueAsDate = new Date();
   formTitle.textContent = 'Nueva publicación';
   resultado.textContent = '';
+  ocultarPreviewImagen();
+}
+
+function ocultarPreviewImagen() {
+  imagePreview.removeAttribute('src');
+  imagePreviewWrap.classList.add('is-hidden');
 }
 
 function mostrarPanel(email) {
@@ -241,6 +345,16 @@ function formatearFecha(fechaISO) {
   }).format(fechaObj);
 }
 
+function crearSlug(texto) {
+  return String(texto || 'publicacion')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'publicacion';
+}
+
 function escaparHTML(valor) {
   return String(valor || '')
     .replaceAll('&', '&amp;')
@@ -248,4 +362,8 @@ function escaparHTML(valor) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
+}
+
+function escaparAtributo(valor) {
+  return escaparHTML(valor);
 }
