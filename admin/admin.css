@@ -292,6 +292,35 @@ body {
   resize: vertical;
 }
 
+.image-upload-box {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px dashed rgba(31, 61, 43, 0.35);
+  border-radius: 20px;
+  background: rgba(79, 125, 74, 0.08);
+}
+
+.image-upload-box p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.image-preview {
+  width: min(420px, 100%);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  background: var(--beige-claro);
+}
+
+.image-preview img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .admin-actions {
   display: flex;
   gap: 12px;
@@ -339,8 +368,9 @@ body {
 
 .post-admin-card {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 120px 1fr auto;
   gap: 18px;
+  align-items: center;
   background: var(--beige-claro);
   border: 1px solid var(--borde);
   border-radius: 20px;
@@ -348,9 +378,22 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.post-admin-card:not(:has(.post-admin-thumb)) {
+  grid-template-columns: 1fr auto;
+}
+
 .post-admin-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 28px rgba(31, 61, 43, 0.12);
+}
+
+.post-admin-thumb {
+  width: 120px;
+  height: 82px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid var(--borde);
+  background: var(--beige);
 }
 
 .post-admin-card h3 {
@@ -498,8 +541,15 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .post-admin-card {
+  .post-admin-card,
+  .post-admin-card:not(:has(.post-admin-thumb)) {
     grid-template-columns: 1fr;
+  }
+
+  .post-admin-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .post-admin-actions {
