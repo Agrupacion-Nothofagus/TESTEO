@@ -13,113 +13,165 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <main class="admin-shell">
-    <section class="admin-hero admin-wide-panel">
-      <div class="admin-brand-block">
-        <img src="../logo.png" alt="Logo Agrupación Nothofagus" class="admin-logo">
+  <main class="admin-dashboard">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../logo.png" alt="Logo Agrupación Nothofagus" class="sidebar-logo">
+        <div>
+          <p>Agrupación</p>
+          <h1>Nothofagus</h1>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Navegación administrativa">
+        <button type="button" class="sidebar-link is-active" data-admin-view="gestion-view">
+          <span>📚</span>
+          Gestión de publicaciones
+        </button>
+        <button type="button" class="sidebar-link" data-admin-view="nueva-view">
+          <span>✍️</span>
+          Agregar nueva publicación
+        </button>
+        <button type="button" class="sidebar-link" data-admin-view="usuarios-view">
+          <span>👤</span>
+          Administrar usuarios
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="../index.html#publicaciones" class="sidebar-site-link">Ver sitio público</a>
+        <button type="button" id="logout-button" class="sidebar-logout">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <section class="admin-content">
+      <header class="admin-header">
         <div>
           <p class="section-tag">Panel institucional</p>
-          <h1>Gestor de publicaciones</h1>
-          <p>
-            Administra publicaciones, comunicados, actividades y contenidos destacados de Agrupación Nothofagus.
-          </p>
+          <h2 id="admin-view-title">Gestión de publicaciones</h2>
+          <p id="admin-view-description">Revisa, edita y elimina las publicaciones existentes del sitio institucional.</p>
         </div>
-      </div>
-
-      <div class="admin-hero-actions">
-        <a href="../index.html#publicaciones" class="admin-pill-link">Ver sitio público</a>
-      </div>
+        <div class="admin-session-card is-hidden" id="session-panel">
+          <span>Sesión activa</span>
+          <strong id="session-email">—</strong>
+        </div>
+      </header>
 
       <p id="admin-status" class="admin-status admin-status-hero">Verificando sesión...</p>
-    </section>
 
-    <section class="admin-panel admin-wide-panel is-hidden session-card" id="session-panel">
-      <div class="admin-topbar compact">
-        <div>
-          <p class="section-tag">Sesión administrativa</p>
-          <h2>Sesión activa</h2>
-          <p id="session-email">—</p>
+      <section class="admin-view is-active" id="gestion-view" data-view-title="Gestión de publicaciones" data-view-description="Revisa, edita y elimina las publicaciones existentes del sitio institucional.">
+        <div class="admin-panel list-card is-hidden" id="posts-panel">
+          <div class="admin-topbar compact">
+            <div>
+              <p class="section-tag">Contenido existente</p>
+              <h3>Publicaciones</h3>
+            </div>
+            <button type="button" id="reload-posts" class="secondary-admin-button">Actualizar</button>
+          </div>
+          <div id="posts-list" class="posts-list">
+            <p class="admin-status">Cargando publicaciones...</p>
+          </div>
         </div>
-        <button type="button" id="logout-button" class="secondary-admin-button">Cerrar sesión</button>
-      </div>
-    </section>
+      </section>
 
-    <section class="admin-panel editor-card is-hidden" id="editor-panel">
-      <div class="panel-heading">
-        <p class="section-tag">Editor de contenido</p>
-        <h2 id="form-title">Nueva publicación</h2>
-        <p>Completa los campos y guarda la publicación en Supabase.</p>
-      </div>
+      <section class="admin-view" id="nueva-view" data-view-title="Agregar nueva publicación" data-view-description="Crea una publicación nueva o edita una publicación seleccionada desde el listado.">
+        <div class="admin-panel editor-card is-hidden" id="editor-panel">
+          <div class="panel-heading">
+            <p class="section-tag">Editor de contenido</p>
+            <h3 id="form-title">Nueva publicación</h3>
+            <p>Completa los campos y guarda la publicación en Supabase.</p>
+          </div>
 
-      <form id="publication-form" class="admin-form">
-        <input id="publicacion-id" type="hidden">
+          <form id="publication-form" class="admin-form">
+            <input id="publicacion-id" type="hidden">
 
-        <div class="form-row two-columns">
-          <label>
-            Estado
-            <select id="estado">
-              <option value="publicado">Publicado</option>
-              <option value="borrador">Borrador</option>
-              <option value="archivado">Archivado</option>
-            </select>
-          </label>
+            <div class="form-row two-columns">
+              <label>
+                Estado
+                <select id="estado">
+                  <option value="publicado">Publicado</option>
+                  <option value="borrador">Borrador</option>
+                  <option value="archivado">Archivado</option>
+                </select>
+              </label>
 
-          <label>
-            Fecha
-            <input id="fecha" type="date" required>
-          </label>
+              <label>
+                Fecha
+                <input id="fecha" type="date" required>
+              </label>
+            </div>
+
+            <label>
+              Categoría
+              <input id="categoria" type="text" placeholder="Institucional, Actividad, Comunicado..." required>
+            </label>
+
+            <label>
+              Título
+              <input id="titulo" type="text" required>
+            </label>
+
+            <label>
+              Resumen
+              <textarea id="resumen" rows="5" required></textarea>
+            </label>
+
+            <label>
+              Contenido extendido opcional
+              <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
+            </label>
+
+            <label>
+              URL de imagen opcional
+              <input id="imagen" type="text" placeholder="https://...">
+            </label>
+
+            <label>
+              Enlace opcional
+              <input id="enlace" type="text" placeholder="https://...">
+            </label>
+
+            <div class="admin-actions">
+              <button type="submit" class="join-button">Guardar publicación</button>
+              <button type="button" id="reset-form" class="secondary-admin-button">Limpiar</button>
+            </div>
+          </form>
+
+          <p id="form-status" class="admin-status"></p>
         </div>
+      </section>
 
-        <label>
-          Categoría
-          <input id="categoria" type="text" placeholder="Institucional, Actividad, Comunicado..." required>
-        </label>
+      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Revisa orientaciones para gestionar usuarios autorizados desde Supabase Auth.">
+        <div class="admin-panel users-card is-hidden" id="users-panel">
+          <div class="panel-heading">
+            <p class="section-tag">Usuarios y accesos</p>
+            <h3>Administrar usuarios</h3>
+            <p>
+              La administración real de usuarios se realiza desde Supabase Authentication. Desde allí puedes crear, confirmar, bloquear o eliminar cuentas con acceso al panel.
+            </p>
+          </div>
 
-        <label>
-          Título
-          <input id="titulo" type="text" required>
-        </label>
+          <div class="users-guide-grid">
+            <article class="user-guide-card">
+              <span>1</span>
+              <h4>Crear usuario</h4>
+              <p>Ve a Supabase → Authentication → Users → Add user.</p>
+            </article>
+            <article class="user-guide-card">
+              <span>2</span>
+              <h4>Confirmar correo</h4>
+              <p>Marca el correo como confirmado para habilitar el ingreso inmediato.</p>
+            </article>
+            <article class="user-guide-card">
+              <span>3</span>
+              <h4>Asignar uso institucional</h4>
+              <p>Usa preferentemente correos del dominio @agrupacionnothofagus.cl.</p>
+            </article>
+          </div>
 
-        <label>
-          Resumen
-          <textarea id="resumen" rows="5" required></textarea>
-        </label>
-
-        <label>
-          Contenido extendido opcional
-          <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
-        </label>
-
-        <label>
-          URL de imagen opcional
-          <input id="imagen" type="text" placeholder="https://...">
-        </label>
-
-        <label>
-          Enlace opcional
-          <input id="enlace" type="text" placeholder="https://...">
-        </label>
-
-        <div class="admin-actions">
-          <button type="submit" class="join-button">Guardar publicación</button>
-          <button type="button" id="reset-form" class="secondary-admin-button">Limpiar</button>
+          <a class="admin-pill-link users-link" href="https://supabase.com/dashboard/project/wzfnjychxjcpayaajjih/auth/users" target="_blank" rel="noopener noreferrer">Abrir usuarios en Supabase</a>
         </div>
-      </form>
-
-      <p id="form-status" class="admin-status"></p>
-    </section>
-
-    <section class="admin-panel list-card is-hidden" id="posts-panel">
-      <div class="admin-topbar compact">
-        <div>
-          <p class="section-tag">Contenido existente</p>
-          <h2>Publicaciones</h2>
-        </div>
-        <button type="button" id="reload-posts" class="secondary-admin-button">Actualizar</button>
-      </div>
-      <div id="posts-list" class="posts-list">
-        <p class="admin-status">Cargando publicaciones...</p>
-      </div>
+      </section>
     </section>
   </main>
 
