@@ -10,6 +10,7 @@ const adminStatus = document.querySelector('#admin-status');
 const sessionPanel = document.querySelector('#session-panel');
 const editorPanel = document.querySelector('#editor-panel');
 const postsPanel = document.querySelector('#posts-panel');
+const usersPanel = document.querySelector('#users-panel');
 const sessionEmail = document.querySelector('#session-email');
 const logoutButton = document.querySelector('#logout-button');
 const formulario = document.querySelector('#publication-form');
@@ -19,11 +20,19 @@ const resetButton = document.querySelector('#reset-form');
 const reloadButton = document.querySelector('#reload-posts');
 const postsList = document.querySelector('#posts-list');
 const formTitle = document.querySelector('#form-title');
+const sidebarLinks = document.querySelectorAll('[data-admin-view]');
+const adminViews = document.querySelectorAll('.admin-view');
+const viewTitle = document.querySelector('#admin-view-title');
+const viewDescription = document.querySelector('#admin-view-description');
 
 let supabase = null;
 let publicaciones = [];
 
 if (fecha) fecha.valueAsDate = new Date();
+
+sidebarLinks.forEach((button) => {
+  button.addEventListener('click', () => cambiarVista(button.dataset.adminView));
+});
 
 if (!supabaseConfigurado()) {
   setStatus(adminStatus, 'Supabase aún no está configurado. Revisa scripts/supabase-config.js.', false);
@@ -83,6 +92,7 @@ formulario.addEventListener('submit', async (evento) => {
     setStatus(resultado, id ? 'Publicación actualizada correctamente.' : 'Publicación creada correctamente.', true);
     limpiarFormulario();
     await cargarPublicacionesAdmin();
+    cambiarVista('gestion-view');
   } catch (error) {
     setStatus(resultado, error.message || 'No fue posible guardar la publicación.', false);
   }
@@ -145,7 +155,8 @@ window.editarPublicacion = function editarPublicacion(id) {
   document.querySelector('#imagen').value = item.imagen_url || '';
   document.querySelector('#enlace').value = item.enlace || '';
   formTitle.textContent = 'Editar publicación';
-  window.scrollTo({ top: editorPanel.offsetTop - 80, behavior: 'smooth' });
+  cambiarVista('nueva-view');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.eliminarPublicacion = async function eliminarPublicacion(id) {
@@ -161,10 +172,10 @@ window.eliminarPublicacion = async function eliminarPublicacion(id) {
 
     if (error) throw error;
 
-    setStatus(resultado, 'Publicación eliminada correctamente.', true);
+    setStatus(adminStatus, 'Publicación eliminada correctamente.', true);
     await cargarPublicacionesAdmin();
   } catch (error) {
-    setStatus(resultado, error.message || 'No fue posible eliminar la publicación.', false);
+    setStatus(adminStatus, error.message || 'No fue posible eliminar la publicación.', false);
   }
 };
 
@@ -193,8 +204,25 @@ function mostrarPanel(email) {
   sessionPanel.classList.remove('is-hidden');
   editorPanel.classList.remove('is-hidden');
   postsPanel.classList.remove('is-hidden');
+  usersPanel.classList.remove('is-hidden');
   sessionEmail.textContent = email || 'Sesión activa';
   setStatus(adminStatus, 'Sesión verificada. Panel administrativo disponible.', true);
+}
+
+function cambiarVista(viewId) {
+  sidebarLinks.forEach((button) => {
+    button.classList.toggle('is-active', button.dataset.adminView === viewId);
+  });
+
+  adminViews.forEach((view) => {
+    const activa = view.id === viewId;
+    view.classList.toggle('is-active', activa);
+
+    if (activa) {
+      viewTitle.textContent = view.dataset.viewTitle || 'Panel administrativo';
+      viewDescription.textContent = view.dataset.viewDescription || '';
+    }
+  });
 }
 
 function setStatus(elemento, mensaje, success) {
