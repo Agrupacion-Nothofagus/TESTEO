@@ -5,7 +5,13 @@ const usersList = document.querySelector('#users-list');
 const createPassword = document.querySelector('#user-password');
 const usersStatus = document.querySelector('#users-status');
 
+let allowNativeDeleteConfirm = false;
+let pendingDeleteButton = null;
+
 if (usersPanel && userForm) {
+  installDeleteModal();
+  installConfirmInterceptor();
+
   const addToolbar = document.createElement('div');
   addToolbar.className = 'users-add-toolbar';
   addToolbar.innerHTML = `
@@ -94,6 +100,86 @@ document.addEventListener('change', (event) => {
     row?.querySelector('[data-remove-user]')?.click();
   }
 });
+
+function installDeleteModal() {
+  if (document.querySelector('#delete-user-modal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'delete-user-modal';
+  modal.className = 'delete-user-modal is-hidden';
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+    <div class="delete-user-modal__backdrop" data-delete-cancel></div>
+    <section class="delete-user-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="delete-user-title">
+      <p class="section-tag">Confirmar eliminación</p>
+      <h3 id="delete-user-title">Eliminar usuario</h3>
+      <p id="delete-user-message" class="delete-user-modal__message"></p>
+      <div class="delete-user-modal__actions">
+        <button type="button" class="delete-user-modal__cancel" data-delete-cancel>Cancelar</button>
+        <button type="button" class="delete-user-modal__accept" data-delete-accept>Aceptar</button>
+      </div>
+    </section>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelectorAll('[data-delete-cancel]').forEach((button) => {
+    button.addEventListener('click', closeDeleteModal);
+  });
+
+  modal.querySelector('[data-delete-accept]')?.addEventListener('click', () => {
+    const button = pendingDeleteButton;
+    closeDeleteModal();
+    if (!button) return;
+
+    allowNativeDeleteConfirm = true;
+    button.click();
+    allowNativeDeleteConfirm = false;
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeDeleteModal();
+  });
+}
+
+function installConfirmInterceptor() {
+  if (window.__nothofagusConfirmInstalled) return;
+  window.__nothofagusConfirmInstalled = true;
+  const nativeConfirm = window.confirm.bind(window);
+
+  window.confirm = (message) => {
+    const text = String(message || '');
+    if (allowNativeDeleteConfirm) return true;
+
+    if (text.startsWith('¿Eliminar el usuario') && text.includes('Esta acción no se puede deshacer')) {
+      showDeleteModal(text);
+      return false;
+    }
+
+    return nativeConfirm(message);
+  };
+}
+
+function showDeleteModal(message) {
+  const modal = document.querySelector('#delete-user-modal');
+  const messageBox = document.querySelector('#delete-user-message');
+  if (!modal || !messageBox) return;
+
+  pendingDeleteButton = document.activeElement?.closest?.('[data-remove-user]') || pendingDeleteButton;
+  messageBox.textContent = message;
+  modal.classList.remove('is-hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  modal.querySelector('[data-delete-cancel]')?.focus();
+}
+
+function closeDeleteModal() {
+  const modal = document.querySelector('#delete-user-modal');
+  if (!modal) return;
+
+  modal.classList.add('is-hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  pendingDeleteButton = null;
+}
 
 function observePasswordFields() {
   enhanceAllPasswordFields();
