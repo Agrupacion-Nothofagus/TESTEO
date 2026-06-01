@@ -61,7 +61,6 @@ a,
 .publicacion-card-link,
 .document-item,
 .nav-home,
-.nav-admin,
 .login-back,
 .admin-link,
 .post-admin-view {
@@ -73,11 +72,31 @@ a,
 .publicacion-card-link:hover,
 .document-item:hover,
 .nav-home:hover,
-.nav-admin:hover,
 .login-back:hover,
 .admin-link:hover,
 .post-admin-view:hover {
   text-decoration: none !important;
+}
+
+/* Botón Acceder: verde institucional en todas las páginas */
+.nav-access,
+.nav-access:visited,
+.nav-access:hover,
+.nav-access:active,
+.nav-admin,
+.nav-admin:visited,
+.nav-admin:hover,
+.nav-admin:active {
+  background: var(--verde-bosque) !important;
+  color: var(--blanco) !important;
+  text-decoration: none !important;
+  border-color: var(--verde-bosque) !important;
+}
+
+.nav-access:hover,
+.nav-admin:hover {
+  background: var(--verde-profundo) !important;
+  color: var(--blanco) !important;
 }
 
 /* Botones y accesos con fondo oscuro: texto blanco consistente */
