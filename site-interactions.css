@@ -78,7 +78,7 @@ a,
   text-decoration: none !important;
 }
 
-/* Botón Acceder: verde institucional en todas las páginas */
+/* Botón Acceder: fondo anterior y letras en verde institucional */
 .nav-access,
 .nav-access:visited,
 .nav-access:hover,
@@ -87,16 +87,17 @@ a,
 .nav-admin:visited,
 .nav-admin:hover,
 .nav-admin:active {
-  background: var(--verde-bosque) !important;
-  color: var(--blanco) !important;
+  background: var(--beige) !important;
+  color: var(--verde-bosque) !important;
   text-decoration: none !important;
-  border-color: var(--verde-bosque) !important;
+  border-color: var(--beige) !important;
+  text-shadow: none !important;
 }
 
 .nav-access:hover,
 .nav-admin:hover {
-  background: var(--verde-profundo) !important;
-  color: var(--blanco) !important;
+  background: var(--beige-claro) !important;
+  color: var(--verde-profundo) !important;
 }
 
 /* Botones y accesos con fondo oscuro: texto blanco consistente */
