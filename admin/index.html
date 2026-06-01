@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../site-interactions.css">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -79,7 +80,7 @@
           <div class="panel-heading">
             <p class="section-tag">Editor de contenido</p>
             <h3 id="form-title">Nueva publicación</h3>
-            <p>Completa título, bajada, imagen, categoría, contenido completo y fuentes o referencias.</p>
+            <p>Completa los campos en orden editorial: estado, categoría, título, bajada, contenido, fuentes, imagen y enlaces.</p>
           </div>
 
           <form id="publication-form" class="admin-form">
@@ -122,22 +123,6 @@
               <textarea id="resumen" rows="3" placeholder="Síntesis breve que acompañará el título en tarjetas y publicación completa." required></textarea>
             </label>
 
-            <div class="image-upload-box">
-              <label>
-                Fotografía o imagen destacada JPG/PNG
-                <input id="imagen-file" type="file" accept="image/jpeg,image/png">
-              </label>
-              <p>Máximo recomendado: 5 MB. La imagen se guardará en Supabase Storage.</p>
-              <div class="image-preview is-hidden" id="image-preview-wrap">
-                <img id="image-preview" alt="Vista previa de imagen destacada">
-              </div>
-            </div>
-
-            <label>
-              URL de imagen destacada
-              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen" required>
-            </label>
-
             <label>
               Contenido completo de la noticia, ensayo o columna
               <textarea id="contenido" rows="12" placeholder="Desarrolla aquí el contenido completo de la publicación." required></textarea>
@@ -148,8 +133,24 @@
               <textarea id="fuentes-referencias" rows="5" placeholder="Incluye enlaces, documentos, autores, medios o referencias utilizadas." required></textarea>
             </label>
 
+            <div class="image-upload-box">
+              <label>
+                Fotografía o imagen destacada JPG/PNG
+                <input id="imagen-file" type="file" accept="image/jpeg,image/png">
+              </label>
+              <p>Máximo recomendado: 5 MB. En edición, puedes mantener la URL existente o subir una nueva imagen.</p>
+              <div class="image-preview is-hidden" id="image-preview-wrap">
+                <img id="image-preview" alt="Vista previa de imagen destacada">
+              </div>
+            </div>
+
             <label>
-              Enlace externo opcional
+              URL de imagen destacada, opcional
+              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen">
+            </label>
+
+            <label>
+              Enlace externo, opcional
               <input id="enlace" type="text" placeholder="https://...">
             </label>
 
