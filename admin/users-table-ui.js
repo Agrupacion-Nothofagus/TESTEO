@@ -41,7 +41,7 @@ if (usersPanel && userForm) {
     header.innerHTML = `
       <span>Usuario</span>
       <span>Rol</span>
-      <span>Contraseña</span>
+      <span>Restablecer contraseña</span>
       <span>Acciones</span>
     `;
     usersList.parentNode.insertBefore(header, usersList);
