@@ -9,8 +9,10 @@ import {
 
 const form = document.querySelector('#publication-form');
 const status = document.querySelector('#form-status');
-const imageInput = document.querySelector('#imagen');
-const imageFile = document.querySelector('#imagen-file');
+const coverInput = document.querySelector('#imagen');
+const coverFile = document.querySelector('#imagen-file');
+const extraFiles = document.querySelector('#imagenes-complementarias-file');
+const extraUrls = document.querySelector('#imagenes-complementarias');
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
@@ -26,12 +28,18 @@ form.addEventListener('submit', async (event) => {
   show('Guardando publicación...', true);
 
   try {
-    const uploadedUrl = await uploadFeaturedImage();
-    if (uploadedUrl) imageInput.value = uploadedUrl;
+    const coverUrl = await uploadSingleImage(coverFile?.files?.[0], 'portada');
+    if (coverUrl) coverInput.value = coverUrl;
 
-    if (!imageInput.value.trim()) {
-      throw new Error('Debes subir una imagen destacada JPG/PNG o mantener una URL existente.');
+    if (!coverInput.value.trim()) {
+      throw new Error('Debes subir una imagen de portada JPG/PNG o mantener una URL existente.');
     }
+
+    const complementaryUploaded = await uploadComplementaryImages();
+    const complementaryManual = parseUrls(extraUrls.value);
+    const complementaryUrls = [...complementaryManual, ...complementaryUploaded];
+
+    extraUrls.value = complementaryUrls.join('\n');
 
     const bajada = document.querySelector('#resumen').value.trim();
     const record = {
@@ -43,7 +51,8 @@ form.addEventListener('submit', async (event) => {
       bajada,
       contenido: document.querySelector('#contenido').value.trim(),
       fuentes_referencias: document.querySelector('#fuentes-referencias').value.trim(),
-      imagen_url: imageInput.value.trim(),
+      imagen_url: coverInput.value.trim(),
+      imagenes_complementarias: complementaryUrls,
       enlace: document.querySelector('#enlace').value.trim()
     };
 
@@ -78,19 +87,32 @@ async function fillEditorialFields(id) {
   document.querySelector('#resumen').value = item.bajada || item.resumen || '';
   document.querySelector('#contenido').value = item.contenido || '';
   document.querySelector('#fuentes-referencias').value = item.fuentes_referencias || '';
-  imageInput.value = item.imagen_url || '';
+  coverInput.value = item.imagen_url || '';
+  extraUrls.value = Array.isArray(item.imagenes_complementarias)
+    ? item.imagenes_complementarias.join('\n')
+    : '';
 }
 
-async function uploadFeaturedImage() {
-  const file = imageFile?.files?.[0];
-  if (!file) return '';
+async function uploadComplementaryImages() {
+  const files = Array.from(extraFiles?.files || []);
+  const urls = [];
 
+  for (const file of files) {
+    const url = await uploadSingleImage(file, 'complementaria');
+    if (url) urls.push(url);
+  }
+
+  return urls;
+}
+
+async function uploadSingleImage(file, folder) {
+  if (!file) return '';
   validateImage(file);
-  show('Subiendo imagen destacada...', true);
+  show(folder === 'portada' ? 'Subiendo imagen de portada...' : 'Subiendo imagen complementaria...', true);
 
   const extension = file.type === 'image/png' ? 'png' : 'jpg';
   const title = document.querySelector('#titulo').value || 'publicacion';
-  const path = `publicaciones/${slug(title)}-${Date.now()}.${extension}`;
+  const path = `publicaciones/${folder}/${slug(title)}-${Date.now()}-${Math.random().toString(16).slice(2)}.${extension}`;
   const upload = await client.storage.from(SUPABASE_BUCKET_PUBLICACIONES).upload(path, file, {
     cacheControl: '3600',
     upsert: false,
@@ -101,6 +123,13 @@ async function uploadFeaturedImage() {
 
   const { data } = client.storage.from(SUPABASE_BUCKET_PUBLICACIONES).getPublicUrl(path);
   return data?.publicUrl || '';
+}
+
+function parseUrls(value) {
+  return String(value || '')
+    .split('\n')
+    .map((url) => url.trim())
+    .filter(Boolean);
 }
 
 function validateImage(file) {
