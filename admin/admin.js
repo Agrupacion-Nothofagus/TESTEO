@@ -78,7 +78,7 @@ async function iniciarPanel() {
     return;
   }
 
-  mostrarPanel(data.session.user.email);
+  mostrarPanel(data.session.user);
   await cargarPublicacionesAdmin();
 }
 
@@ -304,12 +304,18 @@ function ocultarPreviewImagen() {
   imagePreviewWrap.classList.add('is-hidden');
 }
 
-function mostrarPanel(email) {
+function mostrarPanel(usuario) {
+  const nombreUsuario = usuario?.user_metadata?.nombre
+    || usuario?.user_metadata?.name
+    || usuario?.user_metadata?.full_name
+    || usuario?.email
+    || 'Sesión activa';
+
   sessionPanel.classList.remove('is-hidden');
   editorPanel.classList.remove('is-hidden');
   postsPanel.classList.remove('is-hidden');
   usersPanel.classList.remove('is-hidden');
-  sessionEmail.textContent = email || 'Sesión activa';
+  sessionEmail.textContent = nombreUsuario;
   setStatus(adminStatus, 'Sesión verificada. Panel administrativo disponible.', true);
 }
 
