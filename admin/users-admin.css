@@ -6,7 +6,7 @@
   flex-wrap: wrap;
   margin: 24px 0 18px;
   padding-bottom: 18px;
-  border-bottom: 1px solid var(--borde);
+  border-bottom: 1px solid rgba(31, 61, 43, 0.2);
 }
 
 .user-create-form-collapsed {
@@ -16,40 +16,70 @@
 .user-admin-form {
   margin: 0 0 24px;
   padding: 22px;
-  border: 1px solid var(--borde);
+  border: 1px solid rgba(31, 61, 43, 0.16);
   border-radius: 22px;
-  background: var(--beige-claro);
+  background: rgba(250, 248, 242, 0.72);
+  backdrop-filter: blur(14px);
 }
 
 .original-users-actions {
   display: none !important;
 }
 
+.users-table-header,
 .users-admin-list {
-  display: grid;
-  gap: 0;
-  margin-top: 20px;
-  overflow-x: auto;
-  border: 1px solid var(--borde);
-  border-radius: 22px;
-  background: var(--blanco);
-  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  min-width: 980px;
 }
 
-.users-admin-list::before {
-  content: 'Nombre de la persona  Nombre de usuario  Rol  Contraseña  Acciones';
-  min-width: 980px;
+.users-table-header {
   display: grid;
   grid-template-columns: 1.15fr 1.45fr 170px 1.05fr 220px;
-  gap: 14px;
+  align-items: center;
+  margin-top: 20px;
   padding: 16px 18px;
-  background: var(--verde-bosque);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+  background: rgba(31, 61, 43, 0.92);
   color: var(--blanco);
-  font-size: 0.78rem;
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(16px);
+  overflow-x: auto;
+}
+
+.users-table-header span {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.76rem;
   font-weight: 900;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  white-space: pre;
+  line-height: 1.25;
+}
+
+.users-table-header span:last-child {
+  border-right: 0;
+  justify-content: flex-end;
+}
+
+.users-admin-list {
+  display: grid;
+  gap: 0;
+  margin-top: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-top: 0;
+  border-radius: 0 0 22px 22px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.users-admin-list::before {
+  content: none;
 }
 
 .user-admin-card,
@@ -57,14 +87,20 @@
   min-width: 980px;
   display: grid;
   grid-template-columns: 1.15fr 1.45fr 170px 1.05fr 220px;
-  gap: 14px;
-  align-items: center;
-  padding: 16px 18px;
+  gap: 0;
+  align-items: stretch;
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--borde);
+  border-bottom: 1px solid rgba(31, 61, 43, 0.2);
   border-radius: 0;
-  background: var(--blanco);
+  background: rgba(255, 255, 255, 0.62);
   box-shadow: none;
+  backdrop-filter: blur(12px);
+}
+
+.user-admin-card:nth-child(even),
+.user-admin-edit-card:nth-child(even) {
+  background: rgba(250, 248, 242, 0.62);
 }
 
 .user-admin-card:last-child {
@@ -85,9 +121,15 @@
 
 .user-admin-headline h4 {
   grid-column: 2;
+  display: flex;
+  align-items: center;
+  min-height: 74px;
   margin: 0;
+  padding: 14px;
+  border-right: 1px solid rgba(31, 61, 43, 0.2);
   color: var(--verde-bosque);
   font-size: 0.95rem;
+  font-weight: 900;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -105,8 +147,11 @@
 }
 
 .user-admin-fields label {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  align-items: center;
+  min-height: 74px;
+  padding: 12px 14px;
+  border-right: 1px solid rgba(31, 61, 43, 0.2);
   color: var(--texto-suave);
   font-size: 0;
   font-weight: 800;
@@ -127,12 +172,12 @@
 .user-admin-fields input,
 .user-admin-fields select {
   width: 100%;
-  border: 1px solid var(--borde);
+  border: 1px solid rgba(31, 61, 43, 0.16);
   border-radius: 14px;
   padding: 11px 12px;
   font: inherit;
   font-size: 0.92rem;
-  background: var(--beige-claro);
+  background: rgba(250, 248, 242, 0.86);
   color: var(--texto);
 }
 
@@ -140,15 +185,19 @@
 .user-admin-fields select:focus {
   outline: 3px solid rgba(79, 125, 74, 0.18);
   border-color: var(--verde-hoja);
+  background: var(--blanco);
 }
 
 .user-admin-actions {
   grid-column: 5;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
+  min-height: 74px;
   margin-top: 0;
+  padding: 12px 14px;
 }
 
 .user-admin-actions .secondary-admin-button {
