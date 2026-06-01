@@ -49,37 +49,22 @@ async function obtenerPublicaciones() {
 
 function renderizarPublicacion(publicacion) {
   const imagen = publicacion.imagen_url || publicacion.imagen || '';
+  const bajada = publicacion.bajada || publicacion.resumen || '';
+  const url = `../publicacion/?id=${encodeURIComponent(publicacion.id)}`;
   const imagenHTML = imagen
     ? `<img src="${escaparAtributo(imagen)}" alt="${escaparAtributo(publicacion.titulo)}" class="publicacion-card-image">`
     : '<div class="publicacion-card-placeholder">Nothofagus</div>';
 
-  const enlaceHTML = publicacion.enlace && publicacion.enlace !== '#'
-    ? `<a href="${escaparAtributo(publicacion.enlace)}" target="_blank" rel="noopener noreferrer">Ver más</a>`
-    : '';
-
   return `
-    <article class="publicacion-card">
+    <a class="publicacion-card publicacion-card-link" href="${url}">
       ${imagenHTML}
       <div class="publicacion-card-body">
-        <span class="publicacion-category">${escaparHTML(publicacion.categoria || 'Institucional')}</span>
+        <span class="publicacion-category">${escaparHTML(publicacion.categoria || 'Institución')}</span>
         <h3>${escaparHTML(publicacion.titulo)}</h3>
-        <p>${escaparHTML(publicacion.resumen)}</p>
-        <div class="publicacion-meta">
-          <time datetime="${escaparAtributo(publicacion.fecha)}">${formatearFecha(publicacion.fecha)}</time>
-          ${enlaceHTML}
-        </div>
+        <p>${escaparHTML(bajada)}</p>
       </div>
-    </article>
+    </a>
   `;
-}
-
-function formatearFecha(fechaISO) {
-  const fecha = new Date(`${fechaISO}T12:00:00`);
-  return new Intl.DateTimeFormat('es-CL', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  }).format(fecha);
 }
 
 function escaparHTML(valor) {
