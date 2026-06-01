@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="../site-interactions.css">
   <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="users-admin.css">
 </head>
 <body>
   <main class="admin-dashboard">
@@ -177,20 +178,20 @@
         </div>
       </section>
 
-      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Crea y revisa usuarios autorizados directamente desde el panel institucional.">
+      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Crea, revisa y actualiza usuarios autorizados directamente desde el panel institucional.">
         <div class="admin-panel users-card is-hidden" id="users-panel">
           <div class="panel-heading">
             <p class="section-tag">Usuarios y accesos</p>
             <h3>Administrar usuarios</h3>
             <p>
-              Crea usuarios institucionales y revisa las cuentas registradas sin salir del panel. Esta sección requiere el endpoint seguro <strong>/api/users</strong> configurado en Cloudflare Pages Functions.
+              Administra cuentas institucionales desde el panel. La columna contraseña permite escribir una nueva contraseña; por seguridad, la contraseña actual nunca se muestra.
             </p>
           </div>
 
           <form id="user-create-form" class="admin-form user-admin-form">
             <div class="form-row two-columns">
               <label>
-                Nombre o identificación
+                Nombre de la persona
                 <input id="user-name" type="text" placeholder="Nombre del usuario">
               </label>
 
@@ -205,7 +206,7 @@
             </div>
 
             <label>
-              Correo institucional
+              Nombre de usuario / correo electrónico
               <input id="user-email" type="email" placeholder="nombre@agrupacionnothofagus.cl" required>
             </label>
 
@@ -214,7 +215,7 @@
               <input id="user-password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
             </label>
 
-            <div class="admin-actions">
+            <div class="admin-actions original-users-actions">
               <button type="submit" class="join-button">Crear usuario</button>
               <button type="button" id="reload-users" class="secondary-admin-button">Actualizar listado</button>
             </div>
@@ -232,6 +233,7 @@
 
   <script type="module" src="editorial-save.js"></script>
   <script type="module" src="users-admin.js"></script>
+  <script type="module" src="users-table-ui.js"></script>
   <script type="module" src="admin.js"></script>
 </body>
 </html>
