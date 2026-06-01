@@ -101,6 +101,15 @@ a,
   text-decoration: none !important;
 }
 
+/* Botón ÚNETE: letras en verde institucional */
+.join-section .join-button,
+.join-section .join-button:visited,
+.join-section .join-button:hover,
+.join-section .join-button:active {
+  color: var(--verde-bosque) !important;
+  text-decoration: none !important;
+}
+
 .contact-card,
 .contact-card:visited,
 .contact-card:hover,
