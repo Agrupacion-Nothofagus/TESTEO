@@ -47,7 +47,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(79, 125, 74, 0.32);
+  outline: 3px solid rgba(245, 241, 232, 0.55);
   outline-offset: 3px;
 }
 
@@ -59,10 +59,7 @@ a,
 
 .publication-slide-link,
 .publicacion-card-link,
-.contact-card,
 .document-item,
-.sidebar-site-link,
-.admin-pill-link,
 .nav-home,
 .nav-admin,
 .login-back,
@@ -74,16 +71,46 @@ a,
 
 .publication-slide-link:hover,
 .publicacion-card-link:hover,
-.contact-card:hover,
 .document-item:hover,
-.sidebar-site-link:hover,
-.admin-pill-link:hover,
 .nav-home:hover,
 .nav-admin:hover,
 .login-back:hover,
 .admin-link:hover,
 .post-admin-view:hover {
   text-decoration: none !important;
+}
+
+/* Botones y accesos con fondo oscuro: texto blanco consistente */
+.admin-access,
+.admin-access:visited,
+.admin-access:hover,
+.admin-access:active,
+.sidebar-site-link,
+.sidebar-site-link:visited,
+.sidebar-site-link:hover,
+.sidebar-site-link:active,
+.admin-pill-link,
+.admin-pill-link:visited,
+.admin-pill-link:hover,
+.admin-pill-link:active,
+.post-admin-view,
+.post-admin-view:visited,
+.post-admin-view:hover,
+.post-admin-view:active {
+  color: var(--blanco) !important;
+  text-decoration: none !important;
+}
+
+.contact-card,
+.contact-card:visited,
+.contact-card:hover,
+.contact-card:active {
+  color: var(--blanco) !important;
+  text-decoration: none !important;
+}
+
+.contact-card span {
+  color: var(--blanco) !important;
 }
 
 .publication-slide-link {
@@ -106,14 +133,12 @@ a,
   border-radius: 999px;
   padding: 10px 16px;
   background: var(--verde-hoja);
-  color: var(--blanco) !important;
   font-weight: 900;
 }
 
 .post-admin-view:hover,
 .post-admin-view:focus-visible {
   background: var(--verde-bosque);
-  color: var(--blanco) !important;
 }
 
 .article-content a,
