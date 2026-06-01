@@ -7,8 +7,8 @@ if (usersPanel && userForm) {
   const toolbar = document.createElement('div');
   toolbar.className = 'users-table-toolbar';
   toolbar.innerHTML = `
-    <button type="button" class="join-button" id="toggle-create-user">Crear usuario</button>
     <button type="button" class="secondary-admin-button" id="toolbar-reload-users">Actualizar listado</button>
+    <button type="button" class="secondary-admin-button" id="toggle-create-user">Crear usuario</button>
   `;
 
   userForm.parentNode.insertBefore(toolbar, userForm);
