@@ -1,3 +1,9 @@
+:root {
+  --users-grid-columns: minmax(150px, 1.15fr) minmax(230px, 1.65fr) minmax(150px, 0.85fr) minmax(250px, 1.45fr) minmax(210px, 1fr);
+  --users-table-min: 1120px;
+  --users-line: rgba(31, 61, 43, 0.2);
+}
+
 .users-add-toolbar {
   display: flex;
   justify-content: flex-start;
@@ -15,7 +21,7 @@
   flex-wrap: wrap;
   margin: 22px 0 0;
   padding-top: 18px;
-  border-top: 1px solid rgba(31, 61, 43, 0.2);
+  border-top: 1px solid var(--users-line);
 }
 
 .user-create-actions-bottom {
@@ -28,7 +34,8 @@
   border-top: 1px solid rgba(31, 61, 43, 0.16);
 }
 
-.user-create-topbar {
+.user-create-topbar,
+.original-users-actions {
   display: none !important;
 }
 
@@ -43,10 +50,6 @@
   border-radius: 22px;
   background: rgba(250, 248, 242, 0.72);
   backdrop-filter: blur(14px);
-}
-
-.original-users-actions {
-  display: none !important;
 }
 
 .password-field {
@@ -80,15 +83,23 @@
   background: rgba(31, 61, 43, 0.18);
 }
 
+.users-card {
+  overflow-x: auto;
+}
+
 .users-table-header,
-.users-admin-list {
-  min-width: 1080px;
+.users-admin-list,
+.user-admin-card,
+.user-admin-edit-card {
+  width: 100%;
+  min-width: var(--users-table-min);
+  box-sizing: border-box;
 }
 
 .users-table-header {
   display: grid;
-  grid-template-columns: 1.25fr 1.8fr 170px 1.35fr 220px;
-  align-items: center;
+  grid-template-columns: var(--users-grid-columns);
+  align-items: stretch;
   margin-top: 20px;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -98,11 +109,11 @@
   color: var(--blanco);
   box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
   backdrop-filter: blur(16px);
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 .users-table-header span {
-  min-height: 58px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +135,7 @@
   display: grid;
   gap: 0;
   margin-top: 0;
-  overflow-x: auto;
+  overflow: visible;
   border: 1px solid rgba(31, 61, 43, 0.16);
   border-top: 0;
   border-radius: 0 0 22px 22px;
@@ -139,14 +150,13 @@
 
 .user-admin-card,
 .user-admin-edit-card {
-  min-width: 1080px;
   display: grid;
-  grid-template-columns: 1.25fr 1.8fr 170px 1.35fr 220px;
+  grid-template-columns: var(--users-grid-columns);
   gap: 0;
   align-items: stretch;
   padding: 0;
   border: 0;
-  border-bottom: 1px solid rgba(31, 61, 43, 0.2);
+  border-bottom: 1px solid var(--users-line);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.62);
   box-shadow: none;
@@ -171,15 +181,16 @@
 
 .user-admin-headline h4 {
   grid-column: 2;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 74px;
+  min-height: 76px;
   margin: 0;
-  padding: 14px;
-  border-right: 1px solid rgba(31, 61, 43, 0.2);
+  padding: 12px 14px;
+  border-right: 1px solid var(--users-line);
   color: var(--verde-bosque);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 900;
   line-height: 1.35;
   text-align: center;
@@ -192,12 +203,13 @@
 }
 
 .user-admin-fields label {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 74px;
+  min-height: 76px;
   padding: 12px 14px;
-  border-right: 1px solid rgba(31, 61, 43, 0.2);
+  border-right: 1px solid var(--users-line);
   color: var(--texto-suave);
   font-size: 0;
   font-weight: 800;
@@ -216,14 +228,18 @@
 }
 
 .user-admin-fields input,
-.user-admin-fields select {
+.user-admin-fields select,
+.user-action-menu {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1px solid rgba(31, 61, 43, 0.16);
   border-radius: 14px;
   padding: 11px 12px;
   font: inherit;
-  font-size: 0.9rem;
-  background: rgba(250, 248, 242, 0.86);
+  font-size: 0.88rem;
+  background: rgba(250, 248, 242, 0.9);
   color: var(--texto);
   text-align: center;
 }
@@ -238,25 +254,18 @@
 
 .user-admin-actions {
   grid-column: 5;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 74px;
+  min-height: 76px;
   margin-top: 0;
   padding: 12px 14px;
 }
 
 .user-action-menu {
-  width: 100%;
-  border: 1px solid rgba(31, 61, 43, 0.16);
-  border-radius: 14px;
-  padding: 11px 12px;
-  font: inherit;
-  font-size: 0.9rem;
   font-weight: 800;
-  background: rgba(250, 248, 242, 0.9);
   color: var(--verde-bosque);
-  text-align: center;
   cursor: pointer;
 }
 
