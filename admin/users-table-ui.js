@@ -3,6 +3,7 @@ const userForm = document.querySelector('#user-create-form');
 const reloadUsers = document.querySelector('#reload-users');
 const usersList = document.querySelector('#users-list');
 const createPassword = document.querySelector('#user-password');
+const usersStatus = document.querySelector('#users-status');
 
 if (usersPanel && userForm) {
   const addToolbar = document.createElement('div');
@@ -14,12 +15,12 @@ if (usersPanel && userForm) {
   userForm.parentNode.insertBefore(addToolbar, userForm);
   userForm.classList.add('user-create-form-collapsed');
 
-  const createTopbar = document.createElement('div');
-  createTopbar.className = 'user-create-topbar';
-  createTopbar.innerHTML = `
+  const createActions = document.createElement('div');
+  createActions.className = 'user-create-actions-bottom';
+  createActions.innerHTML = `
     <button type="submit" class="secondary-admin-button">Crear usuario</button>
   `;
-  userForm.insertBefore(createTopbar, userForm.firstElementChild);
+  userForm.appendChild(createActions);
 
   enhancePasswordField(createPassword, 'Mostrar u ocultar contraseña inicial');
 
@@ -55,6 +56,7 @@ if (usersPanel && userForm) {
   });
 
   observePasswordFields();
+  observeActionMenus();
 }
 
 document.addEventListener('click', (event) => {
@@ -71,6 +73,27 @@ document.addEventListener('click', (event) => {
   button.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
 });
 
+document.addEventListener('change', (event) => {
+  const select = event.target.closest('[data-user-action-menu]');
+  if (!select || !select.value) return;
+
+  const row = select.closest('.user-admin-card');
+  const action = select.value;
+  select.value = '';
+
+  if (action === 'save') {
+    row?.querySelector('[data-save-user]')?.click();
+  }
+
+  if (action === 'suspend') {
+    showUserTableMessage('La opción Suspender requiere activar el endpoint seguro de suspensión en Cloudflare.', false);
+  }
+
+  if (action === 'remove') {
+    row?.querySelector('[data-remove-user]')?.click();
+  }
+});
+
 function observePasswordFields() {
   enhanceAllPasswordFields();
 
@@ -79,9 +102,34 @@ function observePasswordFields() {
   observer.observe(usersList, { childList: true, subtree: true });
 }
 
+function observeActionMenus() {
+  enhanceAllActionMenus();
+
+  if (!usersList) return;
+  const observer = new MutationObserver(() => enhanceAllActionMenus());
+  observer.observe(usersList, { childList: true, subtree: true });
+}
+
 function enhanceAllPasswordFields() {
   document.querySelectorAll('#users-panel input[type="password"], #users-panel input[data-user-password]').forEach((input) => {
     enhancePasswordField(input, 'Mostrar u ocultar contraseña');
+  });
+}
+
+function enhanceAllActionMenus() {
+  document.querySelectorAll('.user-admin-actions').forEach((actions) => {
+    if (actions.querySelector('[data-user-action-menu]')) return;
+
+    const menu = document.createElement('select');
+    menu.className = 'user-action-menu';
+    menu.dataset.userActionMenu = 'true';
+    menu.innerHTML = `
+      <option value="">Seleccionar acción</option>
+      <option value="save">Guardar cambios</option>
+      <option value="suspend">Suspender</option>
+      <option value="remove">Eliminar usuario</option>
+    `;
+    actions.prepend(menu);
   });
 }
 
@@ -100,4 +148,11 @@ function enhancePasswordField(input, label) {
   button.setAttribute('aria-label', label || 'Mostrar contraseña');
   button.textContent = '👁️';
   wrapper.appendChild(button);
+}
+
+function showUserTableMessage(message, ok) {
+  if (!usersStatus) return;
+  usersStatus.textContent = message;
+  usersStatus.classList.toggle('success', ok);
+  usersStatus.classList.toggle('error', !ok);
 }
