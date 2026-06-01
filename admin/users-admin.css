@@ -281,6 +281,90 @@
   display: none !important;
 }
 
+.delete-user-modal.is-hidden {
+  display: none;
+}
+
+.delete-user-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.delete-user-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 31, 22, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.delete-user-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 28px;
+  background: rgba(250, 248, 242, 0.94);
+  box-shadow: 0 28px 80px rgba(15, 31, 22, 0.28);
+  backdrop-filter: blur(18px);
+  text-align: center;
+}
+
+.delete-user-modal__dialog h3 {
+  margin: 6px 0 12px;
+  color: var(--verde-bosque);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.delete-user-modal__message {
+  margin: 0;
+  color: var(--texto);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.delete-user-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.delete-user-modal__cancel,
+.delete-user-modal__accept {
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 22px;
+  color: var(--blanco);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.delete-user-modal__cancel {
+  background: #2563eb;
+}
+
+.delete-user-modal__cancel:hover {
+  background: #1d4ed8;
+}
+
+.delete-user-modal__accept {
+  background: #b42318;
+}
+
+.delete-user-modal__accept:hover {
+  background: #8f1d15;
+}
+
 @media (max-width: 720px) {
   .users-add-toolbar,
   .users-table-toolbar,
@@ -291,6 +375,15 @@
   .users-add-toolbar .secondary-admin-button,
   .users-table-toolbar .secondary-admin-button,
   .user-create-actions-bottom .secondary-admin-button {
+    width: 100%;
+  }
+
+  .delete-user-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-user-modal__cancel,
+  .delete-user-modal__accept {
     width: 100%;
   }
 }
