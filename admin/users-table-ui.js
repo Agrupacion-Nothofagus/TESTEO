@@ -40,6 +40,7 @@ if (usersPanel && userForm) {
     header.setAttribute('aria-hidden', 'true');
     header.innerHTML = `
       <span>Usuario</span>
+      <span>Correo electrónico</span>
       <span>Rol</span>
       <span>Restablecer contraseña</span>
       <span>Acciones</span>
