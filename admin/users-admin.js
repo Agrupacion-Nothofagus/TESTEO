@@ -8,6 +8,7 @@ const reload = document.querySelector('#reload-users');
 const usersViewButton = document.querySelector('[data-admin-view="usuarios-view"]');
 
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 let loadedOnce = false;
 
 usersViewButton?.addEventListener('click', () => {
@@ -31,6 +32,7 @@ form?.addEventListener('submit', async (event) => {
 
   try {
     show('Creando usuario...', true);
+
     await api('/api/users', {
       method: 'POST',
       body: JSON.stringify({ email, password, nombre, rol })
@@ -38,10 +40,24 @@ form?.addEventListener('submit', async (event) => {
 
     form.reset();
     document.querySelector('#user-role').value = 'editor';
+
     show('Usuario creado correctamente.', true);
     await loadUsers();
   } catch (error) {
     show(error.message || 'No fue posible crear el usuario.', false);
+  }
+});
+
+list?.addEventListener('click', async (event) => {
+  const saveButton = event.target.closest('[data-save-user]');
+  const removeButton = event.target.closest('[data-remove-user]');
+
+  if (saveButton) {
+    await updateUser(saveButton.dataset.saveUser);
+  }
+
+  if (removeButton) {
+    await removeUser(removeButton.dataset.removeUser, removeButton.dataset.userEmail);
   }
 });
 
@@ -64,12 +80,65 @@ async function loadUsers() {
   }
 }
 
+async function updateUser(id) {
+  const card = list.querySelector(`[data-user-card="${cssEscape(id)}"]`);
+  if (!card) return;
+
+  const nombre = card.querySelector('[data-user-name]').value.trim();
+  const rol = card.querySelector('[data-user-role]').value;
+  const password = card.querySelector('[data-user-password]').value.trim();
+
+  try {
+    show('Actualizando usuario...', true);
+
+    await api('/api/users', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        id,
+        nombre,
+        rol,
+        password
+      })
+    });
+
+    show('Usuario actualizado correctamente.', true);
+    await loadUsers();
+  } catch (error) {
+    show(error.message || 'No fue posible actualizar el usuario.', false);
+  }
+}
+
+async function removeUser(id, email) {
+  const confirmacion = confirm(`¿Eliminar el usuario ${email}? Esta acción no se puede deshacer.`);
+
+  if (!confirmacion) return;
+
+  try {
+    show('Eliminando usuario...', true);
+
+    await api('/api/users', {
+      method: 'DELETE',
+      body: JSON.stringify({ id })
+    });
+
+    show('Usuario eliminado correctamente.', true);
+    await loadUsers();
+  } catch (error) {
+    show(error.message || 'No fue posible eliminar el usuario.', false);
+  }
+}
+
 async function api(url, options = {}) {
-  if (!client) throw new Error('Supabase no está configurado.');
+  if (!client) {
+    throw new Error('Supabase no está configurado.');
+  }
 
   const sessionResponse = await client.auth.getSession();
   const token = sessionResponse.data?.session?.access_token;
-  if (!token) throw new Error('Sesión no disponible. Vuelve a iniciar sesión.');
+
+  if (!token) {
+    throw new Error('Sesión no disponible. Vuelve a iniciar sesión.');
+  }
 
   const response = await fetch(url, {
     ...options,
@@ -81,19 +150,63 @@ async function api(url, options = {}) {
   });
 
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || 'Error de solicitud.');
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Error de solicitud.');
+  }
+
   return data;
 }
 
 function renderUser(user) {
   return `
-    <article class="user-admin-card">
-      <div>
-        <h4>${escapeHTML(user.email)}</h4>
-        <p>${escapeHTML(user.nombre || 'Sin nombre')} · ${escapeHTML(user.rol || 'editor')}</p>
-        <small>Creado: ${formatDate(user.created_at)}${user.last_sign_in_at ? ` · Último ingreso: ${formatDate(user.last_sign_in_at)}` : ''}</small>
+    <article class="user-admin-card user-admin-edit-card" data-user-card="${escapeAttr(user.id)}">
+      <div class="user-admin-main">
+        <div class="user-admin-headline">
+          <div>
+            <h4>${escapeHTML(user.email)}</h4>
+            <small>
+              Creado: ${formatDate(user.created_at)}
+              ${user.last_sign_in_at ? ` · Último ingreso: ${formatDate(user.last_sign_in_at)}` : ''}
+            </small>
+          </div>
+
+          <span class="user-admin-badge">
+            ${user.email_confirmed_at ? 'Confirmado' : 'Pendiente'}
+          </span>
+        </div>
+
+        <div class="user-admin-fields">
+          <label>
+            Nombre o identificación
+            <input data-user-name type="text" value="${escapeAttr(user.nombre || '')}" placeholder="Nombre del usuario">
+          </label>
+
+          <label>
+            Rol
+            <select data-user-role>
+              <option value="administrador" ${user.rol === 'administrador' ? 'selected' : ''}>Administrador</option>
+              <option value="editor" ${user.rol === 'editor' ? 'selected' : ''}>Editor</option>
+              <option value="lector" ${user.rol === 'lector' ? 'selected' : ''}>Lector</option>
+            </select>
+          </label>
+
+          <label>
+            Nueva contraseña, opcional
+            <input data-user-password type="password" minlength="8" placeholder="Dejar vacío para no cambiar">
+          </label>
+        </div>
       </div>
-      <span class="user-admin-badge">${user.email_confirmed_at ? 'Confirmado' : 'Pendiente'}</span>
+
+      <div class="user-admin-actions">
+        <button type="button" class="secondary-admin-button" data-save-user="${escapeAttr(user.id)}">
+          Guardar cambios
+        </button>
+
+        <button type="button" class="user-delete-button" data-remove-user="${escapeAttr(user.id)}" data-user-email="${escapeAttr(user.email)}">
+          Eliminar usuario
+        </button>
+      </div>
     </article>
   `;
 }
@@ -106,7 +219,12 @@ function show(message, ok) {
 
 function formatDate(value) {
   if (!value) return '—';
-  return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value));
+
+  return new Intl.DateTimeFormat('es-CL', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  }).format(new Date(value));
 }
 
 function escapeHTML(value) {
@@ -116,4 +234,14 @@ function escapeHTML(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
+}
+
+function escapeAttr(value) {
+  return escapeHTML(value);
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) return window.CSS.escape(value);
+
+  return String(value).replaceAll('"', '\\"');
 }
