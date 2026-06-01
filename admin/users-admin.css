@@ -1,59 +1,69 @@
-.user-admin-form {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--borde);
+.user-admin-edit-card {
+  align-items: stretch;
+  flex-direction: column;
 }
 
-.users-admin-list {
+.user-admin-main {
   display: grid;
-  gap: 14px;
-  margin-top: 20px;
+  gap: 18px;
+  width: 100%;
 }
 
-.user-admin-card {
+.user-admin-headline {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 16px;
-  padding: 18px;
+  align-items: flex-start;
+}
+
+.user-admin-fields {
+  display: grid;
+  grid-template-columns: 1fr 180px 1fr;
+  gap: 14px;
+}
+
+.user-admin-fields label {
+  display: grid;
+  gap: 8px;
+  color: var(--texto);
+  font-weight: 800;
+}
+
+.user-admin-fields input,
+.user-admin-fields select {
+  width: 100%;
   border: 1px solid var(--borde);
-  border-radius: 18px;
-  background: var(--beige-claro);
+  border-radius: 14px;
+  padding: 12px 13px;
+  font: inherit;
+  background: var(--blanco);
+  color: var(--texto);
 }
 
-.user-admin-card h4 {
-  margin: 0 0 6px;
-  color: var(--verde-bosque);
-  font-size: 1rem;
+.user-admin-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
 }
 
-.user-admin-card p {
-  margin: 0 0 8px;
-  font-weight: 700;
-}
-
-.user-admin-card small {
-  color: var(--texto-suave);
-  font-weight: 700;
-}
-
-.user-admin-badge {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 7px 11px;
+.user-delete-button {
+  border: 0;
   border-radius: 999px;
-  background: rgba(79, 125, 74, 0.14);
-  color: var(--verde-bosque);
-  font-size: 0.78rem;
+  padding: 13px 20px;
+  background: #9b2c2c;
+  color: var(--blanco);
+  font: inherit;
   font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  cursor: pointer;
 }
 
-@media (max-width: 640px) {
-  .user-admin-card {
-    flex-direction: column;
+.user-delete-button:hover {
+  background: #7f1d1d;
+}
+
+@media (max-width: 860px) {
+  .user-admin-fields {
+    grid-template-columns: 1fr;
   }
 }
