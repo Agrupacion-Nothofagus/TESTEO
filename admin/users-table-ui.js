@@ -19,8 +19,7 @@ if (usersPanel && userForm) {
     header.className = 'users-table-header';
     header.setAttribute('aria-hidden', 'true');
     header.innerHTML = `
-      <span>Nombre de la persona</span>
-      <span>Nombre de usuario</span>
+      <span>Usuario</span>
       <span>Rol</span>
       <span>Contraseña</span>
       <span>Acciones</span>
