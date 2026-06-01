@@ -1,6 +1,7 @@
 const usersPanel = document.querySelector('#users-panel');
 const userForm = document.querySelector('#user-create-form');
 const reloadUsers = document.querySelector('#reload-users');
+const usersList = document.querySelector('#users-list');
 
 if (usersPanel && userForm) {
   const toolbar = document.createElement('div');
@@ -12,6 +13,20 @@ if (usersPanel && userForm) {
 
   userForm.parentNode.insertBefore(toolbar, userForm);
   userForm.classList.add('user-create-form-collapsed');
+
+  if (usersList && !document.querySelector('.users-table-header')) {
+    const header = document.createElement('div');
+    header.className = 'users-table-header';
+    header.setAttribute('aria-hidden', 'true');
+    header.innerHTML = `
+      <span>Nombre de la persona</span>
+      <span>Nombre de usuario</span>
+      <span>Rol</span>
+      <span>Contraseña</span>
+      <span>Acciones</span>
+    `;
+    usersList.parentNode.insertBefore(header, usersList);
+  }
 
   document.querySelector('#toggle-create-user')?.addEventListener('click', () => {
     userForm.classList.toggle('user-create-form-collapsed');
