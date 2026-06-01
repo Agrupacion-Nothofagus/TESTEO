@@ -177,41 +177,61 @@
         </div>
       </section>
 
-      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Revisa orientaciones para gestionar usuarios autorizados desde Supabase Auth.">
+      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Crea y revisa usuarios autorizados directamente desde el panel institucional.">
         <div class="admin-panel users-card is-hidden" id="users-panel">
           <div class="panel-heading">
             <p class="section-tag">Usuarios y accesos</p>
             <h3>Administrar usuarios</h3>
             <p>
-              La administración real de usuarios se realiza desde Supabase Authentication. Desde allí puedes crear, confirmar, bloquear o eliminar cuentas con acceso al panel.
+              Crea usuarios institucionales y revisa las cuentas registradas sin salir del panel. Esta sección requiere el endpoint seguro <strong>/api/users</strong> configurado en Cloudflare Pages Functions.
             </p>
           </div>
 
-          <div class="users-guide-grid">
-            <article class="user-guide-card">
-              <span>1</span>
-              <h4>Crear usuario</h4>
-              <p>Ve a Supabase → Authentication → Users → Add user.</p>
-            </article>
-            <article class="user-guide-card">
-              <span>2</span>
-              <h4>Confirmar correo</h4>
-              <p>Marca el correo como confirmado para habilitar el ingreso inmediato.</p>
-            </article>
-            <article class="user-guide-card">
-              <span>3</span>
-              <h4>Asignar uso institucional</h4>
-              <p>Usa preferentemente correos del dominio @agrupacionnothofagus.cl.</p>
-            </article>
-          </div>
+          <form id="user-create-form" class="admin-form user-admin-form">
+            <div class="form-row two-columns">
+              <label>
+                Nombre o identificación
+                <input id="user-name" type="text" placeholder="Nombre del usuario">
+              </label>
 
-          <a class="admin-pill-link users-link" href="https://supabase.com/dashboard/project/wzfnjychxjcpayaajjih/auth/users" target="_blank" rel="noopener noreferrer">Abrir usuarios en Supabase</a>
+              <label>
+                Rol
+                <select id="user-role">
+                  <option value="administrador">Administrador</option>
+                  <option value="editor" selected>Editor</option>
+                  <option value="lector">Lector</option>
+                </select>
+              </label>
+            </div>
+
+            <label>
+              Correo institucional
+              <input id="user-email" type="email" placeholder="nombre@agrupacionnothofagus.cl" required>
+            </label>
+
+            <label>
+              Contraseña inicial
+              <input id="user-password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+            </label>
+
+            <div class="admin-actions">
+              <button type="submit" class="join-button">Crear usuario</button>
+              <button type="button" id="reload-users" class="secondary-admin-button">Actualizar listado</button>
+            </div>
+          </form>
+
+          <p id="users-status" class="admin-status"></p>
+
+          <div class="users-admin-list" id="users-list">
+            <p class="admin-status">Cargando usuarios...</p>
+          </div>
         </div>
       </section>
     </section>
   </main>
 
   <script type="module" src="editorial-save.js"></script>
+  <script type="module" src="users-admin.js"></script>
   <script type="module" src="admin.js"></script>
 </body>
 </html>
