@@ -18,14 +18,18 @@
   border-top: 1px solid rgba(31, 61, 43, 0.2);
 }
 
-.user-create-topbar {
+.user-create-actions-bottom {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(31, 61, 43, 0.16);
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(31, 61, 43, 0.16);
+}
+
+.user-create-topbar {
+  display: none !important;
 }
 
 .user-create-form-collapsed {
@@ -225,7 +229,8 @@
 }
 
 .user-admin-fields input:focus,
-.user-admin-fields select:focus {
+.user-admin-fields select:focus,
+.user-action-menu:focus {
   outline: 3px solid rgba(79, 125, 74, 0.18);
   border-color: var(--verde-hoja);
   background: var(--blanco);
@@ -236,44 +241,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
   min-height: 74px;
   margin-top: 0;
   padding: 12px 14px;
 }
 
-.user-admin-actions .secondary-admin-button {
-  padding: 10px 14px;
-  font-size: 0.86rem;
-}
-
-.user-delete-button {
-  border: 0;
-  border-radius: 999px;
-  padding: 10px 14px;
-  background: #9b2c2c;
-  color: var(--blanco);
+.user-action-menu {
+  width: 100%;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 14px;
+  padding: 11px 12px;
   font: inherit;
-  font-size: 0.86rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: rgba(250, 248, 242, 0.9);
+  color: var(--verde-bosque);
+  text-align: center;
   cursor: pointer;
 }
 
-.user-delete-button:hover {
-  background: #7f1d1d;
+.user-admin-actions .secondary-admin-button,
+.user-delete-button {
+  display: none !important;
 }
 
 @media (max-width: 720px) {
   .users-add-toolbar,
   .users-table-toolbar,
-  .user-create-topbar {
+  .user-create-actions-bottom {
     justify-content: stretch;
   }
 
   .users-add-toolbar .secondary-admin-button,
   .users-table-toolbar .secondary-admin-button,
-  .user-create-topbar .secondary-admin-button {
+  .user-create-actions-bottom .secondary-admin-button {
     width: 100%;
   }
 }
