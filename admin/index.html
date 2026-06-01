@@ -80,7 +80,7 @@
           <div class="panel-heading">
             <p class="section-tag">Editor de contenido</p>
             <h3 id="form-title">Nueva publicación</h3>
-            <p>Completa los campos en orden editorial: estado, categoría, título, bajada, contenido, fuentes, imagen y enlaces.</p>
+            <p>Completa los campos en orden editorial: estado, categoría, título, bajada, contenido, fuentes, imagen de portada, imágenes complementarias y enlaces.</p>
           </div>
 
           <form id="publication-form" class="admin-form">
@@ -135,18 +135,31 @@
 
             <div class="image-upload-box">
               <label>
-                Fotografía o imagen destacada JPG/PNG
+                Imagen de portada JPG/PNG
                 <input id="imagen-file" type="file" accept="image/jpeg,image/png">
               </label>
-              <p>Máximo recomendado: 5 MB. En edición, puedes mantener la URL existente o subir una nueva imagen.</p>
+              <p>Máximo recomendado: 5 MB. En edición, puedes mantener la URL existente o subir una nueva imagen de portada.</p>
               <div class="image-preview is-hidden" id="image-preview-wrap">
-                <img id="image-preview" alt="Vista previa de imagen destacada">
+                <img id="image-preview" alt="Vista previa de imagen de portada">
               </div>
             </div>
 
             <label>
-              URL de imagen destacada, opcional
-              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen">
+              URL de imagen de portada, opcional
+              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen de portada">
+            </label>
+
+            <div class="image-upload-box">
+              <label>
+                Imágenes complementarias JPG/PNG, opcional
+                <input id="imagenes-complementarias-file" type="file" accept="image/jpeg,image/png" multiple>
+              </label>
+              <p>Puedes subir varias imágenes complementarias. Se mostrarán en la publicación completa como galería.</p>
+            </div>
+
+            <label>
+              URLs de imágenes complementarias, opcional
+              <textarea id="imagenes-complementarias" rows="4" placeholder="Puedes pegar una URL por línea o dejar que se complete automáticamente al subir imágenes."></textarea>
             </label>
 
             <label>
