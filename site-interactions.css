@@ -100,6 +100,67 @@ a,
   color: var(--verde-profundo) !important;
 }
 
+/* Publicaciones en inicio: misma paleta de "Cuál es nuestro propósito" */
+.publications-section {
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.publications-section .section-tag,
+.publications-section > p,
+.publications-section .slider-indicator,
+.publications-section .slider-empty {
+  color: #edf5ed !important;
+}
+
+.publications-section h2 {
+  color: var(--blanco) !important;
+}
+
+.publications-section .admin-access,
+.publications-section .admin-access:visited,
+.publications-section .admin-access:hover,
+.publications-section .admin-access:active {
+  background: var(--beige) !important;
+  color: var(--verde-bosque) !important;
+  border-color: var(--beige) !important;
+  text-decoration: none !important;
+}
+
+.publications-section .admin-access:hover {
+  background: var(--beige-claro) !important;
+  color: var(--verde-profundo) !important;
+}
+
+.publications-section .publication-slide {
+  background: rgba(250, 248, 242, 0.96) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  box-shadow: 0 16px 34px rgba(19, 37, 27, 0.2);
+}
+
+.publications-section .publication-content h3 {
+  color: var(--verde-bosque) !important;
+}
+
+.publications-section .publication-content p {
+  color: var(--texto-suave) !important;
+}
+
+.publications-section .publication-category {
+  color: var(--verde-hoja) !important;
+}
+
+.publications-section .slider-control {
+  background: var(--beige) !important;
+  color: var(--verde-bosque) !important;
+}
+
+.publications-section .slider-control:hover {
+  background: var(--beige-claro) !important;
+  color: var(--verde-profundo) !important;
+}
+
 /* Botones y accesos con fondo oscuro: texto blanco consistente */
 .admin-access,
 .admin-access:visited,
