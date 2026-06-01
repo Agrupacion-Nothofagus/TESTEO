@@ -52,7 +52,7 @@ function renderizarPublicacion(publicacion) {
   const bajada = publicacion.bajada || publicacion.resumen || '';
   const fuentes = publicacion.fuentes_referencias || 'Sin fuentes o referencias declaradas.';
   const imagenHTML = imagen
-    ? `<img class="article-image" src="${escaparAtributo(imagen)}" alt="${escaparAtributo(publicacion.titulo)}">`
+    ? `<img class="article-image" src="${escaparAtributo(imagen)}" alt="Imagen de portada">`
     : '<div class="article-placeholder">Nothofagus</div>';
 
   return `
@@ -64,6 +64,7 @@ function renderizarPublicacion(publicacion) {
         <p class="article-subtitle">${escaparHTML(bajada)}</p>
         <p class="article-meta">${formatearFecha(publicacion.fecha)}</p>
         <div class="article-content">${escaparHTML(publicacion.contenido || '')}</div>
+        ${renderizarGaleria(publicacion.imagenes_complementarias)}
         <section class="article-references">
           <h2>Fuentes y referencias</h2>
           <div>${escaparHTML(fuentes)}</div>
@@ -71,6 +72,16 @@ function renderizarPublicacion(publicacion) {
       </div>
     </article>
   `;
+}
+
+function renderizarGaleria(lista) {
+  if (!Array.isArray(lista) || !lista.length) return '';
+  const imagenes = lista
+    .filter(Boolean)
+    .map((url) => `<img src="${escaparAtributo(url)}" alt="Imagen complementaria">`)
+    .join('');
+  if (!imagenes) return '';
+  return `<section class="article-gallery"><h2>Imágenes complementarias</h2><div class="article-gallery-grid">${imagenes}</div></section>`;
 }
 
 function formatearFecha(fechaISO) {
