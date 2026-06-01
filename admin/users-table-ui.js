@@ -53,6 +53,8 @@ if (usersPanel && userForm) {
   document.querySelector('#toolbar-reload-users')?.addEventListener('click', () => {
     reloadUsers?.click();
   });
+
+  observePasswordFields();
 }
 
 document.addEventListener('click', (event) => {
@@ -68,6 +70,20 @@ document.addEventListener('click', (event) => {
   button.textContent = isPassword ? '🙈' : '👁️';
   button.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
 });
+
+function observePasswordFields() {
+  enhanceAllPasswordFields();
+
+  if (!usersList) return;
+  const observer = new MutationObserver(() => enhanceAllPasswordFields());
+  observer.observe(usersList, { childList: true, subtree: true });
+}
+
+function enhanceAllPasswordFields() {
+  document.querySelectorAll('#users-panel input[type="password"], #users-panel input[data-user-password]').forEach((input) => {
+    enhancePasswordField(input, 'Mostrar u ocultar contraseña');
+  });
+}
 
 function enhancePasswordField(input, label) {
   if (!input || input.parentElement?.classList.contains('password-field')) return;
