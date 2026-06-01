@@ -152,6 +152,7 @@
 .user-admin-edit-card {
   display: grid;
   grid-template-columns: var(--users-grid-columns);
+  grid-template-rows: minmax(76px, auto);
   gap: 0;
   align-items: stretch;
   padding: 0;
@@ -181,11 +182,13 @@
 
 .user-admin-headline h4 {
   grid-column: 2;
+  grid-row: 1;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 76px;
+  height: 100%;
   margin: 0;
   padding: 12px 14px;
   border-right: 1px solid var(--users-line);
@@ -203,11 +206,13 @@
 }
 
 .user-admin-fields label {
+  grid-row: 1;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 76px;
+  height: 100%;
   padding: 12px 14px;
   border-right: 1px solid var(--users-line);
   color: var(--texto-suave);
@@ -254,11 +259,13 @@
 
 .user-admin-actions {
   grid-column: 5;
+  grid-row: 1;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 76px;
+  height: 100%;
   margin-top: 0;
   padding: 12px 14px;
 }
