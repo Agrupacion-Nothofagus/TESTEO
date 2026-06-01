@@ -96,6 +96,32 @@ body {
   white-space: pre-line;
 }
 
+.article-gallery {
+  margin-top: 42px;
+  padding-top: 28px;
+  border-top: 1px solid var(--borde);
+}
+
+.article-gallery h2 {
+  margin: 0 0 18px;
+  color: var(--verde-bosque);
+}
+
+.article-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.article-gallery-grid img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--borde);
+  background: var(--beige-claro);
+}
+
 .article-references {
   margin-top: 42px;
   padding-top: 26px;
@@ -133,5 +159,9 @@ body {
   .article-image,
   .article-placeholder {
     aspect-ratio: 16 / 11;
+  }
+
+  .article-gallery-grid {
+    grid-template-columns: 1fr;
   }
 }
