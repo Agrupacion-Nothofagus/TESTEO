@@ -74,12 +74,12 @@
         </div>
       </section>
 
-      <section class="admin-view" id="nueva-view" data-view-title="Agregar nueva publicación" data-view-description="Crea una publicación nueva o edita una publicación seleccionada desde el listado.">
+      <section class="admin-view" id="nueva-view" data-view-title="Agregar nueva publicación" data-view-description="Completa la estructura editorial de la publicación antes de guardarla.">
         <div class="admin-panel editor-card is-hidden" id="editor-panel">
           <div class="panel-heading">
             <p class="section-tag">Editor de contenido</p>
             <h3 id="form-title">Nueva publicación</h3>
-            <p>Completa los campos, sube una imagen JPG/PNG opcional y guarda la publicación en Supabase.</p>
+            <p>Completa título, bajada, imagen, categoría, contenido completo y fuentes o referencias.</p>
           </div>
 
           <form id="publication-form" class="admin-form">
@@ -102,43 +102,54 @@
             </div>
 
             <label>
-              Categoría
-              <input id="categoria" type="text" placeholder="Institucional, Actividad, Comunicado..." required>
+              Categoría de la publicación
+              <select id="categoria" required>
+                <option value="Institución">Institución</option>
+                <option value="Labor social">Labor social</option>
+                <option value="Actualidad">Actualidad</option>
+                <option value="Ensayo">Ensayo</option>
+                <option value="Columna de opinión">Columna de opinión</option>
+              </select>
             </label>
 
             <label>
-              Título
+              Título principal
               <input id="titulo" type="text" required>
             </label>
 
             <label>
-              Resumen
-              <textarea id="resumen" rows="5" required></textarea>
-            </label>
-
-            <label>
-              Contenido extendido opcional
-              <textarea id="contenido" rows="6" placeholder="Texto ampliado de la publicación"></textarea>
+              Bajada o subtítulo
+              <textarea id="bajada" rows="3" placeholder="Síntesis breve que acompañará el título en tarjetas y publicación completa." required></textarea>
             </label>
 
             <div class="image-upload-box">
               <label>
-                Imagen de publicación JPG/PNG
+                Fotografía o imagen destacada JPG/PNG
                 <input id="imagen-file" type="file" accept="image/jpeg,image/png">
               </label>
               <p>Máximo recomendado: 5 MB. La imagen se guardará en Supabase Storage.</p>
               <div class="image-preview is-hidden" id="image-preview-wrap">
-                <img id="image-preview" alt="Vista previa de imagen de publicación">
+                <img id="image-preview" alt="Vista previa de imagen destacada">
               </div>
             </div>
 
             <label>
-              URL de imagen opcional
-              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen">
+              URL de imagen destacada
+              <input id="imagen" type="text" placeholder="Se completará automáticamente si subes una imagen" required>
             </label>
 
             <label>
-              Enlace opcional
+              Contenido completo de la noticia, ensayo o columna
+              <textarea id="contenido" rows="12" placeholder="Desarrolla aquí el contenido completo de la publicación." required></textarea>
+            </label>
+
+            <label>
+              Fuentes y referencias
+              <textarea id="fuentes-referencias" rows="5" placeholder="Incluye enlaces, documentos, autores, medios o referencias utilizadas." required></textarea>
+            </label>
+
+            <label>
+              Enlace externo opcional
               <input id="enlace" type="text" placeholder="https://...">
             </label>
 
