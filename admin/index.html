@@ -188,16 +188,16 @@
             </p>
           </div>
 
-          <form id="user-create-form" class="admin-form user-admin-form">
+          <form id="user-create-form" class="admin-form user-admin-form" autocomplete="off">
             <div class="form-row two-columns">
               <label>
                 Usuario
-                <input id="user-name" type="text" placeholder="">
+                <input id="user-name" name="display-name" type="text" placeholder="Ej: Luciano Leal" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
               </label>
 
               <label>
                 Rol
-                <select id="user-role">
+                <select id="user-role" name="user-role" autocomplete="off">
                   <option value="administrador">Administrador</option>
                   <option value="editor" selected>Editor</option>
                   <option value="lector">Lector</option>
@@ -207,12 +207,12 @@
 
             <label>
               Correo electrónico
-              <input id="user-email" type="email" placeholder="@agrupacionnothofagus.cl" required>
+              <input id="user-email" name="institutional-email" type="email" placeholder="Ej: luciano@agrupacionnothofagus.cl" autocomplete="off" required>
             </label>
 
             <label>
               Contraseña inicial
-              <input id="user-password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+              <input id="user-password" name="new-user-password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" autocomplete="new-password" required>
             </label>
 
             <div class="admin-actions original-users-actions">
