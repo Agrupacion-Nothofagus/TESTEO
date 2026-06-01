@@ -1,0 +1,59 @@
+.user-admin-form {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.users-admin-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.user-admin-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  background: var(--beige-claro);
+}
+
+.user-admin-card h4 {
+  margin: 0 0 6px;
+  color: var(--verde-bosque);
+  font-size: 1rem;
+}
+
+.user-admin-card p {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.user-admin-card small {
+  color: var(--texto-suave);
+  font-weight: 700;
+}
+
+.user-admin-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.14);
+  color: var(--verde-bosque);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+@media (max-width: 640px) {
+  .user-admin-card {
+    flex-direction: column;
+  }
+}
