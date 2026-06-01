@@ -1,12 +1,31 @@
+.users-add-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 14px;
+}
+
 .users-table-toolbar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin: 24px 0 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(31, 61, 43, 0.2);
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(31, 61, 43, 0.2);
+}
+
+.user-create-topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(31, 61, 43, 0.16);
 }
 
 .user-create-form-collapsed {
@@ -24,6 +43,37 @@
 
 .original-users-actions {
   display: none !important;
+}
+
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  padding-right: 48px !important;
+}
+
+.password-eye-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(31, 61, 43, 0.1);
+  color: var(--verde-bosque);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.password-eye-button:hover {
+  background: rgba(31, 61, 43, 0.18);
 }
 
 .users-table-header,
@@ -215,12 +265,15 @@
 }
 
 @media (max-width: 720px) {
-  .users-table-toolbar {
+  .users-add-toolbar,
+  .users-table-toolbar,
+  .user-create-topbar {
     justify-content: stretch;
   }
 
-  .users-table-toolbar .join-button,
-  .users-table-toolbar .secondary-admin-button {
+  .users-add-toolbar .secondary-admin-button,
+  .users-table-toolbar .secondary-admin-button,
+  .user-create-topbar .secondary-admin-button {
     width: 100%;
   }
 }
