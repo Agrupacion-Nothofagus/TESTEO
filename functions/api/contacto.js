@@ -2,7 +2,9 @@ const headers = {
   'content-type': 'application/json; charset=utf-8'
 };
 
-const EMAIL_BANNER_DATA_URI = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/wAALCADIA7ABAREA/8QAHAABAQACAgMBAAAAAAAAAAAAAAAABQIDBgQHCAAB/8QARhAAAQIDBQQFCQQIBQUAAAAAAQACAwQRBRIhMQYTQVFhByJxgZGhFCMyUrHR8AcWYnKCsvEkM1OissIXQ0Rjc5L/xAAYAQEBAQEBAAAAAAAAAAAAAAAAAQIDBP/EAB4RAQEAAwEAAwEBAAAAAAAAAAABAhEhAxIxQVEi/9oADAMBAAIRAxEAPwD3FIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGFfI3ZY7viZ2iZNMwdVvUnkLX9c3VwI1t7ptq4lJrQlStvOvTXu1W4WbW5Xf7KfH6ZX/Kr7pnwLhCcc3PrR6LT1YtPbm3CjO0YXJ2WjXvNprfckbV9+F2pNqT0O9r5Dv4C6kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABl3ZnrWp6zM2UJ6hOLprfutP8Ak05XlQqSUoXyva1xd+uPa/Bvs1J43pnN/DO8orB8V7KnDw1RNSXS1Wxtua6Uptr8l92i0v2nH1b6aa+r8L4nZV9oeVceVyrKV2U3tprWtvVb03snpf2wV6ipXKFS2lFNNJpPe2rX1/4nRXsuxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGOfY3Svs3tUZhVGmV5d5ML8tJbSktvX9bn9Tq65g4syuXKp1aU34tv5Xv7mw8pXYuM/FUqR2p3rG/5a8t6/dJt2IZHyaYpluNr29QeUsQ4Wes4/cLqhrz2c+j+9g1rrp/yp+qjKxM7Xxc9+0xP1bJ4x8c2pcpLS1tbtpJv5XU7eQy5m8t2jH5kVr5U0Vb1WnZt4v2GcttAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8v8AauskN9Zq2UqE0iS7a2q9bZ9W8zv6wxvO1FblGm2S1K7a6WvX3PqaHVDu5S6f8AWRmeSt1yq1ShJb6v5N+9q/wDqN7U+vM+vVn4H4j2P2a2jHtCqOaVNvZaztZJ6W3r9LNO2fZY6+rw2Wb9zU4+fGc9qbc10sr3svr0Op+4fctt9n+R4So0qNZ3XFq1N9r21u3R5w60AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMNc2V6aXU6dVqqSp7Wd1Jv2u9p5dr57K05TnGLlJb2s7P9L7HhMxr7i+uT6vMOMp0aNvq6q2u+9bP6nT6Lw9F+PHcV8nZ3VqjSjStfScZPZ6Z7L5+wT+mq9KqSqSbSS2l3rXl7G7JtpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABnH2Hpj2x6mVGnSLk3dJbWvPpvXm+JtqHGjKSnJX0s9tfzqTPaL+R6J9bGbMe+U6Kq0pWut8+Ovrb4ne+eV8mWJqW9v6zVWpVZUpJea2l3r0+3r8u7itbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5c8qx7b6n5m4qjTqpRjB7W3ScbW1t9n6Hq8jZ8h2Pr5xZ0pUqUo0rXl7Pq2rWm/Qa+WnZc7m1Kp1qSkt9rx1+vS6fQ6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPyLOH9u6rxPZ+o1VpU3qUko9vVqX+e/0Oq+KsaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//Z';
+const SITE_BASE_URL = 'https://raw.githubusercontent.com/Agrupacion-Nothofagus/TESTEO/main';
+const LOGO_URL = `${SITE_BASE_URL}/logo.png`;
+const BACKGROUND_URL = `${SITE_BASE_URL}/fondo.jpg`;
 
 export async function onRequestPost({ request, env }) {
   try {
@@ -94,52 +96,69 @@ function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
             <td align="center">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:760px; background:#ffffff; border-radius:24px; overflow:hidden; border:1px solid #dfe8dc; box-shadow:0 18px 44px rgba(31,61,43,0.12);">
                 <tr>
-                  <td style="padding:0; background:#13251b;">
-                    <img src="${EMAIL_BANNER_DATA_URI}" width="760" alt="Agrupación Nothofagus" style="display:block; width:100%; max-width:760px; height:auto; border:0; line-height:0;">
+                  <td background="${BACKGROUND_URL}" style="background-color:#13251b; background-image:linear-gradient(rgba(19,37,27,0.78), rgba(19,37,27,0.78)), url('${BACKGROUND_URL}'); background-size:cover; background-position:center; padding:28px 30px; color:#ffffff;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;">
+                      <tr>
+                        <td width="116" valign="middle" style="width:116px; padding-right:22px;">
+                          <img src="${LOGO_URL}" width="106" height="106" alt="Logo Agrupación Nothofagus" style="display:block; width:106px; height:106px; border-radius:999px; border:1px solid rgba(255,255,255,0.65); background:#213f3d;">
+                        </td>
+                        <td valign="middle" style="text-align:left;">
+                          <p style="margin:0 0 8px; color:#edf5ed; font-size:12px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">
+                            Formulario de contacto institucional
+                          </p>
+                          <h1 style="margin:0; color:#ffffff; font-size:34px; line-height:1.05; font-weight:400; letter-spacing:-0.8px;">
+                            Agrupación<br><strong style="font-weight:800;">Nothofagus</strong>
+                          </h1>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
                 <tr>
-                  <td style="padding:24px 30px 16px; background:#ffffff;">
+                  <td style="padding:24px 30px 10px; background:#ffffff;">
                     <p style="margin:0 0 6px; color:#4f7d4a; font-size:12px; font-weight:800; letter-spacing:1.3px; text-transform:uppercase;">
                       Nuevo mensaje desde la página web
                     </p>
-                    <h1 style="margin:0; color:#1f3d2b; font-size:24px; line-height:1.2; font-weight:800;">
-                      Formulario de contacto institucional
-                    </h1>
+                    <p style="margin:0; color:#5f6f63; font-size:14px; line-height:1.55;">
+                      Se ha recibido una nueva consulta desde el formulario público del sitio institucional.
+                    </p>
                   </td>
                 </tr>
 
                 <tr>
-                  <td style="padding:0 30px 20px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
+                  <td style="padding:6px 30px 22px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:separate; border-spacing:0 12px;">
                       <tr>
                         <td style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
                           <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Nombre</p>
                           <p style="margin:0; color:#1f2d24; font-size:16px; font-weight:800;">${safeNombre}</p>
                         </td>
                       </tr>
-                    </table>
-
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:separate; border-spacing:0 12px; margin-top:0;">
                       <tr>
-                        <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
-                          <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Teléfono</p>
-                          <p style="margin:0; color:#1f2d24; font-size:15px; font-weight:800;">${safeTelefono}</p>
-                        </td>
-                        <td width="12" style="font-size:0; line-height:0;">&nbsp;</td>
-                        <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
-                          <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Correo</p>
-                          <p style="margin:0; color:#1f3d2b; font-size:15px; font-weight:800; word-break:break-word;">${safeCorreo}</p>
+                        <td style="padding:0;">
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
+                            <tr>
+                              <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
+                                <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Teléfono</p>
+                                <p style="margin:0; color:#1f2d24; font-size:15px; font-weight:800;">${safeTelefono}</p>
+                              </td>
+                              <td width="12" style="font-size:0; line-height:0;">&nbsp;</td>
+                              <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
+                                <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Correo</p>
+                                <p style="margin:0; color:#1f3d2b; font-size:15px; font-weight:800; word-break:break-word;">${safeCorreo}</p>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
 
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:2px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:4px;">
                       <tr>
-                        <td style="padding:22px 24px; background:#1f3d2b; border-radius:20px;">
-                          <p style="margin:0 0 7px; color:#cfe4ca; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">Asunto</p>
-                          <h2 style="margin:0; color:#ffffff; font-size:26px; line-height:1.25; font-weight:800;">
+                        <td style="padding:17px 20px; background:#1f3d2b; border-radius:18px;">
+                          <p style="margin:0 0 5px; color:#cfe4ca; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">Asunto</p>
+                          <h2 style="margin:0; color:#ffffff; font-size:20px; line-height:1.3; font-weight:800;">
                             ${safeAsunto}
                           </h2>
                         </td>
@@ -148,7 +167,7 @@ function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
 
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:14px;">
                       <tr>
-                        <td style="padding:24px 26px; background:#ffffff; border:1px solid #dfe8dc; border-left:7px solid #4f7d4a; border-radius:20px;">
+                        <td style="padding:25px 26px; background:#ffffff; border:1px solid #dfe8dc; border-left:7px solid #4f7d4a; border-radius:20px;">
                           <p style="margin:0 0 12px; color:#4f7d4a; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">
                             Mensaje
                           </p>
