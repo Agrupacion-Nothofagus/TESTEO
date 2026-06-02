@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" role="img" aria-labelledby="title desc">
+  <title id="title">Agrupación Nothofagus</title>
+  <desc id="desc">Logo circular institucional de Agrupación Nothofagus.</desc>
+  <circle cx="1024" cy="1024" r="1024" fill="#213f3d"/>
+  <g fill="none" stroke="#ffffff" stroke-width="54" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M474 1230V797"/>
+    <path d="M474 797C428 708 468 628 585 518C707 632 736 736 660 824C610 882 535 892 474 857"/>
+    <path d="M470 1190C384 1050 257 971 144 985C158 1127 229 1213 342 1220C397 1223 436 1209 470 1190Z"/>
+    <path d="M478 1190C575 1044 710 972 822 990C811 1128 736 1213 625 1219C565 1222 520 1208 478 1190Z"/>
+    <path d="M280 1082L474 1230L671 1084"/>
+  </g>
+  <text x="825" y="1221" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="150" font-weight="400" letter-spacing="-3">agrupación</text>
+  <text x="156" y="1438" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="174" font-weight="800" letter-spacing="-5">nothofagus ·</text>
+</svg>
