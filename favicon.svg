@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Favicon Agrupación Nothofagus">
-  <circle cx="256" cy="256" r="256" fill="#213f42"/>
-  <g fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M256 454V166"/>
-    <path d="M256 62C197 116 180 170 190 220C201 274 237 297 256 299C275 297 311 274 322 220C332 170 315 116 256 62Z"/>
-    <path d="M256 358C201 267 126 262 55 278C62 357 91 411 149 423C196 433 233 402 256 358Z"/>
-    <path d="M256 358C311 267 386 262 457 278C450 357 421 411 363 423C316 433 279 402 256 358Z"/>
-    <path d="M135 337L256 431"/>
-    <path d="M377 337L256 431"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" role="img" aria-label="Logo Agrupación Nothofagus">
+  <circle cx="1024" cy="1024" r="1024" fill="#213f3d"/>
+  <g fill="none" stroke="#ffffff" stroke-width="86" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1024 1770V690"/>
+    <path d="M1024 1035C850 1012 760 879 779 706C798 531 910 372 1024 260C1138 372 1250 531 1269 706C1288 879 1198 1012 1024 1035Z"/>
+    <path d="M1008 1605C830 1418 663 1161 185 1100C188 1332 282 1590 525 1668C705 1726 878 1656 1008 1605Z"/>
+    <path d="M1040 1605C1218 1418 1385 1161 1863 1100C1860 1332 1766 1590 1523 1668C1343 1726 1170 1656 1040 1605Z"/>
+    <path d="M520 1360L1024 1742L1528 1360"/>
   </g>
 </svg>
