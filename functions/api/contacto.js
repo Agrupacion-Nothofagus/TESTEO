@@ -156,9 +156,9 @@ function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
 
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:4px;">
                       <tr>
-                        <td style="padding:17px 20px; background:#1f3d2b; border-radius:18px;">
-                          <p style="margin:0 0 5px; color:#cfe4ca; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">Asunto</p>
-                          <h2 style="margin:0; color:#ffffff; font-size:20px; line-height:1.3; font-weight:800;">
+                        <td style="padding:17px 20px; background:#ffffff; border:1px solid #dfe8dc; border-left:7px solid #4f7d4a; border-radius:18px;">
+                          <p style="margin:0 0 8px; color:#4f7d4a; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">Asunto</p>
+                          <h2 style="margin:0; color:#1f2d24; font-size:19px; line-height:1.35; font-weight:800;">
                             ${safeAsunto}
                           </h2>
                         </td>
