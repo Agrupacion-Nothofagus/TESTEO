@@ -5,6 +5,8 @@ const shell = document.querySelector('#article-shell');
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 
+const ALLOWED_RICH_TAGS = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'A', 'H1', 'H2', 'H3', 'H4']);
+
 cargarPublicacion();
 
 async function cargarPublicacion() {
@@ -51,6 +53,7 @@ function renderizarPublicacion(publicacion) {
   const imagen = publicacion.imagen_url || publicacion.imagen || '';
   const bajada = publicacion.bajada || publicacion.resumen || '';
   const fuentes = publicacion.fuentes_referencias || 'Sin fuentes o referencias declaradas.';
+  const contenido = renderizarContenido(publicacion.contenido || '');
   const imagenHTML = imagen
     ? `<img class="article-image" src="${escaparAtributo(imagen)}" alt="Imagen de portada">`
     : '<div class="article-placeholder">Nothofagus</div>';
@@ -63,7 +66,7 @@ function renderizarPublicacion(publicacion) {
         <h1>${escaparHTML(publicacion.titulo)}</h1>
         <p class="article-subtitle">${escaparHTML(bajada)}</p>
         <p class="article-meta">${formatearFecha(publicacion.fecha)}</p>
-        <div class="article-content">${escaparHTML(publicacion.contenido || '')}</div>
+        <div class="article-content">${contenido}</div>
         ${renderizarGaleria(publicacion.imagenes_complementarias)}
         <section class="article-references">
           <h2>Fuentes y referencias</h2>
@@ -72,6 +75,52 @@ function renderizarPublicacion(publicacion) {
       </div>
     </article>
   `;
+}
+
+function renderizarContenido(contenido) {
+  const valor = String(contenido || '').trim();
+  if (!valor) return '';
+
+  if (!looksLikeHTML(valor)) {
+    return escaparHTML(valor).replaceAll('\n', '<br>');
+  }
+
+  return sanitizeHTML(valor);
+}
+
+function sanitizeHTML(html) {
+  const parser = new DOMParser();
+  const documentHTML = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+  const container = documentHTML.body.firstElementChild;
+
+  cleanNode(container);
+  return container.innerHTML;
+}
+
+function cleanNode(node) {
+  Array.from(node.children || []).forEach((child) => {
+    if (!ALLOWED_RICH_TAGS.has(child.tagName)) {
+      child.replaceWith(...Array.from(child.childNodes));
+      return;
+    }
+
+    Array.from(child.attributes).forEach((attribute) => child.removeAttribute(attribute.name));
+
+    if (child.tagName === 'A') {
+      const href = child.getAttribute('href') || '';
+      if (/^https?:\/\//i.test(href) || /^mailto:/i.test(href)) {
+        child.setAttribute('href', href);
+        child.setAttribute('target', '_blank');
+        child.setAttribute('rel', 'noopener noreferrer');
+      }
+    }
+
+    cleanNode(child);
+  });
+}
+
+function looksLikeHTML(value) {
+  return /<\/?[a-z][\s\S]*>/i.test(value);
 }
 
 function renderizarGaleria(lista) {
