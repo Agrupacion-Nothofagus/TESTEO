@@ -1,6 +1,14 @@
 .rich-editor-field {
   display: grid;
   gap: 8px;
+  font-weight: 800;
+  color: var(--texto);
+}
+
+.rich-editor-label {
+  display: block;
+  color: var(--texto);
+  font-weight: 800;
 }
 
 .rich-editor-source-hidden {
@@ -28,6 +36,8 @@
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.75;
+  font-weight: 500;
+  cursor: text;
 }
 
 .rich-editor .ql-editor.ql-blank::before {
