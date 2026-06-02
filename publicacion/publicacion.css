@@ -24,10 +24,17 @@ body {
   display: inline-flex;
   padding: 11px 18px;
   border-radius: 999px;
-  background: var(--verde-bosque);
-  color: var(--blanco);
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
   text-decoration: none;
   font-weight: 900;
+  box-shadow: 0 12px 24px rgba(19, 37, 27, 0.22);
+}
+
+.article-nav a:hover {
+  background: linear-gradient(135deg, var(--verde-profundo), var(--verde-bosque)) !important;
+  color: var(--blanco) !important;
+  transform: translateY(-1px);
 }
 
 .article-shell {
