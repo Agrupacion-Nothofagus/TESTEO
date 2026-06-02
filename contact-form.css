@@ -98,6 +98,36 @@
   color: #9b2c2c;
 }
 
+/* Ajuste visual: Súmate a Nothofagus con fondo equivalente a Publicaciones */
+.join-section {
+  background: var(--blanco);
+  color: var(--texto);
+  text-align: center;
+}
+
+.join-section h2 {
+  color: var(--texto);
+}
+
+.join-section .section-tag {
+  color: var(--verde-hoja);
+}
+
+.join-section p {
+  color: var(--texto-suave);
+}
+
+.join-section .join-button {
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.18);
+}
+
+.join-section .join-button:hover {
+  background: var(--verde-profundo);
+  box-shadow: 0 18px 34px rgba(31, 61, 43, 0.24);
+}
+
 @media (max-width: 720px) {
   .contact-form-row.two-columns {
     grid-template-columns: 1fr;
