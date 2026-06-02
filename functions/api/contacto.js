@@ -86,57 +86,73 @@ function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Nuevo mensaje web Nothofagus</title>
       </head>
-      <body style="margin:0; padding:0; background:#f5f1e8; font-family: Arial, Helvetica, sans-serif; color:#1f2d24;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; background:#f5f1e8; padding:28px 12px;">
+      <body style="margin:0; padding:0; background:#f5f1e8; font-family:Arial, Helvetica, sans-serif; color:#1f2d24;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; background:#f5f1e8; padding:22px 12px;">
           <tr>
             <td align="center">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:680px; background:#ffffff; border-radius:26px; overflow:hidden; border:1px solid #dfe8dc; box-shadow:0 18px 44px rgba(31,61,43,0.12);">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:760px; background:#ffffff; border-radius:24px; overflow:hidden; border:1px solid #dfe8dc; box-shadow:0 18px 44px rgba(31,61,43,0.12);">
                 <tr>
-                  <td style="padding:34px 34px 30px; background:linear-gradient(135deg,#13251b,#1f3d2b 58%,#4f7d4a); color:#ffffff; text-align:center;">
-                    <div style="display:inline-block; padding:7px 13px; border-radius:999px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.22); font-size:12px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">
-                      Agrupación Nothofagus
-                    </div>
-                    <h1 style="margin:18px 0 8px; font-size:30px; line-height:1.15; font-weight:800;">
-                      Nuevo mensaje desde la página web
-                    </h1>
-                    <p style="margin:0; color:#edf5ed; font-size:15px; line-height:1.6;">
-                      Se ha recibido una nueva consulta mediante el formulario de contacto institucional.
-                    </p>
+                  <td style="padding:0; background:#13251b;">
+                    <img src="https://raw.githubusercontent.com/Agrupacion-Nothofagus/TESTEO/main/email-banner-nothofagus.jpg" width="760" alt="Agrupación Nothofagus" style="display:block; width:100%; max-width:760px; height:auto; border:0; line-height:0;">
                   </td>
                 </tr>
 
                 <tr>
-                  <td style="padding:30px 34px 10px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;">
+                  <td style="padding:24px 30px 16px; background:#ffffff;">
+                    <p style="margin:0 0 6px; color:#4f7d4a; font-size:12px; font-weight:800; letter-spacing:1.3px; text-transform:uppercase;">
+                      Nuevo mensaje desde la página web
+                    </p>
+                    <h1 style="margin:0; color:#1f3d2b; font-size:24px; line-height:1.2; font-weight:800;">
+                      Formulario de contacto institucional
+                    </h1>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:0 30px 20px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
                       <tr>
-                        <td style="padding:0 0 18px;">
-                          <p style="margin:0 0 8px; color:#4f7d4a; font-size:12px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">
-                            Asunto
-                          </p>
-                          <h2 style="margin:0; color:#1f3d2b; font-size:23px; line-height:1.25;">
+                        <td style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
+                          <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Nombre</p>
+                          <p style="margin:0; color:#1f2d24; font-size:16px; font-weight:800;">${safeNombre}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:separate; border-spacing:0 12px; margin-top:0;">
+                      <tr>
+                        <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
+                          <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Teléfono</p>
+                          <p style="margin:0; color:#1f2d24; font-size:15px; font-weight:800;">${safeTelefono}</p>
+                        </td>
+                        <td width="12" style="font-size:0; line-height:0;">&nbsp;</td>
+                        <td width="50%" style="padding:14px 16px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
+                          <p style="margin:0 0 6px; color:#5f6f63; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Correo</p>
+                          <p style="margin:0; color:#1f3d2b; font-size:15px; font-weight:800; word-break:break-word;">${safeCorreo}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:2px;">
+                      <tr>
+                        <td style="padding:22px 24px; background:#1f3d2b; border-radius:20px;">
+                          <p style="margin:0 0 7px; color:#cfe4ca; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">Asunto</p>
+                          <h2 style="margin:0; color:#ffffff; font-size:26px; line-height:1.25; font-weight:800;">
                             ${safeAsunto}
                           </h2>
                         </td>
                       </tr>
                     </table>
 
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:separate; border-spacing:0 12px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; margin-top:14px;">
                       <tr>
-                        <td style="padding:16px 18px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
-                          <p style="margin:0 0 4px; color:#5f6f63; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Nombre</p>
-                          <p style="margin:0; color:#1f2d24; font-size:16px; font-weight:800;">${safeNombre}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:16px 18px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
-                          <p style="margin:0 0 4px; color:#5f6f63; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Teléfono</p>
-                          <p style="margin:0; color:#1f2d24; font-size:16px; font-weight:800;">${safeTelefono}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:16px 18px; background:#faf8f2; border:1px solid #dfe8dc; border-radius:18px;">
-                          <p style="margin:0 0 4px; color:#5f6f63; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Correo</p>
-                          <p style="margin:0; color:#1f3d2b; font-size:16px; font-weight:800; word-break:break-word;">${safeCorreo}</p>
+                        <td style="padding:24px 26px; background:#ffffff; border:1px solid #dfe8dc; border-left:7px solid #4f7d4a; border-radius:20px;">
+                          <p style="margin:0 0 12px; color:#4f7d4a; font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">
+                            Mensaje
+                          </p>
+                          <p style="margin:0; color:#1f2d24; font-size:17px; line-height:1.75;">
+                            ${safeMensaje}
+                          </p>
                         </td>
                       </tr>
                     </table>
@@ -144,25 +160,12 @@ function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
                 </tr>
 
                 <tr>
-                  <td style="padding:8px 34px 32px;">
-                    <div style="background:#ffffff; border:1px solid #dfe8dc; border-left:6px solid #4f7d4a; border-radius:20px; padding:22px 24px;">
-                      <p style="margin:0 0 12px; color:#4f7d4a; font-size:12px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;">
-                        Mensaje
-                      </p>
-                      <p style="margin:0; color:#1f2d24; font-size:16px; line-height:1.75;">
-                        ${safeMensaje}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td style="padding:22px 34px; background:#faf8f2; border-top:1px solid #dfe8dc; text-align:center;">
-                    <p style="margin:0 0 6px; color:#1f3d2b; font-size:14px; font-weight:800;">
-                      Mensaje recibido el ${escapeHTML(fecha)}
+                  <td style="padding:18px 30px; background:#faf8f2; border-top:1px solid #dfe8dc; text-align:center;">
+                    <p style="margin:0 0 5px; color:#1f3d2b; font-size:13px; font-weight:800;">
+                      Recibido el ${escapeHTML(fecha)}
                     </p>
-                    <p style="margin:0; color:#5f6f63; font-size:12px; line-height:1.6;">
-                      Este correo fue generado automáticamente desde el formulario de contacto de Agrupación Nothofagus.
+                    <p style="margin:0; color:#5f6f63; font-size:12px; line-height:1.5;">
+                      Correo automático generado desde el formulario de contacto de Agrupación Nothofagus.
                     </p>
                   </td>
                 </tr>
