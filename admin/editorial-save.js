@@ -17,7 +17,7 @@ const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-const CATEGORIAS = ['Institución', 'Labor social', 'Actualidad', 'Ensayo', 'Columna de opinión'];
+const CATEGORIAS = ['Institución', 'Labor social', 'Actualidad', 'Ensayo', 'Columna de opinión', 'Memoria institucional'];
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
