@@ -6,6 +6,8 @@ import {
   supabaseConfigurado
 } from './supabase-config.js';
 
+const MAX_PUBLICACIONES_SLIDER = 10;
+
 async function cargarPublicaciones() {
   const contenedor = document.querySelector('[data-publicaciones-slider]');
   const indicador = document.querySelector('[data-publicaciones-indicador]');
@@ -16,7 +18,7 @@ async function cargarPublicaciones() {
 
   try {
     const publicaciones = await obtenerPublicaciones();
-    const visibles = publicaciones.filter((item) => item.estado === 'publicado');
+    const visibles = normalizarPublicacionesSlider(publicaciones);
 
     if (!visibles.length) {
       contenedor.innerHTML = '<p class="slider-empty">No hay publicaciones disponibles por el momento.</p>';
@@ -82,7 +84,8 @@ async function obtenerPublicaciones() {
         .from(SUPABASE_TABLE_PUBLICACIONES)
         .select('*')
         .eq('estado', 'publicado')
-        .order('fecha', { ascending: false });
+        .order('fecha', { ascending: false })
+        .limit(MAX_PUBLICACIONES_SLIDER);
 
       if (error) throw error;
       return data || [];
@@ -93,6 +96,18 @@ async function obtenerPublicaciones() {
 
   const respuesta = await fetch('content/publicaciones.json', { cache: 'no-store' });
   return await respuesta.json();
+}
+
+function normalizarPublicacionesSlider(publicaciones) {
+  return (publicaciones || [])
+    .filter((item) => item.estado === 'publicado')
+    .sort((a, b) => fechaOrdenable(b.fecha) - fechaOrdenable(a.fecha))
+    .slice(0, MAX_PUBLICACIONES_SLIDER);
+}
+
+function fechaOrdenable(fecha) {
+  const valor = new Date(`${fecha || ''}T12:00:00`).getTime();
+  return Number.isNaN(valor) ? 0 : valor;
 }
 
 function escaparHTML(valor) {
