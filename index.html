@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="site-interactions.css">
   <link rel="stylesheet" href="nav-access.css">
+  <link rel="stylesheet" href="contact-form.css">
 </head>
 
 <body>
@@ -191,10 +192,10 @@
       </p>
 
       <div class="contact-grid" aria-label="Canales de contacto y redes sociales de Agrupación Nothofagus">
-        <a class="contact-card" href="mailto:contacto@agrupacionnothofagus.cl" aria-label="Enviar correo a Agrupación Nothofagus">
+        <button class="contact-card" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-form-panel">
           <img src="mail-logo.svg" alt="" class="contact-card-icon">
           <span>Correo</span>
-        </a>
+        </button>
 
         <a class="contact-card" href="https://www.instagram.com/nothofagus_org/?hl=es" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Agrupación Nothofagus">
           <img src="instagram-logo.svg" alt="" class="contact-card-icon">
@@ -205,6 +206,43 @@
           <img src="facebook-logo.svg" alt="" class="contact-card-icon">
           <span>Facebook</span>
         </a>
+      </div>
+
+      <div class="contact-form-panel is-hidden" id="contact-form-panel">
+        <form class="contact-form" id="contact-form">
+          <div class="contact-form-row two-columns">
+            <label>
+              Nombre
+              <input id="contact-name" type="text" placeholder="Nombre y apellido" required>
+            </label>
+
+            <label>
+              Teléfono
+              <input id="contact-phone" type="tel" value="+569" inputmode="tel" required>
+            </label>
+          </div>
+
+          <label>
+            Correo
+            <input id="contact-email" type="email" placeholder="correo@ejemplo.cl" required>
+          </label>
+
+          <label>
+            Asunto
+            <input id="contact-subject" type="text" placeholder="Motivo de contacto" required>
+          </label>
+
+          <label>
+            Mensaje
+            <textarea id="contact-message" rows="6" placeholder="Escribe tu mensaje" required></textarea>
+          </label>
+
+          <div class="contact-form-actions">
+            <button type="submit" class="contact-submit-button">Enviar mensaje</button>
+          </div>
+
+          <p id="contact-status" class="contact-status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
 
@@ -234,5 +272,6 @@
   </footer>
 
   <script type="module" src="scripts/publicaciones.js"></script>
+  <script type="module" src="scripts/contacto-form.js"></script>
 </body>
 </html>
