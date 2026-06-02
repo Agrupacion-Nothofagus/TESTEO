@@ -3,8 +3,8 @@ const panel = document.querySelector('#contact-form-panel');
 const form = document.querySelector('#contact-form');
 const status = document.querySelector('#contact-status');
 const phone = document.querySelector('#contact-phone');
+const submitButton = form?.querySelector('button[type="submit"]');
 
-const CONTACT_EMAIL = 'contacto@agrupacionnothofagus.cl';
 const PHONE_PREFIX = '+569';
 
 toggle?.addEventListener('click', () => {
@@ -28,34 +28,60 @@ phone?.addEventListener('blur', () => {
   }
 });
 
-form?.addEventListener('submit', (event) => {
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const nombre = document.querySelector('#contact-name').value.trim();
-  const telefono = document.querySelector('#contact-phone').value.trim();
-  const correo = document.querySelector('#contact-email').value.trim();
-  const asunto = document.querySelector('#contact-subject').value.trim();
-  const mensaje = document.querySelector('#contact-message').value.trim();
+  const payload = {
+    nombre: document.querySelector('#contact-name').value.trim(),
+    telefono: document.querySelector('#contact-phone').value.trim(),
+    correo: document.querySelector('#contact-email').value.trim(),
+    asunto: document.querySelector('#contact-subject').value.trim(),
+    mensaje: document.querySelector('#contact-message').value.trim()
+  };
 
-  if (!nombre || !telefono || !correo || !asunto || !mensaje) {
+  if (!payload.nombre || !payload.telefono || !payload.correo || !payload.asunto || !payload.mensaje) {
     showStatus('Completa todos los campos antes de enviar.', false);
     return;
   }
 
-  const cuerpo = [
-    `Nombre: ${nombre}`,
-    `Teléfono: ${telefono}`,
-    `Correo: ${correo}`,
-    '',
-    'Mensaje:',
-    mensaje
-  ].join('\n');
+  if (!/^\+569\d{8}$/.test(payload.telefono)) {
+    showStatus('Ingresa un teléfono válido con formato +569XXXXXXXX.', false);
+    return;
+  }
 
-  const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
-  window.location.href = mailto;
+  try {
+    setLoading(true);
+    showStatus('Enviando mensaje...', true);
 
-  showStatus('Se abrirá tu aplicación de correo para enviar el mensaje.', true);
+    const response = await fetch('/api/contacto', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || 'No fue posible enviar el mensaje.');
+    }
+
+    form.reset();
+    phone.value = PHONE_PREFIX;
+    showStatus('Mensaje enviado correctamente. Te contactaremos a la brevedad.', true);
+  } catch (error) {
+    showStatus(error.message || 'No fue posible enviar el mensaje.', false);
+  } finally {
+    setLoading(false);
+  }
 });
+
+function setLoading(isLoading) {
+  if (!submitButton) return;
+  submitButton.disabled = isLoading;
+  submitButton.textContent = isLoading ? 'Enviando...' : 'Enviar mensaje';
+}
 
 function showStatus(message, ok) {
   status.textContent = message;
