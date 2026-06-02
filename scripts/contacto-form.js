@@ -6,14 +6,20 @@ const phone = document.querySelector('#contact-phone');
 const submitButton = form?.querySelector('button[type="submit"]');
 
 const PHONE_PREFIX = '+569';
+const CONTACT_PANEL_ANIMATION_MS = 320;
+let contactPanelTimer = null;
 
 toggle?.addEventListener('click', () => {
-  const isHidden = panel.classList.toggle('is-hidden');
-  toggle.setAttribute('aria-expanded', String(!isHidden));
+  if (!panel) return;
 
-  if (!isHidden) {
-    setTimeout(() => document.querySelector('#contact-name')?.focus(), 80);
+  const isClosed = panel.classList.contains('is-hidden');
+
+  if (isClosed) {
+    openContactPanel();
+    return;
   }
+
+  closeContactPanel();
 });
 
 phone?.addEventListener('input', () => {
@@ -76,6 +82,24 @@ form?.addEventListener('submit', async (event) => {
     setLoading(false);
   }
 });
+
+function openContactPanel() {
+  clearTimeout(contactPanelTimer);
+  panel.classList.remove('is-hidden', 'is-closing');
+  toggle?.setAttribute('aria-expanded', 'true');
+  setTimeout(() => document.querySelector('#contact-name')?.focus(), 120);
+}
+
+function closeContactPanel() {
+  clearTimeout(contactPanelTimer);
+  panel.classList.add('is-closing');
+  toggle?.setAttribute('aria-expanded', 'false');
+
+  contactPanelTimer = setTimeout(() => {
+    panel.classList.add('is-hidden');
+    panel.classList.remove('is-closing');
+  }, CONTACT_PANEL_ANIMATION_MS);
+}
 
 function setLoading(isLoading) {
   if (!submitButton) return;
