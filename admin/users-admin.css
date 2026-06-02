@@ -89,6 +89,19 @@
   padding-right: 26px;
 }
 
+.sidebar-link,
+.sidebar-link:hover,
+.sidebar-link.is-active {
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+}
+
+.sidebar-link span,
+.sidebar-link:hover span,
+.sidebar-link.is-active span {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
 .sidebar-site-link {
   background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
   color: var(--blanco) !important;
