@@ -22,6 +22,7 @@ const reloadButton = document.querySelector('#reload-posts');
 const postsList = document.querySelector('#posts-list');
 const formTitle = document.querySelector('#form-title');
 const sidebarLinks = document.querySelectorAll('[data-admin-view]');
+const usersViewButton = document.querySelector('[data-admin-view="usuarios-view"]');
 const adminViews = document.querySelectorAll('.admin-view');
 const viewTitle = document.querySelector('#admin-view-title');
 const viewDescription = document.querySelector('#admin-view-description');
@@ -35,6 +36,9 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
 
 let supabase = null;
 let publicaciones = [];
+
+usersViewButton?.classList.add('is-hidden');
+usersPanel?.classList.add('is-hidden');
 
 if (fecha) fecha.valueAsDate = new Date();
 
@@ -310,16 +314,50 @@ function mostrarPanel(usuario) {
     || usuario?.user_metadata?.full_name
     || usuario?.email
     || 'Sesión activa';
+  const esAdministrador = tieneRolAdministrador(usuario);
 
   sessionPanel.classList.remove('is-hidden');
   editorPanel.classList.remove('is-hidden');
   postsPanel.classList.remove('is-hidden');
-  usersPanel.classList.remove('is-hidden');
   sessionEmail.textContent = nombreUsuario;
-  setStatus(adminStatus, 'Sesión verificada. Panel administrativo disponible.', true);
+  ocultarEstadoPanel();
+
+  if (esAdministrador) {
+    usersViewButton?.classList.remove('is-hidden');
+    usersPanel?.classList.remove('is-hidden');
+  } else {
+    usersViewButton?.classList.add('is-hidden');
+    usersPanel?.classList.add('is-hidden');
+
+    if (document.querySelector('#usuarios-view')?.classList.contains('is-active')) {
+      cambiarVista('gestion-view');
+    }
+  }
+}
+
+function tieneRolAdministrador(usuario) {
+  const rol = String(
+    usuario?.user_metadata?.rol
+    || usuario?.user_metadata?.role
+    || usuario?.app_metadata?.rol
+    || usuario?.app_metadata?.role
+    || ''
+  ).trim().toLowerCase();
+
+  return rol === 'administrador' || rol === 'admin';
+}
+
+function ocultarEstadoPanel() {
+  adminStatus.textContent = '';
+  adminStatus.classList.add('is-hidden');
+  adminStatus.classList.remove('success', 'error');
 }
 
 function cambiarVista(viewId) {
+  if (viewId === 'usuarios-view' && usersViewButton?.classList.contains('is-hidden')) {
+    viewId = 'gestion-view';
+  }
+
   sidebarLinks.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.adminView === viewId);
   });
@@ -336,7 +374,10 @@ function cambiarVista(viewId) {
 }
 
 function setStatus(elemento, mensaje, success) {
+  if (!elemento) return;
+
   elemento.textContent = mensaje;
+  elemento.classList.remove('is-hidden');
   elemento.classList.toggle('success', Boolean(success));
   elemento.classList.toggle('error', !success);
 }
