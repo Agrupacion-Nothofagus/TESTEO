@@ -14,11 +14,12 @@
   max-width: 760px;
   margin: 28px auto 0;
   padding: 24px;
-  border: 1px solid rgba(31, 61, 43, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   border-radius: 24px;
-  background: rgba(250, 248, 242, 0.9);
-  box-shadow: 0 18px 42px rgba(31, 61, 43, 0.12);
-  text-align: left;
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+  box-shadow: 0 18px 42px rgba(31, 61, 43, 0.18);
+  text-align: center;
 }
 
 .contact-form-panel.is-hidden {
@@ -39,14 +40,15 @@
 .contact-form label {
   display: grid;
   gap: 8px;
-  color: var(--texto);
+  color: var(--blanco) !important;
   font-weight: 800;
+  text-align: left;
 }
 
 .contact-form input,
 .contact-form textarea {
   width: 100%;
-  border: 1px solid var(--borde);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   padding: 14px 15px;
   font: inherit;
@@ -61,8 +63,8 @@
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-  outline: 3px solid rgba(79, 125, 74, 0.18);
-  border-color: var(--verde-hoja);
+  outline: 3px solid rgba(255, 255, 255, 0.28);
+  border-color: var(--blanco);
 }
 
 .contact-form-actions {
@@ -75,8 +77,8 @@
   border: 0;
   border-radius: 999px;
   padding: 14px 24px;
-  background: var(--verde-bosque);
-  color: var(--blanco);
+  background: var(--beige);
+  color: var(--verde-profundo);
   font: inherit;
   font-weight: 900;
   cursor: pointer;
@@ -84,24 +86,24 @@
 }
 
 .contact-submit-button:hover {
-  background: var(--verde-profundo);
+  background: var(--blanco);
   transform: translateY(-2px);
 }
 
 .contact-status {
   min-height: 22px;
   margin: 0 !important;
-  color: var(--texto-suave);
+  color: #edf5ed;
   font-weight: 800;
   text-align: center;
 }
 
 .contact-status.success {
-  color: var(--verde-bosque);
+  color: var(--blanco);
 }
 
 .contact-status.error {
-  color: #9b2c2c;
+  color: #ffe3e3;
 }
 
 .join-section {
