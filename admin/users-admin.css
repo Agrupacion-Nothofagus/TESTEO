@@ -89,6 +89,15 @@
   padding-right: 26px;
 }
 
+.sidebar-site-link {
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+}
+
+.sidebar-site-link:hover {
+  background: linear-gradient(135deg, var(--verde-profundo), var(--verde-bosque)) !important;
+}
+
 .users-table-header,
 .users-admin-list,
 .user-admin-card,
