@@ -2,6 +2,12 @@
   border: 0;
   font: inherit;
   cursor: pointer;
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+}
+
+.contact-card:hover {
+  background: linear-gradient(135deg, var(--verde-profundo), var(--verde-bosque)) !important;
 }
 
 .contact-form-panel {
