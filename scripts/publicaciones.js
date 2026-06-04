@@ -7,6 +7,8 @@ import {
 } from './supabase-config.js';
 
 const MAX_PUBLICACIONES_SLIDER = 10;
+const PUBLICACIONES_SLIDER_INTERVAL_MS = 7000;
+const PUBLICACIONES_FADE_MS = 360;
 
 async function cargarPublicaciones() {
   const contenedor = document.querySelector('[data-publicaciones-slider]');
@@ -26,6 +28,8 @@ async function cargarPublicaciones() {
     }
 
     let indiceActual = 0;
+    let sliderTimer = null;
+    let enTransicion = false;
 
     function renderizarSlide(indice) {
       const publicacion = visibles[indice];
@@ -37,7 +41,7 @@ async function cargarPublicaciones() {
         : `<div class="publication-image publication-placeholder">Nothofagus</div>`;
 
       contenedor.innerHTML = `
-        <a class="publication-slide publication-slide-link" href="${urlPublicacion}">
+        <a class="publication-slide publication-slide-link publication-slide-fade-in" href="${urlPublicacion}">
           ${imagenHTML}
           <div class="publication-content">
             <span class="publication-category">${escaparHTML(publicacion.categoria || 'Institución')}</span>
@@ -52,24 +56,60 @@ async function cargarPublicaciones() {
       }
     }
 
+    function cambiarSlide(nuevoIndice) {
+      if (enTransicion || nuevoIndice === indiceActual) return;
+
+      const slideActual = contenedor.querySelector('.publication-slide');
+      enTransicion = true;
+
+      if (!slideActual) {
+        indiceActual = nuevoIndice;
+        renderizarSlide(indiceActual);
+        enTransicion = false;
+        return;
+      }
+
+      slideActual.classList.remove('publication-slide-fade-in');
+      slideActual.classList.add('publication-slide-fade-out');
+
+      setTimeout(() => {
+        indiceActual = nuevoIndice;
+        renderizarSlide(indiceActual);
+        enTransicion = false;
+      }, PUBLICACIONES_FADE_MS);
+    }
+
     function avanzar() {
-      indiceActual = (indiceActual + 1) % visibles.length;
-      renderizarSlide(indiceActual);
+      cambiarSlide((indiceActual + 1) % visibles.length);
     }
 
     function retroceder() {
-      indiceActual = (indiceActual - 1 + visibles.length) % visibles.length;
-      renderizarSlide(indiceActual);
+      cambiarSlide((indiceActual - 1 + visibles.length) % visibles.length);
     }
 
-    if (botonSiguiente) botonSiguiente.addEventListener('click', avanzar);
-    if (botonAnterior) botonAnterior.addEventListener('click', retroceder);
+    function reiniciarTimer() {
+      if (sliderTimer) clearInterval(sliderTimer);
+      if (visibles.length > 1) {
+        sliderTimer = setInterval(avanzar, PUBLICACIONES_SLIDER_INTERVAL_MS);
+      }
+    }
+
+    if (botonSiguiente) {
+      botonSiguiente.addEventListener('click', () => {
+        avanzar();
+        reiniciarTimer();
+      });
+    }
+
+    if (botonAnterior) {
+      botonAnterior.addEventListener('click', () => {
+        retroceder();
+        reiniciarTimer();
+      });
+    }
 
     renderizarSlide(indiceActual);
-
-    if (visibles.length > 1) {
-      setInterval(avanzar, 7000);
-    }
+    reiniciarTimer();
   } catch (error) {
     contenedor.innerHTML = '<p class="slider-empty">No fue posible cargar las publicaciones.</p>';
     console.error('Error al cargar publicaciones:', error);
