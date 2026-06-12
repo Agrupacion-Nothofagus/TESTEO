@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="site-interactions.css">
   <link rel="stylesheet" href="nav-access.css">
   <link rel="stylesheet" href="contact-form.css">
+  <link rel="stylesheet" href="member-form.css">
 </head>
 
 <body>
@@ -257,9 +258,64 @@
         puedes iniciar tu solicitud de ingreso como socio o socia.
       </p>
 
-      <a class="join-button" href="https://forms.gle/9Q1FwpiemfF4ykNu8" target="_blank" rel="noopener noreferrer">
+      <button class="join-button" type="button" data-member-toggle aria-expanded="false" aria-controls="member-form-panel">
         ÚNETE
-      </a>
+      </button>
+
+      <div class="member-form-panel is-hidden" id="member-form-panel">
+        <form class="member-form" id="member-form">
+          <div class="member-form-row two-columns">
+            <label>
+              Nombre completo
+              <input id="member-name" type="text" placeholder="Nombre y apellido" required>
+            </label>
+
+            <label>
+              Teléfono
+              <input id="member-phone" type="tel" value="+569" inputmode="tel" required>
+            </label>
+          </div>
+
+          <div class="member-form-row two-columns">
+            <label>
+              Correo electrónico
+              <input id="member-email" type="email" placeholder="correo@ejemplo.cl" required>
+            </label>
+
+            <label>
+              Edad
+              <input id="member-age" type="number" min="12" max="120" placeholder="Edad" required>
+            </label>
+          </div>
+
+          <label>
+            Comuna o ciudad
+            <input id="member-city" type="text" placeholder="Ej: Temuco" required>
+          </label>
+
+          <label>
+            Motivación para participar
+            <textarea id="member-motivation" rows="5" placeholder="Cuéntanos brevemente por qué quieres sumarte a Nothofagus" required></textarea>
+          </label>
+
+          <label>
+            Áreas de interés, opcional
+            <textarea id="member-interests" rows="4" placeholder="Ej: investigación social, educación, territorio, cultura, medio ambiente"></textarea>
+          </label>
+
+          <label class="member-honeypot" aria-hidden="true">
+            Sitio web
+            <input id="member-website" type="text" tabindex="-1" autocomplete="off">
+          </label>
+
+          <div class="member-form-actions">
+            <button type="button" class="member-cancel-button" data-member-cancel>Cancelar</button>
+            <button type="submit" class="member-submit-button">Enviar solicitud</button>
+          </div>
+
+          <p id="member-status" class="member-status" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
 
   </main>
@@ -273,5 +329,6 @@
 
   <script type="module" src="scripts/publicaciones.js"></script>
   <script type="module" src="scripts/contacto-form.js"></script>
+  <script type="module" src="scripts/miembros-form.js"></script>
 </body>
 </html>
