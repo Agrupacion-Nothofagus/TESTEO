@@ -1,3 +1,5 @@
+import './roles-miembros.js';
+
 const source = document.querySelector('#contenido');
 const editorElement = document.querySelector('#contenido-editor');
 
