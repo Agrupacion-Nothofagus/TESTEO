@@ -39,7 +39,7 @@
 
 .member-request-card {
   display: grid;
-  grid-template-columns: 1.4fr 0.9fr;
+  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.8fr);
   gap: 18px;
   padding: 22px;
   border: 1px solid rgba(31, 61, 43, 0.16);
@@ -58,19 +58,40 @@
 .member-request-main p {
   margin: 0;
   color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.member-admin-section {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 18px;
+  background: rgba(250, 248, 242, 0.72);
+}
+
+.member-admin-section > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--verde-bosque);
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.member-adult-section {
+  background: rgba(79, 125, 74, 0.08);
 }
 
 .member-request-main dl {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 14px;
-  margin: 18px 0 0;
+  margin: 0;
 }
 
 .member-request-main dl div {
   padding: 12px;
   border-radius: 14px;
-  background: rgba(79, 125, 74, 0.08);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .member-request-main dt {
@@ -114,6 +135,24 @@
   color: #1d4ed8;
 }
 
+.member-areas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.member-areas-list li {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.12);
+  color: var(--verde-bosque);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
 .member-interests {
   margin-top: 16px;
   padding: 14px;
@@ -126,9 +165,16 @@
 }
 
 .member-request-actions {
+  position: sticky;
+  top: 20px;
   display: grid;
   gap: 12px;
   align-content: start;
+  align-self: start;
+  padding: 16px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 18px;
+  background: rgba(250, 248, 242, 0.9);
 }
 
 .member-request-actions label {
@@ -156,6 +202,10 @@
 @media (max-width: 920px) {
   .member-request-card {
     grid-template-columns: 1fr;
+  }
+
+  .member-request-actions {
+    position: static;
   }
 
   .member-request-main dl {
