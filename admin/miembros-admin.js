@@ -80,20 +80,49 @@ async function saveRequest(id) {
 
 function renderRequest(item) {
   const estado = item.estado || 'pendiente';
+  const areas = normalizeAreas(item.areas_participacion || item.intereses);
+
   return `
     <article class="member-request-card" data-member-card="${escapeAttr(item.id)}">
       <div class="member-request-main">
         <span class="member-status-pill ${escapeAttr(estado)}">${escapeHTML(labelStatus(estado))}</span>
         <h4>${escapeHTML(item.nombre)}</h4>
         <p>${escapeHTML(item.motivacion)}</p>
-        <dl>
-          <div><dt>Correo</dt><dd>${escapeHTML(item.correo)}</dd></div>
-          <div><dt>Teléfono</dt><dd>${escapeHTML(item.telefono)}</dd></div>
-          <div><dt>Edad</dt><dd>${escapeHTML(item.edad)}</dd></div>
-          <div><dt>Comuna</dt><dd>${escapeHTML(item.comuna)}</dd></div>
-          <div><dt>Fecha</dt><dd>${formatDate(item.created_at)}</dd></div>
-        </dl>
-        ${item.intereses ? `<div class="member-interests"><strong>Intereses</strong><p>${escapeHTML(item.intereses)}</p></div>` : ''}
+
+        <div class="member-admin-section">
+          <strong>Antecedentes personales</strong>
+          <dl>
+            <div><dt>RUT / documento</dt><dd>${escapeHTML(item.rut_documento || '—')}</dd></div>
+            <div><dt>Nacimiento</dt><dd>${formatDate(item.fecha_nacimiento)}</dd></div>
+            <div><dt>Edad</dt><dd>${escapeHTML(item.edad)}</dd></div>
+            <div><dt>Menor de edad</dt><dd>${item.menor_edad ? 'Sí' : 'No'}</dd></div>
+            <div><dt>Domicilio</dt><dd>${escapeHTML(item.domicilio || '—')}</dd></div>
+            <div><dt>Comuna</dt><dd>${escapeHTML(item.comuna)}</dd></div>
+            <div><dt>Teléfono</dt><dd>${escapeHTML(item.telefono)}</dd></div>
+            <div><dt>Correo</dt><dd>${escapeHTML(item.correo)}</dd></div>
+            <div><dt>Ocupación</dt><dd>${escapeHTML(item.ocupacion || '—')}</dd></div>
+            <div><dt>Fecha solicitud</dt><dd>${formatDate(item.created_at)}</dd></div>
+          </dl>
+        </div>
+
+        ${item.menor_edad ? renderAdultSection(item) : ''}
+
+        <div class="member-admin-section">
+          <strong>Categoría y vínculo</strong>
+          <dl>
+            <div><dt>Categoría solicitada</dt><dd>${escapeHTML(item.categoria_socio || '—')}</dd></div>
+            <div><dt>Experiencia previa</dt><dd>${item.experiencia_previa ? 'Sí' : 'No'}</dd></div>
+          </dl>
+          <p><strong>Vínculo con la organización:</strong> ${escapeHTML(item.vinculo_organizacion || '—')}</p>
+        </div>
+
+        <div class="member-admin-section">
+          <strong>Motivación e intereses</strong>
+          ${areas.length ? `<ul class="member-areas-list">${areas.map((area) => `<li>${escapeHTML(area)}</li>`).join('')}</ul>` : '<p>Sin áreas declaradas.</p>'}
+          ${item.otro_area ? `<p><strong>Otro:</strong> ${escapeHTML(item.otro_area)}</p>` : ''}
+          <p><strong>Aporte declarado:</strong> ${escapeHTML(item.aporte || '—')}</p>
+          ${item.experiencia_previa ? `<p><strong>Experiencia:</strong> ${escapeHTML(item.experiencia_descripcion || '—')}</p>` : ''}
+        </div>
       </div>
 
       <div class="member-request-actions">
@@ -107,11 +136,27 @@ function renderRequest(item) {
           </select>
         </label>
         <label>Observaciones
-          <textarea data-member-notes rows="4" placeholder="Notas internas del proceso">${escapeHTML(item.observaciones || '')}</textarea>
+          <textarea data-member-notes rows="5" placeholder="Notas internas del proceso">${escapeHTML(item.observaciones || '')}</textarea>
         </label>
         <button type="button" class="secondary-admin-button" data-save-member="${escapeAttr(item.id)}">Guardar cambios</button>
       </div>
     </article>
+  `;
+}
+
+function renderAdultSection(item) {
+  return `
+    <div class="member-admin-section member-adult-section">
+      <strong>Adulto responsable</strong>
+      <dl>
+        <div><dt>Nombre</dt><dd>${escapeHTML(item.adulto_nombre || '—')}</dd></div>
+        <div><dt>RUT</dt><dd>${escapeHTML(item.adulto_rut || '—')}</dd></div>
+        <div><dt>Vínculo</dt><dd>${escapeHTML(item.adulto_vinculo || '—')}</dd></div>
+        <div><dt>Teléfono</dt><dd>${escapeHTML(item.adulto_telefono || '—')}</dd></div>
+        <div><dt>Correo</dt><dd>${escapeHTML(item.adulto_correo || '—')}</dd></div>
+        <div><dt>Declaración</dt><dd>${item.adulto_declaracion ? 'Aceptada' : 'No registrada'}</dd></div>
+      </dl>
+    </div>
   `;
 }
 
@@ -134,6 +179,11 @@ async function api(url, options = {}) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || 'Error de solicitud.');
   return data;
+}
+
+function normalizeAreas(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
 }
 
 function statusOption(value, current, label) {
