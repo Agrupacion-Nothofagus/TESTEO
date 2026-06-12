@@ -1,4 +1,5 @@
 import './roles-miembros.js';
+import './miembros-admin.js';
 
 const source = document.querySelector('#contenido');
 const editorElement = document.querySelector('#contenido-editor');
