@@ -2,7 +2,9 @@ const headers = {
   'content-type': 'application/json; charset=utf-8'
 };
 
-const ESTADOS_PERMITIDOS = ['pendiente', 'contactado', 'aceptado', 'rechazado', 'archivado'];
+const ESTADOS_PERMITIDOS = ['pendiente', 'contactado', 'rechazado', 'miembro'];
+const ESTADOS_LEGACY = ['aceptado', 'archivado'];
+const ESTADOS_SOCIO = ['activo', 'inactivo', 'suspendido'];
 const CATEGORIAS_PERMITIDAS = ['Socio/a activo/a', 'Socio/a colaborador/a', 'Socio/a benefactor/a'];
 
 export async function onRequest({ request, env }) {
@@ -34,7 +36,6 @@ function config(env) {
     .filter(Boolean);
 
   if (!url || !key) throw fail('Faltan variables SUPABASE_URL o SUPABASE_ADMIN_KEY.', 500);
-
   return { url, key, admins };
 }
 
@@ -44,6 +45,7 @@ async function createSolicitud(request, cfg) {
   const sitioWeb = limpiar(body.sitio_web);
   if (sitioWeb) return reply({ ok: true });
 
+  const areas = normalizarLista(body.areas_participacion);
   const solicitud = {
     nombre: limpiar(body.nombre),
     rut_documento: limpiar(body.rut_documento),
@@ -64,15 +66,19 @@ async function createSolicitud(request, cfg) {
     categoria_socio: normalizarCategoria(body.categoria_socio),
     vinculo_organizacion: limpiar(body.vinculo_organizacion),
     motivacion: limpiar(body.motivacion),
-    areas_participacion: normalizarLista(body.areas_participacion),
+    areas_participacion: areas,
     otro_area: limpiar(body.otro_area),
     aporte: limpiar(body.aporte),
     experiencia_previa: Boolean(body.experiencia_previa),
     experiencia_descripcion: limpiar(body.experiencia_descripcion),
     declaracion_final: Boolean(body.declaracion_final),
-    intereses: normalizarLista(body.areas_participacion).join(', '),
+    intereses: areas.join(', '),
     estado: 'pendiente',
-    observaciones: ''
+    observaciones: '',
+    observacion_rechazo: '',
+    observaciones_internas: '',
+    estado_socio: 'activo',
+    fecha_ingreso: null
   };
 
   validarSolicitud(solicitud);
@@ -90,31 +96,68 @@ async function createSolicitud(request, cfg) {
 }
 
 async function listSolicitudes(cfg) {
-  const res = await callSupabase(cfg, '/rest/v1/solicitudes_miembros?select=*&order=created_at.desc&limit=200');
+  const res = await callSupabase(cfg, '/rest/v1/solicitudes_miembros?select=*&order=created_at.desc&limit=300');
   const data = await res.json();
   if (!res.ok) throw fail(data.message || 'No fue posible listar solicitudes.', res.status);
 
-  return reply({ solicitudes: data || [] });
+  return reply({ solicitudes: (data || []).map(normalizarRegistroSalida) });
 }
 
 async function updateSolicitud(request, cfg) {
   const body = await request.json();
   const id = limpiar(body.id);
   const estado = normalizarEstado(body.estado || 'pendiente');
-  const observaciones = limpiar(body.observaciones);
 
   if (!id) throw fail('Falta el ID de la solicitud.', 400);
+
+  const actual = await getSolicitudById(cfg, id);
+  const payload = construirPayloadActualizacion(body, estado, actual);
+
+  validarCambioEstado(payload, actual);
 
   const res = await callSupabase(cfg, `/rest/v1/solicitudes_miembros?id=eq.${encodeURIComponent(id)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
-    body: JSON.stringify({ estado, observaciones, updated_at: new Date().toISOString() })
+    body: JSON.stringify(payload)
   });
 
   const data = await res.json().catch(() => []);
   if (!res.ok) throw fail(data.message || 'No fue posible actualizar la solicitud.', res.status);
 
-  return reply({ solicitud: Array.isArray(data) ? data[0] : data });
+  return reply({ solicitud: Array.isArray(data) ? normalizarRegistroSalida(data[0]) : normalizarRegistroSalida(data) });
+}
+
+async function getSolicitudById(cfg, id) {
+  const res = await callSupabase(cfg, `/rest/v1/solicitudes_miembros?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible revisar la solicitud.', res.status);
+  const item = Array.isArray(data) ? data[0] : data;
+  if (!item) throw fail('Solicitud no encontrada.', 404);
+  return normalizarRegistroSalida(item);
+}
+
+function construirPayloadActualizacion(body, estado, actual) {
+  const observacionRechazo = limpiar(body.observacion_rechazo || body.rejectionObservation || '');
+  const observacionesInternas = limpiar(body.observaciones_internas || body.internalNotes || body.observaciones || '');
+  const estadoSocio = normalizarEstadoSocio(body.estado_socio || body.memberStatus || actual.estado_socio || 'activo');
+
+  const payload = {
+    estado,
+    observaciones: observacionesInternas,
+    observaciones_internas: observacionesInternas,
+    estado_socio: estadoSocio,
+    updated_at: new Date().toISOString()
+  };
+
+  if (estado === 'rechazado') {
+    payload.observacion_rechazo = observacionRechazo;
+  }
+
+  if (estado === 'miembro') {
+    payload.fecha_ingreso = actual.fecha_ingreso || new Date().toISOString();
+  }
+
+  return payload;
 }
 
 async function currentUser(request, cfg) {
@@ -168,38 +211,53 @@ function validarSolicitud(solicitud) {
     solicitud.aporte
   ];
 
-  if (requeridos.some((item) => !String(item || '').trim())) {
-    throw fail('Faltan campos obligatorios.', 400);
-  }
-
+  if (requeridos.some((item) => !String(item || '').trim())) throw fail('Faltan campos obligatorios.', 400);
   if (!solicitud.declaracion_final) throw fail('Debes aceptar la declaración final.', 400);
   if (!/^\+569\d{8}$/.test(solicitud.telefono)) throw fail('El teléfono debe tener formato +569XXXXXXXX.', 400);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(solicitud.correo)) throw fail('El correo electrónico no es válido.', 400);
   if (solicitud.edad < 12 || solicitud.edad > 120) throw fail('La edad ingresada no es válida.', 400);
   if (!solicitud.areas_participacion.length) throw fail('Debes seleccionar al menos un área de participación.', 400);
 
-  if (solicitud.areas_participacion.includes('Otro') && !solicitud.otro_area) {
-    throw fail('Debes especificar el área marcada como Otro.', 400);
+  if (solicitud.areas_participacion.includes('Otro') && !solicitud.otro_area) throw fail('Debes especificar el área marcada como Otro.', 400);
+  if (solicitud.experiencia_previa && !solicitud.experiencia_descripcion) throw fail('Debes describir brevemente la experiencia previa.', 400);
+
+  if (solicitud.menor_edad) validarAdultoResponsable(solicitud);
+}
+
+function validarAdultoResponsable(solicitud) {
+  const adulto = [solicitud.adulto_nombre, solicitud.adulto_rut, solicitud.adulto_vinculo, solicitud.adulto_telefono, solicitud.adulto_correo];
+  if (adulto.some((item) => !String(item || '').trim())) throw fail('Faltan antecedentes del adulto responsable.', 400);
+  if (!solicitud.adulto_declaracion) throw fail('Falta la declaración del adulto responsable.', 400);
+  if (!/^\+569\d{8}$/.test(solicitud.adulto_telefono)) throw fail('El teléfono del adulto responsable no es válido.', 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(solicitud.adulto_correo)) throw fail('El correo del adulto responsable no es válido.', 400);
+}
+
+function validarCambioEstado(payload, actual) {
+  if (payload.estado === 'rechazado' && !payload.observacion_rechazo) {
+    throw fail('Para rechazar una solicitud debes completar Observaciones del rechazo.', 400);
   }
 
-  if (solicitud.experiencia_previa && !solicitud.experiencia_descripcion) {
-    throw fail('Debes describir brevemente la experiencia previa.', 400);
+  if (payload.estado === 'miembro') {
+    const requerido = [actual.nombre, actual.correo, actual.telefono, actual.categoria_socio];
+    if (requerido.some((item) => !String(item || '').trim())) {
+      throw fail('No se puede transformar en miembro sin nombre, correo, teléfono y categoría de socio/a.', 400);
+    }
   }
 
-  if (solicitud.menor_edad) {
-    const adulto = [
-      solicitud.adulto_nombre,
-      solicitud.adulto_rut,
-      solicitud.adulto_vinculo,
-      solicitud.adulto_telefono,
-      solicitud.adulto_correo
-    ];
+  if (actual.menor_edad) validarAdultoResponsable(actual);
+}
 
-    if (adulto.some((item) => !String(item || '').trim())) throw fail('Faltan antecedentes del adulto responsable.', 400);
-    if (!solicitud.adulto_declaracion) throw fail('Falta la declaración del adulto responsable.', 400);
-    if (!/^\+569\d{8}$/.test(solicitud.adulto_telefono)) throw fail('El teléfono del adulto responsable no es válido.', 400);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(solicitud.adulto_correo)) throw fail('El correo del adulto responsable no es válido.', 400);
-  }
+function normalizarRegistroSalida(item) {
+  if (!item) return item;
+  const estado = normalizarEstado(item.estado);
+  return {
+    ...item,
+    estado,
+    observacion_rechazo: item.observacion_rechazo || item.rejectionObservation || '',
+    observaciones_internas: item.observaciones_internas || item.internalNotes || item.observaciones || '',
+    estado_socio: normalizarEstadoSocio(item.estado_socio || item.memberStatus || 'activo'),
+    fecha_ingreso: item.fecha_ingreso || item.joinedAt || (estado === 'miembro' ? item.updated_at || item.created_at : null)
+  };
 }
 
 function normalizarCategoria(categoria) {
@@ -209,7 +267,18 @@ function normalizarCategoria(categoria) {
 
 function normalizarEstado(estado) {
   const value = String(estado || '').trim().toLowerCase();
-  return ESTADOS_PERMITIDOS.includes(value) ? value : 'pendiente';
+  if (value === 'aceptado' || value === 'accepted' || value === 'member') return 'miembro';
+  if (ESTADOS_PERMITIDOS.includes(value)) return value;
+  if (ESTADOS_LEGACY.includes(value)) return value;
+  return 'pendiente';
+}
+
+function normalizarEstadoSocio(estado) {
+  const value = String(estado || '').trim().toLowerCase();
+  if (value === 'active') return 'activo';
+  if (value === 'inactive') return 'inactivo';
+  if (value === 'suspended') return 'suspendido';
+  return ESTADOS_SOCIO.includes(value) ? value : 'activo';
 }
 
 function normalizarLista(value) {
