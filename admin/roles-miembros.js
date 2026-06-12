@@ -58,19 +58,20 @@ function instalarVistaMiembros() {
   section.dataset.viewDescription = 'Revisa y gestiona las solicitudes de ingreso realizadas desde el botón ÚNETE.';
   section.innerHTML = `
     <div class="admin-panel members-card">
-      <div class="panel-heading">
-        <p class="section-tag">Solicitudes de ingreso</p>
-        <h3>Gestión de miembros</h3>
-        <p>
-          Este módulo está destinado a las personas con rol Gestor de miembros. El siguiente paso es reemplazar o conectar el botón ÚNETE con un formulario interno que guarde las solicitudes en Supabase.
-        </p>
+      <div class="panel-heading members-heading-row">
+        <div>
+          <p class="section-tag">Solicitudes de ingreso</p>
+          <h3>Gestión de miembros</h3>
+          <p>
+            Revisa nuevas solicitudes, actualiza su estado y registra observaciones del proceso de incorporación.
+          </p>
+        </div>
+        <button type="button" class="secondary-admin-button" id="reload-members">Actualizar solicitudes</button>
       </div>
 
-      <div class="members-empty-state">
-        <strong>Rol habilitado</strong>
-        <p>
-          La cuenta con este rol podrá revisar nuevas solicitudes, actualizar su estado y apoyar el proceso de incorporación una vez conectado el formulario de ingreso.
-        </p>
+      <p id="members-status" class="admin-status"></p>
+      <div id="members-list" class="members-list">
+        <p class="admin-status">Cargando solicitudes...</p>
       </div>
     </div>
   `;
