@@ -5,10 +5,20 @@ const ROLE_VALUE = 'gestor_miembros';
 const ROLE_LABEL = 'Gestor de miembros';
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
+cargarEstilosMiembros();
 agregarOpcionRol();
 observarSelectoresDeRol();
 instalarVistaMiembros();
 aplicarPermisosMiembros();
+
+function cargarEstilosMiembros() {
+  if (document.querySelector('link[href="members-admin.css"]')) return;
+
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'members-admin.css';
+  document.head.appendChild(link);
+}
 
 function agregarOpcionRol() {
   document.querySelectorAll('#user-role, [data-user-role]').forEach((select) => {
