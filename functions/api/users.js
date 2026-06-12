@@ -2,7 +2,7 @@ const headers = {
   'content-type': 'application/json; charset=utf-8'
 };
 
-const ROLES_PERMITIDOS = ['administrador', 'editor', 'lector'];
+const ROLES_PERMITIDOS = ['administrador', 'editor', 'lector', 'gestor_miembros'];
 const DOMINIO_INSTITUCIONAL = '@agrupacionnothofagus.cl';
 
 export async function onRequest({ request, env }) {
@@ -15,28 +15,14 @@ export async function onRequest({ request, env }) {
     const session = await currentUser(request, cfg);
     allow(session, cfg);
 
-    if (request.method === 'GET') {
-      return listUsers(cfg);
-    }
-
-    if (request.method === 'POST') {
-      return createUser(request, cfg);
-    }
-
-    if (request.method === 'PATCH') {
-      return updateUser(request, cfg);
-    }
-
-    if (request.method === 'DELETE') {
-      return deleteUser(request, cfg, session);
-    }
+    if (request.method === 'GET') return listUsers(cfg);
+    if (request.method === 'POST') return createUser(request, cfg);
+    if (request.method === 'PATCH') return updateUser(request, cfg);
+    if (request.method === 'DELETE') return deleteUser(request, cfg, session);
 
     return reply({ error: 'Método no permitido.' }, 405);
   } catch (error) {
-    return reply(
-      { error: error.message || 'Error interno.' },
-      error.status || 500
-    );
+    return reply({ error: error.message || 'Error interno.' }, error.status || 500);
   }
 }
 
@@ -48,13 +34,8 @@ function config(env) {
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
 
-  if (!url || !key) {
-    throw fail('Faltan variables SUPABASE_URL o SUPABASE_ADMIN_KEY.', 500);
-  }
-
-  if (!admins.length) {
-    throw fail('Falta configurar ADMIN_EMAILS.', 500);
-  }
+  if (!url || !key) throw fail('Faltan variables SUPABASE_URL o SUPABASE_ADMIN_KEY.', 500);
+  if (!admins.length) throw fail('Falta configurar ADMIN_EMAILS.', 500);
 
   return { url, key, admins };
 }
@@ -64,9 +45,7 @@ async function currentUser(request, cfg) {
     .replace(/^Bearer\s+/i, '')
     .trim();
 
-  if (!token) {
-    throw fail('Sesión no enviada.', 401);
-  }
+  if (!token) throw fail('Sesión no enviada.', 401);
 
   const res = await fetch(`${cfg.url}/auth/v1/user`, {
     headers: {
@@ -75,41 +54,26 @@ async function currentUser(request, cfg) {
     }
   });
 
-  if (!res.ok) {
-    throw fail('Sesión inválida o expirada.', 401);
-  }
-
+  if (!res.ok) throw fail('Sesión inválida o expirada.', 401);
   return res.json();
 }
 
 function allow(user, cfg) {
   const email = String(user.email || '').toLowerCase();
-
-  if (!cfg.admins.includes(email)) {
-    throw fail('No autorizado para administrar usuarios.', 403);
-  }
+  if (!cfg.admins.includes(email)) throw fail('No autorizado para administrar usuarios.', 403);
 }
 
 async function listUsers(cfg) {
-  const res = await callSupabase(
-    cfg,
-    '/auth/v1/admin/users?per_page=100&page=1'
-  );
-
+  const res = await callSupabase(cfg, '/auth/v1/admin/users?per_page=100&page=1');
   const data = await res.json();
 
-  if (!res.ok) {
-    throw fail(data.message || 'No fue posible listar usuarios.', res.status);
-  }
+  if (!res.ok) throw fail(data.message || 'No fue posible listar usuarios.', res.status);
 
-  return reply({
-    users: (data.users || []).map(cleanUser)
-  });
+  return reply({ users: (data.users || []).map(cleanUser) });
 }
 
 async function createUser(request, cfg) {
   const body = await request.json();
-
   const email = String(body.email || '').trim().toLowerCase();
   const password = String(body.password || '').trim();
   const nombre = String(body.nombre || '').trim();
@@ -119,9 +83,7 @@ async function createUser(request, cfg) {
     throw fail(`El correo debe usar el dominio ${DOMINIO_INSTITUCIONAL}.`, 400);
   }
 
-  if (password.length < 8) {
-    throw fail('La contraseña debe tener al menos 8 caracteres.', 400);
-  }
+  if (password.length < 8) throw fail('La contraseña debe tener al menos 8 caracteres.', 400);
 
   const res = await callSupabase(cfg, '/auth/v1/admin/users', {
     method: 'POST',
@@ -129,91 +91,53 @@ async function createUser(request, cfg) {
       email,
       password,
       email_confirm: true,
-      user_metadata: {
-        nombre,
-        rol
-      }
+      user_metadata: { nombre, rol }
     })
   });
 
   const data = await res.json();
+  if (!res.ok) throw fail(data.message || 'No fue posible crear el usuario.', res.status);
 
-  if (!res.ok) {
-    throw fail(data.message || 'No fue posible crear el usuario.', res.status);
-  }
-
-  return reply({
-    user: cleanUser(data.user || data)
-  });
+  return reply({ user: cleanUser(data.user || data) });
 }
 
 async function updateUser(request, cfg) {
   const body = await request.json();
-
   const id = String(body.id || '').trim();
   const nombre = String(body.nombre || '').trim();
   const rol = normalizeRole(body.rol || 'editor');
   const password = String(body.password || '').trim();
 
-  if (!id) {
-    throw fail('Falta el ID del usuario.', 400);
-  }
+  if (!id) throw fail('Falta el ID del usuario.', 400);
 
-  const payload = {
-    user_metadata: {
-      nombre,
-      rol
-    }
-  };
+  const payload = { user_metadata: { nombre, rol } };
 
   if (password) {
-    if (password.length < 8) {
-      throw fail('La contraseña debe tener al menos 8 caracteres.', 400);
-    }
-
+    if (password.length < 8) throw fail('La contraseña debe tener al menos 8 caracteres.', 400);
     payload.password = password;
   }
 
-  const res = await callSupabase(
-    cfg,
-    `/auth/v1/admin/users/${encodeURIComponent(id)}`,
-    {
-      method: 'PUT',
-      body: JSON.stringify(payload)
-    }
-  );
+  const res = await callSupabase(cfg, `/auth/v1/admin/users/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
 
   const data = await res.json();
+  if (!res.ok) throw fail(data.message || 'No fue posible actualizar el usuario.', res.status);
 
-  if (!res.ok) {
-    throw fail(data.message || 'No fue posible actualizar el usuario.', res.status);
-  }
-
-  return reply({
-    user: cleanUser(data.user || data)
-  });
+  return reply({ user: cleanUser(data.user || data) });
 }
 
 async function deleteUser(request, cfg, session) {
   const body = await request.json();
-
   const id = String(body.id || '').trim();
 
-  if (!id) {
-    throw fail('Falta el ID del usuario.', 400);
-  }
+  if (!id) throw fail('Falta el ID del usuario.', 400);
+  if (id === session.id) throw fail('No puedes eliminar tu propio usuario desde este panel.', 400);
 
-  if (id === session.id) {
-    throw fail('No puedes eliminar tu propio usuario desde este panel.', 400);
-  }
-
-  const res = await callSupabase(
-    cfg,
-    `/auth/v1/admin/users/${encodeURIComponent(id)}`,
-    {
-      method: 'DELETE'
-    }
-  );
+  const res = await callSupabase(cfg, `/auth/v1/admin/users/${encodeURIComponent(id)}`, {
+    method: 'DELETE'
+  });
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
@@ -229,10 +153,14 @@ function callSupabase(cfg, path, options = {}) {
     headers: {
       ...headers,
       apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      authorization: authHeader(cfg.key),
       ...(options.headers || {})
     }
   });
+}
+
+function authHeader(token) {
+  return `Bearer ${token}`;
 }
 
 function cleanUser(user) {
@@ -249,19 +177,11 @@ function cleanUser(user) {
 
 function normalizeRole(rol) {
   const value = String(rol || 'editor').trim().toLowerCase();
-
-  if (!ROLES_PERMITIDOS.includes(value)) {
-    return 'editor';
-  }
-
-  return value;
+  return ROLES_PERMITIDOS.includes(value) ? value : 'editor';
 }
 
 function reply(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers
-  });
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
 function fail(message, status) {
