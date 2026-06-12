@@ -136,11 +136,49 @@
   grid-template-columns: 1fr;
 }
 
+.member-checkbox-group:has(input[name="member-areas"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px 12px;
+}
+
+.member-checkbox-group:has(input[name="member-areas"]) > span {
+  flex: 0 0 100%;
+}
+
+.member-checkbox-group:has(input[name="member-areas"]) .member-checkbox {
+  flex: 0 1 auto;
+  min-width: 230px;
+  max-width: calc(50% - 8px);
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid rgba(31, 61, 43, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.member-checkbox-group:has(input[name="member-areas"]) .member-checkbox input {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+
 .declaration-box {
   padding: 14px;
   border: 1px solid rgba(31, 61, 43, 0.14);
   border-radius: 18px;
   background: rgba(79, 125, 74, 0.08);
+}
+
+.declaration-box:has(#member-final-declaration) {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.declaration-box:has(#member-final-declaration) input {
+  margin-top: 0;
 }
 
 .member-conditional-section.is-hidden {
@@ -245,6 +283,10 @@
   .member-form-row.three-columns {
     grid-template-columns: 1fr;
   }
+
+  .member-checkbox-group:has(input[name="member-areas"]) .member-checkbox {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 720px) {
@@ -263,5 +305,9 @@
   .member-submit-button,
   .member-cancel-button {
     width: 100%;
+  }
+
+  .member-checkbox-group:has(input[name="member-areas"]) .member-checkbox {
+    flex-basis: 100%;
   }
 }
