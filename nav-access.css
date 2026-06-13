@@ -2,6 +2,7 @@
 .nav-links .nav-access:visited,
 .nav-links .nav-access:active {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -12,6 +13,7 @@
   text-shadow: none !important;
   font-weight: 900;
   line-height: 1;
+  white-space: nowrap;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
