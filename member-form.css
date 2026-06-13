@@ -137,31 +137,44 @@
 }
 
 .member-checkbox-group:has(input[name="member-areas"]) {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 8px;
 }
 
 .member-checkbox-group:has(input[name="member-areas"]) > span {
-  flex: 0 0 100%;
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
 }
 
 .member-checkbox-group:has(input[name="member-areas"]) .member-checkbox {
-  flex: 0 1 auto;
-  min-width: 230px;
-  max-width: calc(50% - 8px);
-  align-items: flex-start;
-  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 12px 14px;
   border: 1px solid rgba(31, 61, 43, 0.1);
-  border-radius: 999px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.72);
 }
 
+.member-checkbox-group:has(input[name="member-areas"]) .member-checkbox span {
+  grid-column: 1;
+  grid-row: 1;
+  text-align: left;
+}
+
 .member-checkbox-group:has(input[name="member-areas"]) .member-checkbox input {
-  flex: 0 0 auto;
-  margin-top: 3px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  width: auto;
+  margin: 0;
 }
 
 .declaration-box {
@@ -308,6 +321,7 @@
   }
 
   .member-checkbox-group:has(input[name="member-areas"]) .member-checkbox {
-    flex-basis: 100%;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: 100%;
   }
 }
