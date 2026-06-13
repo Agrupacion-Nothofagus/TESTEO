@@ -1,12 +1,23 @@
-.nav-links .nav-access {
-  background: var(--beige);
-  color: var(--verde-profundo);
-  text-shadow: none;
-  font-weight: 800;
+.nav-links .nav-access,
+.nav-links .nav-access:visited,
+.nav-links .nav-access:active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 46px;
+  padding: 12px 17px;
+  background: var(--beige) !important;
+  color: var(--verde-profundo) !important;
+  text-shadow: none !important;
+  font-weight: 900;
+  line-height: 1;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
-.nav-links .nav-access:hover {
-  background: var(--blanco);
-  color: var(--verde-profundo);
+.nav-links .nav-access:hover,
+.nav-links .nav-access:focus-visible {
+  background: var(--blanco) !important;
+  color: var(--verde-profundo) !important;
+  transform: translateY(-1px);
 }
