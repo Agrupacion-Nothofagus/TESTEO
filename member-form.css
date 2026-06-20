@@ -148,7 +148,8 @@
   accent-color: var(--verde-bosque);
 }
 
-.member-radio-group:has(#member-minor-label) {
+.member-radio-group:has(#member-minor-label),
+.member-radio-group:has(#member-experience-label) {
   display: grid;
   grid-template-columns: auto auto;
   align-items: center;
@@ -157,11 +158,13 @@
   row-gap: 10px;
 }
 
-.member-radio-group:has(#member-minor-label) > span {
+.member-radio-group:has(#member-minor-label) > span,
+.member-radio-group:has(#member-experience-label) > span {
   grid-column: 1 / -1;
 }
 
-.member-radio-group:has(#member-minor-label) label {
+.member-radio-group:has(#member-minor-label) label,
+.member-radio-group:has(#member-experience-label) label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -169,7 +172,8 @@
   line-height: 1;
 }
 
-.member-radio-group:has(#member-minor-label) input {
+.member-radio-group:has(#member-minor-label) input,
+.member-radio-group:has(#member-experience-label) input {
   margin: 0;
 }
 
