@@ -228,15 +228,25 @@
 }
 
 .declaration-box:has(#member-final-declaration) {
+  display: flex;
   flex-direction: column-reverse;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
   gap: 12px;
+  text-align: center;
 }
 
 .declaration-box:has(#member-final-declaration) span {
   display: block;
-  width: 100%;
-  text-align: left;
+  width: min(720px, 100%);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.declaration-box:has(#member-final-declaration) .required-mark {
+  display: inline;
+  margin-left: 3px;
+  vertical-align: baseline;
 }
 
 .declaration-box:has(#member-final-declaration) input {
