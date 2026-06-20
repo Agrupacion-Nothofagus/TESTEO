@@ -148,6 +148,31 @@
   accent-color: var(--verde-bosque);
 }
 
+.member-radio-group:has(#member-minor-label) {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-content: start;
+  column-gap: 18px;
+  row-gap: 10px;
+}
+
+.member-radio-group:has(#member-minor-label) > span {
+  grid-column: 1 / -1;
+}
+
+.member-radio-group:has(#member-minor-label) label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  line-height: 1;
+}
+
+.member-radio-group:has(#member-minor-label) input {
+  margin: 0;
+}
+
 .member-checkbox-group:has(input[name="member-areas"]) {
   display: grid;
   grid-template-columns: 1fr;
