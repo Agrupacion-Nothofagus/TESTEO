@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="stylesheet" href="users-admin.css">
   <link rel="stylesheet" href="sidebar-overrides.css">
+  <link rel="stylesheet" href="publications-compact.css">
   <link rel="stylesheet" href="quill-editor.css">
 </head>
 <body>
@@ -169,66 +170,63 @@
             </label>
 
             <label>
-              Enlace externo, opcional
-              <input id="enlace" type="text" placeholder="https://...">
+              Enlace asociado, opcional
+              <input id="enlace" type="url" placeholder="https://...">
             </label>
 
             <div class="admin-actions">
-              <button type="submit" class="join-button">Guardar publicación</button>
-              <button type="button" id="reset-form" class="secondary-admin-button">Limpiar</button>
+              <button type="submit" class="secondary-admin-button">Guardar publicación</button>
+              <button type="button" id="reset-form" class="secondary-admin-button">Limpiar formulario</button>
             </div>
-          </form>
 
-          <p id="form-status" class="admin-status"></p>
+            <p id="form-status" class="admin-status" aria-live="polite"></p>
+          </form>
         </div>
       </section>
 
-      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Crea, revisa y actualiza usuarios autorizados directamente desde el panel institucional.">
+      <section class="admin-view" id="usuarios-view" data-view-title="Administrar usuarios" data-view-description="Crea cuentas internas y administra roles de acceso al panel.">
         <div class="admin-panel users-card is-hidden" id="users-panel">
-          <div class="panel-heading">
-            <p class="section-tag">Usuarios y accesos</p>
-            <h3>Administrar usuarios</h3>
-            <p>
-              Administra cuentas institucionales desde el panel. La columna restablecer contraseña permite escribir una nueva contraseña; por seguridad, la contraseña actual nunca se muestra.
-            </p>
+          <div class="admin-topbar compact">
+            <div>
+              <p class="section-tag">Accesos internos</p>
+              <h3>Usuarios</h3>
+              <p>Solo los administradores pueden crear, actualizar o eliminar usuarios del panel.</p>
+            </div>
+            <button type="button" id="reload-users" class="secondary-admin-button">Actualizar usuarios</button>
           </div>
 
-          <form id="user-create-form" class="admin-form user-admin-form" autocomplete="off">
+          <form id="user-create-form" class="admin-form user-admin-form">
             <div class="form-row two-columns">
               <label>
-                Usuario
-                <input id="user-name" name="display-name" type="text" placeholder="Ej: Luciano Leal" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+                Correo institucional
+                <input id="user-email" type="email" placeholder="usuario@agrupacionnothofagus.cl" required>
               </label>
 
               <label>
-                Rol
-                <select id="user-role" name="user-role" autocomplete="off">
-                  <option value="administrador">Administrador</option>
-                  <option value="editor" selected>Editor</option>
-                  <option value="lector">Lector</option>
-                </select>
+                Nombre o identificación
+                <input id="user-name" type="text" placeholder="Nombre del usuario" required>
               </label>
             </div>
 
-            <label>
-              Correo electrónico
-              <input id="user-email" name="institutional-email" type="email" placeholder="Ej: luciano@agrupacionnothofagus.cl" autocomplete="off" required>
-            </label>
+            <div class="form-row two-columns">
+              <label>
+                Rol
+                <select id="user-role" required>
+                  <option value="editor">Editor</option>
+                  <option value="lector">Lector</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+              </label>
 
-            <label>
-              Contraseña inicial
-              <input id="user-password" name="new-user-password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" autocomplete="new-password" required>
-            </label>
-
-            <div class="admin-actions original-users-actions">
-              <button type="submit" class="join-button">Crear usuario</button>
-              <button type="button" id="reload-users" class="secondary-admin-button">Actualizar listado</button>
+              <label>
+                Contraseña inicial
+                <input id="user-password" type="password" minlength="8" placeholder="Mínimo 8 caracteres" required>
+              </label>
             </div>
           </form>
 
-          <p id="users-status" class="admin-status"></p>
-
-          <div class="users-admin-list" id="users-list">
+          <p id="users-status" class="admin-status" aria-live="polite"></p>
+          <div id="users-list" class="users-admin-list">
             <p class="admin-status">Cargando usuarios...</p>
           </div>
         </div>
@@ -237,10 +235,9 @@
   </main>
 
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-  <script type="module" src="quill-editor.js"></script>
-  <script type="module" src="editorial-save.js"></script>
-  <script type="module" src="users-admin.js"></script>
-  <script type="module" src="users-table-ui.js"></script>
   <script type="module" src="admin.js"></script>
+  <script type="module" src="users-table-ui.js"></script>
+  <script type="module" src="users-admin.js"></script>
+  <script type="module" src="quill-editor.js"></script>
 </body>
 </html>
