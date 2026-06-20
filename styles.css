@@ -221,6 +221,21 @@ main {
   margin-top: 18px;
 }
 
+#quienes-somos p,
+#proposito p,
+#areas .card p {
+  text-align: justify;
+  text-indent: 1.6em;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+#quienes-somos p:first-of-type,
+#proposito p:first-of-type,
+#areas .card p:first-of-type {
+  text-indent: 1.6em;
+}
+
 .section-highlight p {
   color: #f5f8f3;
 }
@@ -582,6 +597,13 @@ footer {
 @media (max-width: 640px) {
   .section {
     padding: 28px;
+  }
+
+  #quienes-somos p,
+  #proposito p,
+  #areas .card p {
+    text-align: left;
+    text-indent: 1.2em;
   }
 
   .hero h1 {
