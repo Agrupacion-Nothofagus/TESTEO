@@ -12,11 +12,16 @@ instalarVistasMiembros();
 aplicarPermisosMiembros();
 
 function cargarEstilosMiembros() {
-  if (document.querySelector('link[href="members-admin.css"]')) return;
+  agregarHojaEstilo('members-admin.css');
+  agregarHojaEstilo('members-layout-fixes.css');
+}
+
+function agregarHojaEstilo(href) {
+  if (document.querySelector(`link[href="${href}"]`)) return;
 
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'members-admin.css';
+  link.href = href;
   document.head.appendChild(link);
 }
 
