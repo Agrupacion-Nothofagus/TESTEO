@@ -1,8 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
 
-const ROLE_VALUE = 'gestor_miembros';
-const ROLE_LABEL = 'Gestor de miembros';
+const ROLE_VALUE = 'secretariado';
+const ROLE_LEGACY_VALUE = 'gestor_miembros';
+const ROLE_LABEL = 'Secretariado';
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 cargarEstilosMiembros();
@@ -27,7 +28,11 @@ function agregarHojaEstilo(href) {
 
 function agregarOpcionRol() {
   document.querySelectorAll('#user-role, [data-user-role]').forEach((select) => {
-    if (!select || select.querySelector(`option[value="${ROLE_VALUE}"]`)) return;
+    if (!select) return;
+
+    select.querySelector(`option[value="${ROLE_LEGACY_VALUE}"]`)?.remove();
+
+    if (select.querySelector(`option[value="${ROLE_VALUE}"]`)) return;
 
     const option = document.createElement('option');
     option.value = ROLE_VALUE;
@@ -158,14 +163,14 @@ async function aplicarPermisosMiembros() {
   const user = data?.session?.user;
   const rol = obtenerRol(user);
   const esAdmin = rol === 'administrador' || rol === 'admin';
-  const esGestorMiembros = rol === ROLE_VALUE;
+  const esSecretariado = rol === ROLE_VALUE || rol === ROLE_LEGACY_VALUE;
 
-  if (esAdmin || esGestorMiembros) {
+  if (esAdmin || esSecretariado) {
     document.querySelector('[data-members-sidebar]')?.classList.remove('is-hidden');
     document.querySelectorAll('.member-sidebar-link').forEach((button) => button.classList.remove('is-hidden'));
   }
 
-  if (esGestorMiembros) {
+  if (esSecretariado) {
     ocultarAccesosPublicaciones();
     activarVista('members-pending-view');
   }
