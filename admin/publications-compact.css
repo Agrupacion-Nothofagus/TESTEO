@@ -1,0 +1,122 @@
+/* Vista compacta de gestión de publicaciones */
+#posts-panel.list-card {
+  overflow: hidden;
+}
+
+#posts-list.posts-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+#posts-list .post-admin-card,
+#posts-list .post-admin-card:not(:has(.post-admin-thumb)) {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 30px rgba(31, 61, 43, 0.08);
+  overflow: hidden;
+}
+
+#posts-list .post-admin-thumb {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  object-fit: cover;
+  background: var(--beige);
+}
+
+#posts-list .post-admin-card > div:not(.post-admin-actions) {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+#posts-list .post-admin-state {
+  width: fit-content;
+  max-width: 100%;
+  font-size: 0.68rem;
+}
+
+#posts-list .post-admin-card h3 {
+  margin: 0;
+  color: var(--verde-bosque);
+  font-size: clamp(1.08rem, 2vw, 1.35rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#posts-list .post-admin-card p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#posts-list .post-admin-card small {
+  margin-top: 2px;
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+#posts-list .post-admin-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-self: end;
+}
+
+#posts-list .post-admin-actions button {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+@media (max-width: 1180px) {
+  #posts-list.posts-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  #posts-list.posts-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  #posts-list .post-admin-card,
+  #posts-list .post-admin-card:not(:has(.post-admin-thumb)) {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  #posts-list .post-admin-actions {
+    grid-template-columns: 1fr;
+  }
+}
