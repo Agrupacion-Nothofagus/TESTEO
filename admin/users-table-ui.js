@@ -97,7 +97,9 @@ document.addEventListener('change', (event) => {
   }
 
   if (action === 'remove') {
-    row?.querySelector('[data-remove-user]')?.click();
+    const removeButton = row?.querySelector('[data-remove-user]');
+    pendingDeleteButton = removeButton || null;
+    removeButton?.click();
   }
 });
 
@@ -165,7 +167,7 @@ function showDeleteModal(message) {
   const messageBox = document.querySelector('#delete-user-message');
   if (!modal || !messageBox) return;
 
-  pendingDeleteButton = document.activeElement?.closest?.('[data-remove-user]') || pendingDeleteButton;
+  pendingDeleteButton = pendingDeleteButton || document.activeElement?.closest?.('[data-remove-user]') || null;
   messageBox.textContent = message;
   modal.classList.remove('is-hidden');
   modal.setAttribute('aria-hidden', 'false');
