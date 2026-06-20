@@ -227,6 +227,31 @@
   background: rgba(79, 125, 74, 0.08);
 }
 
+#member-minor-section > .member-help {
+  color: #1f2d24 !important;
+}
+
+.declaration-box:has(#member-adult-declaration) {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.declaration-box:has(#member-adult-declaration) span {
+  display: block;
+  width: min(720px, 100%);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.declaration-box:has(#member-adult-declaration) input {
+  align-self: center;
+  margin: 0;
+}
+
 .declaration-box:has(#member-final-declaration) {
   display: flex;
   flex-direction: column-reverse;
