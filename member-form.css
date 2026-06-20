@@ -229,12 +229,19 @@
 
 .declaration-box:has(#member-final-declaration) {
   flex-direction: column-reverse;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 12px;
 }
 
+.declaration-box:has(#member-final-declaration) span {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
 .declaration-box:has(#member-final-declaration) input {
-  margin-top: 0;
+  align-self: center;
+  margin: 0;
 }
 
 .member-conditional-section.is-hidden {
