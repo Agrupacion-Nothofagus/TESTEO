@@ -1,8 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
 
-const ROLE_VALUE = 'secretariado';
-const ROLE_LEGACY_VALUE = 'gestor_miembros';
+const ROLE_VALUE = 'gestor_miembros';
 const ROLE_LABEL = 'Secretariado';
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -30,14 +29,17 @@ function agregarOpcionRol() {
   document.querySelectorAll('#user-role, [data-user-role]').forEach((select) => {
     if (!select) return;
 
-    select.querySelector(`option[value="${ROLE_LEGACY_VALUE}"]`)?.remove();
+    const option = select.querySelector(`option[value="${ROLE_VALUE}"]`);
 
-    if (select.querySelector(`option[value="${ROLE_VALUE}"]`)) return;
+    if (option) {
+      option.textContent = ROLE_LABEL;
+      return;
+    }
 
-    const option = document.createElement('option');
-    option.value = ROLE_VALUE;
-    option.textContent = ROLE_LABEL;
-    select.appendChild(option);
+    const nuevaOpcion = document.createElement('option');
+    nuevaOpcion.value = ROLE_VALUE;
+    nuevaOpcion.textContent = ROLE_LABEL;
+    select.appendChild(nuevaOpcion);
   });
 }
 
@@ -163,7 +165,7 @@ async function aplicarPermisosMiembros() {
   const user = data?.session?.user;
   const rol = obtenerRol(user);
   const esAdmin = rol === 'administrador' || rol === 'admin';
-  const esSecretariado = rol === ROLE_VALUE || rol === ROLE_LEGACY_VALUE;
+  const esSecretariado = rol === ROLE_VALUE;
 
   if (esAdmin || esSecretariado) {
     document.querySelector('[data-members-sidebar]')?.classList.remove('is-hidden');
