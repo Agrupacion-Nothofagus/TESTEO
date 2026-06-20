@@ -1,4 +1,5 @@
 import './roles-miembros.js';
+import './miembros-delete.js';
 import './miembros-admin.js';
 
 const source = document.querySelector('#contenido');
