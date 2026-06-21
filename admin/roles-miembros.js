@@ -50,7 +50,7 @@ function observarSelectoresDeRol() {
   if (!usersList) return;
 
   const observer = new MutationObserver(() => agregarOpcionRol());
-  observer.observe(usersList, { childList: true, subtree: true });
+  observer.observe(usersList, { childList: true, subtree: false });
 }
 
 function instalarVistasMiembros() {
