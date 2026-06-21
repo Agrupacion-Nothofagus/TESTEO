@@ -1,5 +1,5 @@
 import './roles-miembros.js?v=20260620-observer-fix';
-import './users-role-fix.js?v=20260620-role-save-fix';
+import './users-role-fix.js?v=20260620-role-stability';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
