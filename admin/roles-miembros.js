@@ -14,6 +14,7 @@ aplicarPermisosMiembros();
 function cargarEstilosMiembros() {
   agregarHojaEstilo('members-admin.css');
   agregarHojaEstilo('members-layout-fixes.css');
+  agregarHojaEstilo('members-sidebar-dropdown.css');
 }
 
 function agregarHojaEstilo(href) {
@@ -62,22 +63,34 @@ function instalarVistasMiembros() {
   group.className = 'sidebar-member-group is-hidden';
   group.dataset.membersSidebar = 'true';
   group.innerHTML = `
-    <p class="sidebar-group-title">Solicitudes</p>
-    <button type="button" class="sidebar-link member-sidebar-link" data-admin-view="members-pending-view" data-member-counter-key="pendiente">
-      <span>🕓</span>
-      Pendientes <strong class="member-sidebar-counter" data-member-counter="pendiente">0</strong>
+    <button type="button" class="sidebar-link sidebar-member-toggle is-hidden" data-members-toggle aria-expanded="false" aria-controls="members-sidebar-menu">
+      <span>🤝</span>
+      Miembros
+      <strong class="member-toggle-caret" aria-hidden="true">⌄</strong>
     </button>
-    <button type="button" class="sidebar-link member-sidebar-link" data-admin-view="members-contacted-view" data-member-counter-key="contactado">
-      <span>📞</span>
-      Contactados <strong class="member-sidebar-counter" data-member-counter="contactado">0</strong>
-    </button>
+    <div class="sidebar-member-menu is-collapsed" id="members-sidebar-menu" data-members-menu>
+      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-list-view" data-member-counter-key="miembro">
+        <span>👥</span>
+        Miembros <strong class="member-sidebar-counter" data-member-counter="miembro">0</strong>
+      </button>
+      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-pending-view" data-member-counter-key="pendiente">
+        <span>🕓</span>
+        Pendientes <strong class="member-sidebar-counter" data-member-counter="pendiente">0</strong>
+      </button>
+      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-contacted-view" data-member-counter-key="contactado">
+        <span>📞</span>
+        Contactados <strong class="member-sidebar-counter" data-member-counter="contactado">0</strong>
+      </button>
+      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-rejected-view" data-member-counter-key="rechazado">
+        <span>🚫</span>
+        Rechazados <strong class="member-sidebar-counter" data-member-counter="rechazado">0</strong>
+      </button>
+    </div>
   `;
   nav.appendChild(group);
 
-  const rejectedButton = crearSidebarButton('members-rejected-view', '🚫', 'Rechazados', 'rechazado');
-  const membersButton = crearSidebarButton('members-list-view', '🤝', 'Miembros', 'miembro');
-  nav.appendChild(rejectedButton);
-  nav.appendChild(membersButton);
+  const toggle = group.querySelector('[data-members-toggle]');
+  toggle?.addEventListener('click', () => alternarMenuMiembros());
 
   const vistas = [
     crearVista('members-pending-view', 'Pendientes', 'Solicitudes recién ingresadas o aún no revisadas.', 'pendiente'),
@@ -91,16 +104,6 @@ function instalarVistasMiembros() {
   document.querySelectorAll('.member-sidebar-link').forEach((button) => {
     button.addEventListener('click', () => activarVista(button.dataset.adminView));
   });
-}
-
-function crearSidebarButton(viewId, icon, label, counterKey) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'sidebar-link member-sidebar-link is-hidden';
-  button.dataset.adminView = viewId;
-  button.dataset.memberCounterKey = counterKey;
-  button.innerHTML = `<span>${icon}</span>${label} <strong class="member-sidebar-counter" data-member-counter="${counterKey}">0</strong>`;
-  return button;
 }
 
 function crearVista(id, title, description, status) {
@@ -171,11 +174,13 @@ async function aplicarPermisosMiembros() {
 
   if (esAdmin || esSecretariado) {
     document.querySelector('[data-members-sidebar]')?.classList.remove('is-hidden');
+    document.querySelector('[data-members-toggle]')?.classList.remove('is-hidden');
     document.querySelectorAll('.member-sidebar-link').forEach((button) => button.classList.remove('is-hidden'));
   }
 
   if (esSecretariado) {
     ocultarAccesosPublicaciones();
+    abrirMenuMiembros();
     activarVista('members-pending-view');
   }
 }
@@ -190,9 +195,14 @@ function ocultarAccesosPublicaciones() {
 }
 
 function activarVista(viewId) {
+  const esVistaMiembros = String(viewId || '').startsWith('members-');
+  if (esVistaMiembros) abrirMenuMiembros();
+
   document.querySelectorAll('[data-admin-view]').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.adminView === viewId);
   });
+
+  document.querySelector('[data-members-toggle]')?.classList.toggle('is-active', esVistaMiembros);
 
   document.querySelectorAll('.admin-view').forEach((view) => {
     const activa = view.id === viewId;
@@ -204,6 +214,37 @@ function activarVista(viewId) {
       window.dispatchEvent(new CustomEvent('nothofagus:members-view', { detail: { viewId } }));
     }
   });
+}
+
+function alternarMenuMiembros() {
+  const menu = document.querySelector('[data-members-menu]');
+  if (!menu) return;
+
+  if (menu.classList.contains('is-collapsed')) {
+    abrirMenuMiembros();
+  } else {
+    cerrarMenuMiembros();
+  }
+}
+
+function abrirMenuMiembros() {
+  const menu = document.querySelector('[data-members-menu]');
+  const toggle = document.querySelector('[data-members-toggle]');
+  if (!menu || !toggle) return;
+
+  menu.classList.remove('is-collapsed');
+  toggle.classList.add('is-open');
+  toggle.setAttribute('aria-expanded', 'true');
+}
+
+function cerrarMenuMiembros() {
+  const menu = document.querySelector('[data-members-menu]');
+  const toggle = document.querySelector('[data-members-toggle]');
+  if (!menu || !toggle) return;
+
+  menu.classList.add('is-collapsed');
+  toggle.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
 }
 
 function obtenerRol(user) {
