@@ -32,7 +32,9 @@ function agregarOpcionRol() {
     const option = select.querySelector(`option[value="${ROLE_VALUE}"]`);
 
     if (option) {
-      option.textContent = ROLE_LABEL;
+      if (option.textContent !== ROLE_LABEL) {
+        option.textContent = ROLE_LABEL;
+      }
       return;
     }
 
