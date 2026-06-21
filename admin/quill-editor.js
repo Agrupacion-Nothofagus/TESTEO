@@ -1,4 +1,4 @@
-import './roles-miembros.js?v=20260620-final-roles';
+import './roles-miembros.js?v=20260620-members-dropdown';
 import './users-role-fix.js?v=20260620-final-roles';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
