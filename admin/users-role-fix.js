@@ -8,14 +8,19 @@ const userCreateRole = document.querySelector('#user-role');
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let syncing = false;
+let applyingDomChanges = false;
 let timer = null;
 
 installCreateOption();
 queueSync();
 
 if (usersList) {
-  const observer = new MutationObserver(() => queueSync());
-  observer.observe(usersList, { childList: true, subtree: true });
+  const observer = new MutationObserver(() => {
+    if (applyingDomChanges) return;
+    queueSync();
+  });
+
+  observer.observe(usersList, { childList: true, subtree: false });
 }
 
 function installCreateOption() {
@@ -25,7 +30,7 @@ function installCreateOption() {
 function queueSync() {
   if (!client || !usersList || syncing) return;
   window.clearTimeout(timer);
-  timer = window.setTimeout(syncUserRoleSelectors, 180);
+  timer = window.setTimeout(syncUserRoleSelectors, 220);
 }
 
 async function syncUserRoleSelectors() {
@@ -50,6 +55,8 @@ async function syncUserRoleSelectors() {
     const data = await response.json().catch(() => ({}));
     const rolesById = new Map((data.users || []).map((user) => [String(user.id || ''), String(user.rol || '')]));
 
+    applyingDomChanges = true;
+
     document.querySelectorAll('[data-user-card]').forEach((card) => {
       const id = String(card.dataset.userCard || '');
       const select = card.querySelector('[data-user-role]');
@@ -64,6 +71,7 @@ async function syncUserRoleSelectors() {
       }
     });
   } finally {
+    applyingDomChanges = false;
     syncing = false;
   }
 }
@@ -79,6 +87,9 @@ function ensureRoleOption(select, selected) {
     select.appendChild(option);
   }
 
-  option.textContent = ROLE_LABEL;
+  if (option.textContent !== ROLE_LABEL) {
+    option.textContent = ROLE_LABEL;
+  }
+
   option.selected = Boolean(selected);
 }
