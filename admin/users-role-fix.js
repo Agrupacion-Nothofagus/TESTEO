@@ -1,8 +1,13 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
 
-const ROLE_VALUE = 'gestor_miembros';
-const ROLE_LABEL = 'Secretariado';
+const ROLE_OPTIONS = [
+  { value: 'administrador', label: 'Administrador' },
+  { value: 'editor', label: 'Editor' },
+  { value: 'lector', label: 'Lectura' },
+  { value: 'gestor_miembros', label: 'Secretariado' }
+];
+
 const usersList = document.querySelector('#users-list');
 const userCreateRole = document.querySelector('#user-role');
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -11,7 +16,7 @@ let syncing = false;
 let applyingDomChanges = false;
 let timer = null;
 
-installCreateOption();
+installCreateOptions();
 queueSync();
 
 if (usersList) {
@@ -21,10 +26,16 @@ if (usersList) {
   });
 
   observer.observe(usersList, { childList: true, subtree: false });
+
+  usersList.addEventListener('change', (event) => {
+    const select = event.target.closest('[data-user-role]');
+    if (!select) return;
+    select.dataset.userRoleDirty = 'true';
+  });
 }
 
-function installCreateOption() {
-  ensureRoleOption(userCreateRole, false);
+function installCreateOptions() {
+  ensureRoleOptions(userCreateRole, userCreateRole?.value || 'editor');
 }
 
 function queueSync() {
@@ -53,22 +64,18 @@ async function syncUserRoleSelectors() {
     if (!response.ok) return;
 
     const data = await response.json().catch(() => ({}));
-    const rolesById = new Map((data.users || []).map((user) => [String(user.id || ''), String(user.rol || '')]));
+    const rolesById = new Map((data.users || []).map((user) => [String(user.id || ''), normalizeRole(user.rol)]));
 
     applyingDomChanges = true;
 
     document.querySelectorAll('[data-user-card]').forEach((card) => {
       const id = String(card.dataset.userCard || '');
       const select = card.querySelector('[data-user-role]');
-      const role = rolesById.get(id);
+      const storedRole = rolesById.get(id);
 
       if (!select) return;
 
-      ensureRoleOption(select, role === ROLE_VALUE);
-
-      if (role === ROLE_VALUE && select.value !== ROLE_VALUE) {
-        select.value = ROLE_VALUE;
-      }
+      ensureRoleOptions(select, select.dataset.userRoleDirty === 'true' ? select.value : storedRole);
     });
   } finally {
     applyingDomChanges = false;
@@ -76,20 +83,36 @@ async function syncUserRoleSelectors() {
   }
 }
 
-function ensureRoleOption(select, selected) {
+function ensureRoleOptions(select, selectedValue) {
   if (!select) return;
 
-  let option = select.querySelector(`option[value="${ROLE_VALUE}"]`);
+  const normalizedSelected = normalizeRole(selectedValue || select.value || 'editor');
 
-  if (!option) {
-    option = document.createElement('option');
-    option.value = ROLE_VALUE;
-    select.appendChild(option);
+  ROLE_OPTIONS.forEach((role) => {
+    let option = select.querySelector(`option[value="${role.value}"]`);
+
+    if (!option) {
+      option = document.createElement('option');
+      option.value = role.value;
+      select.appendChild(option);
+    }
+
+    if (option.textContent !== role.label) {
+      option.textContent = role.label;
+    }
+  });
+
+  if (normalizedSelected && select.value !== normalizedSelected) {
+    select.value = normalizedSelected;
   }
+}
 
-  if (option.textContent !== ROLE_LABEL) {
-    option.textContent = ROLE_LABEL;
-  }
+function normalizeRole(value) {
+  const role = String(value || '').trim().toLowerCase();
 
-  option.selected = Boolean(selected);
+  if (role === 'admin') return 'administrador';
+  if (role === 'lectura') return 'lector';
+  if (role === 'secretariado') return 'gestor_miembros';
+
+  return ROLE_OPTIONS.some((option) => option.value === role) ? role : 'editor';
 }
