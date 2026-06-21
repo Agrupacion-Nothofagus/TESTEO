@@ -1,6 +1,6 @@
-import './roles-miembros.js';
-import './miembros-delete.js';
-import './miembros-admin.js';
+import './roles-miembros.js?v=20260620-observer-fix';
+import './miembros-delete.js?v=20260620-observer-fix';
+import './miembros-admin.js?v=20260620-observer-fix';
 
 const source = document.querySelector('#contenido');
 const editorElement = document.querySelector('#contenido-editor');
