@@ -70,8 +70,8 @@ function prepararAcciones(actions) {
   actions.querySelectorAll('button').forEach((button) => {
     const text = button.textContent.trim().toLowerCase();
 
-    if (text === 'generar pdf') {
-      button.textContent = 'Guardar PDF';
+    if (text === 'generar pdf' || text === 'guardar pdf') {
+      button.textContent = 'Descargar';
     }
   });
 }
