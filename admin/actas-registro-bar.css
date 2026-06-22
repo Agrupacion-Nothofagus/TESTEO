@@ -1,0 +1,108 @@
+.actas-list-card {
+  padding: 18px;
+}
+
+.actas-list {
+  display: grid;
+  gap: 12px;
+}
+
+.acta-card.acta-card-horizontal {
+  display: block;
+  padding: 0;
+  border-radius: 18px;
+  background: rgba(250, 248, 242, 0.88);
+  overflow: hidden;
+}
+
+.acta-card-horizontal .acta-card-header,
+.acta-card-horizontal > p {
+  display: none !important;
+}
+
+.acta-card-strip {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.62fr) minmax(180px, 1.35fr) minmax(130px, 0.72fr) auto minmax(260px, auto);
+  gap: 12px;
+  align-items: center;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 22px rgba(31, 61, 43, 0.08);
+}
+
+.acta-strip-cell {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.acta-strip-cell span {
+  color: var(--texto-suave);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.acta-strip-cell strong {
+  color: var(--verde-bosque);
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.acta-card-horizontal .acta-state-pill {
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.acta-card-horizontal .acta-card-actions {
+  justify-self: end;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acta-card-horizontal .acta-card-actions button {
+  padding: 9px 13px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .acta-card-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .acta-card-horizontal .acta-state-pill,
+  .acta-card-horizontal .acta-card-actions {
+    justify-self: start;
+  }
+
+  .acta-card-horizontal .acta-card-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .acta-card-strip {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .acta-card-horizontal .acta-card-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .acta-card-horizontal .acta-card-actions button {
+    width: 100%;
+  }
+}
