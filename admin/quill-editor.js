@@ -1,5 +1,6 @@
 import './roles-miembros.js?v=20260620-members-dropdown';
 import './users-role-fix.js?v=20260620-final-roles';
+import './users-actions-actas-style.js?v=20260622-users-actions-actas';
 import './actas-admin.js?v=20260622-actas-split';
 import './actas-sidebar-default.js?v=20260622-actas-collapsed';
 import './actas-registro-bar.js?v=20260622-actas-actions-dropdown';
