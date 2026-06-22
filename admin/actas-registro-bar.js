@@ -1,15 +1,24 @@
-// Convierte las tarjetas del Registro de actas en una barra horizontal compacta.
+// Convierte las tarjetas del Registro de actas en un listado horizontal compacto.
 // Orden visible solicitado: Fecha → Título de acta → Tipo de reunión.
+// Además muestra una confirmación visible al guardar borrador o finalizar acta.
 if (!window.__nothofagusActasRegistroBar) {
   window.__nothofagusActasRegistroBar = true;
 
   cargarEstiloBarraActas();
-  transformarBarrasActas();
+  instalarToastGuardadoActas();
+  transformarListadoActas();
 
-  const observer = new MutationObserver(() => transformarBarrasActas());
+  const observer = new MutationObserver(() => {
+    transformarListadoActas();
+    detectarGuardadoActa();
+  });
+
   const target = document.querySelector('.admin-content') || document.body;
-  observer.observe(target, { childList: true, subtree: true });
+  observer.observe(target, { childList: true, subtree: true, characterData: true });
 }
+
+let ultimoMensajeGuardado = '';
+let timerToastActas = null;
 
 function cargarEstiloBarraActas() {
   if (document.querySelector('link[href="actas-registro-bar.css"]')) return;
@@ -20,14 +29,15 @@ function cargarEstiloBarraActas() {
   document.head.appendChild(link);
 }
 
-function transformarBarrasActas() {
+function transformarListadoActas() {
   document.querySelectorAll('#registro-actas-view .acta-card:not(.acta-card-horizontal)').forEach((card) => {
     const title = card.querySelector('h4')?.textContent?.trim() || 'Acta sin título';
     const meta = card.querySelector('small')?.textContent?.trim() || '';
     const state = card.querySelector('.acta-state-pill');
     const actions = card.querySelector('.acta-card-actions');
-
     const { tipo, fecha } = separarMetaActa(meta);
+
+    prepararAcciones(actions);
 
     const strip = document.createElement('div');
     strip.className = 'acta-card-strip';
@@ -52,6 +62,54 @@ function transformarBarrasActas() {
     card.prepend(strip);
     card.classList.add('acta-card-horizontal');
   });
+}
+
+function prepararAcciones(actions) {
+  if (!actions) return;
+
+  actions.querySelectorAll('button').forEach((button) => {
+    const text = button.textContent.trim().toLowerCase();
+
+    if (text === 'generar pdf') {
+      button.textContent = 'Guardar PDF';
+    }
+  });
+}
+
+function instalarToastGuardadoActas() {
+  if (document.querySelector('[data-actas-save-toast]')) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'actas-save-toast';
+  toast.dataset.actasSaveToast = 'true';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+  document.body.appendChild(toast);
+}
+
+function detectarGuardadoActa() {
+  const status = document.querySelector('[data-actas-status]');
+  const message = status?.textContent?.trim() || '';
+
+  if (!message || message === ultimoMensajeGuardado) return;
+
+  if (message.toLowerCase().includes('acta guardada')) {
+    ultimoMensajeGuardado = message;
+    mostrarToastActa('Acta guardada correctamente.');
+  }
+}
+
+function mostrarToastActa(message) {
+  const toast = document.querySelector('[data-actas-save-toast]');
+  if (!toast) return;
+
+  window.clearTimeout(timerToastActas);
+  toast.textContent = message;
+  toast.classList.add('is-visible');
+
+  timerToastActas = window.setTimeout(() => {
+    toast.classList.remove('is-visible');
+  }, 2800);
 }
 
 function separarMetaActa(meta) {
