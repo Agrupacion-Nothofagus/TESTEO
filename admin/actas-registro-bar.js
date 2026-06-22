@@ -7,6 +7,7 @@ if (!window.__nothofagusActasRegistroBar) {
   cargarEstiloBarraActas();
   instalarToastGuardadoActas();
   transformarListadoActas();
+  instalarCierreGlobalDeAcciones();
 
   const observer = new MutationObserver(() => {
     transformarListadoActas();
@@ -74,6 +75,73 @@ function prepararAcciones(actions) {
       button.textContent = 'Descargar';
     }
   });
+
+  if (actions.classList.contains('acta-actions-dropdown')) return;
+
+  const botones = [...actions.querySelectorAll(':scope > button')];
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'acta-actions-toggle';
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.innerHTML = 'Acciones <span aria-hidden="true">⌄</span>';
+
+  const menu = document.createElement('div');
+  menu.className = 'acta-actions-menu is-collapsed';
+
+  botones.forEach((button) => {
+    button.classList.add('acta-action-menu-item');
+    button.addEventListener('click', () => cerrarMenuAcciones(actions));
+    menu.appendChild(button);
+  });
+
+  toggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    alternarMenuAcciones(actions);
+  });
+
+  actions.classList.add('acta-actions-dropdown');
+  actions.replaceChildren(toggle, menu);
+}
+
+function instalarCierreGlobalDeAcciones() {
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('.acta-actions-dropdown')) return;
+    cerrarTodosLosMenusAcciones();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') cerrarTodosLosMenusAcciones();
+  });
+}
+
+function alternarMenuAcciones(actions) {
+  const menu = actions.querySelector('.acta-actions-menu');
+  const toggle = actions.querySelector('.acta-actions-toggle');
+  if (!menu || !toggle) return;
+
+  const debeAbrir = menu.classList.contains('is-collapsed');
+  cerrarTodosLosMenusAcciones();
+
+  if (debeAbrir) {
+    menu.classList.remove('is-collapsed');
+    toggle.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function cerrarMenuAcciones(actions) {
+  const menu = actions.querySelector('.acta-actions-menu');
+  const toggle = actions.querySelector('.acta-actions-toggle');
+  if (!menu || !toggle) return;
+
+  menu.classList.add('is-collapsed');
+  toggle.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+function cerrarTodosLosMenusAcciones() {
+  document.querySelectorAll('.acta-actions-dropdown').forEach(cerrarMenuAcciones);
 }
 
 function instalarToastGuardadoActas() {
