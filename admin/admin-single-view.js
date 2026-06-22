@@ -5,29 +5,48 @@ if (!window.__nothofagusAdminSingleView) {
 
   document.addEventListener('click', (event) => {
     const target = event.target;
+    const publicacionesToggle = target.closest?.('[data-publicaciones-toggle]');
+    const publicacionesLink = target.closest?.('[data-publicaciones-sidebar] [data-admin-view]');
     const memberToggle = target.closest?.('[data-members-toggle]');
     const actasToggle = target.closest?.('[data-actas-toggle]');
     const memberLink = target.closest?.('.member-sidebar-link[data-admin-view]');
     const actasLink = target.closest?.('[data-actas-open]');
     const staticAdminLink = target.closest?.('[data-admin-view]');
 
+    if (publicacionesToggle) {
+      closeMembersMenu();
+      closeActasMenu();
+      return;
+    }
+
+    if (publicacionesLink) {
+      closeMembersMenu();
+      closeActasMenu();
+      requestAnimationFrame(() => enforceSingleView(publicacionesLink.dataset.adminView));
+      return;
+    }
+
     if (memberToggle) {
+      closePublicacionesMenu();
       closeActasMenu();
       return;
     }
 
     if (actasToggle) {
+      closePublicacionesMenu();
       closeMembersMenu();
       return;
     }
 
     if (memberLink) {
+      closePublicacionesMenu();
       closeActasMenu();
       requestAnimationFrame(() => enforceSingleView(memberLink.dataset.adminView));
       return;
     }
 
     if (actasLink) {
+      closePublicacionesMenu();
       closeMembersMenu();
       const targetView = actasLink.dataset.actasOpen === 'crear'
         ? 'crear-acta-view'
@@ -36,7 +55,13 @@ if (!window.__nothofagusAdminSingleView) {
       return;
     }
 
-    if (staticAdminLink && !staticAdminLink.closest('[data-members-sidebar]') && !staticAdminLink.closest('[data-actas-sidebar]')) {
+    if (
+      staticAdminLink
+      && !staticAdminLink.closest('[data-publicaciones-sidebar]')
+      && !staticAdminLink.closest('[data-members-sidebar]')
+      && !staticAdminLink.closest('[data-actas-sidebar]')
+    ) {
+      closePublicacionesMenu();
       closeMembersMenu();
       closeActasMenu();
       requestAnimationFrame(() => enforceSingleView(staticAdminLink.dataset.adminView));
@@ -44,6 +69,7 @@ if (!window.__nothofagusAdminSingleView) {
   }, true);
 
   window.addEventListener('nothofagus:members-view', (event) => {
+    closePublicacionesMenu();
     closeActasMenu();
     requestAnimationFrame(() => enforceSingleView(event.detail?.viewId));
   });
@@ -66,8 +92,24 @@ function enforceSingleView(viewId) {
     button.classList.toggle('is-active', shouldBeActive);
   });
 
-  document.querySelector('[data-members-toggle]')?.classList.toggle('is-active', String(viewId).startsWith('members-'));
-  document.querySelector('[data-actas-toggle]')?.classList.toggle('is-active', viewId === 'crear-acta-view' || viewId === 'registro-actas-view');
+  const esPublicaciones = viewId === 'gestion-view' || viewId === 'nueva-view';
+  const esMiembros = String(viewId).startsWith('members-');
+  const esActas = viewId === 'crear-acta-view' || viewId === 'registro-actas-view';
+
+  document.querySelector('[data-publicaciones-toggle]')?.classList.toggle('is-active', esPublicaciones);
+  document.querySelector('[data-members-toggle]')?.classList.toggle('is-active', esMiembros);
+  document.querySelector('[data-actas-toggle]')?.classList.toggle('is-active', esActas);
+}
+
+function closePublicacionesMenu() {
+  const menu = document.querySelector('[data-publicaciones-menu]');
+  const toggle = document.querySelector('[data-publicaciones-toggle]');
+
+  if (!menu || !toggle) return;
+
+  menu.classList.add('is-collapsed');
+  toggle.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
 }
 
 function closeMembersMenu() {
