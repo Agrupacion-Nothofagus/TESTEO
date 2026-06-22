@@ -1,0 +1,319 @@
+.actas-sidebar-link.is-hidden,
+#actas-view.is-hidden {
+  display: none !important;
+}
+
+.actas-access-denied {
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid rgba(155, 44, 44, 0.18);
+  border-radius: 24px;
+  background: rgba(155, 44, 44, 0.08);
+  color: #8f1d15;
+  font-weight: 900;
+}
+
+.actas-panel {
+  display: grid;
+  gap: 20px;
+  padding: clamp(20px, 3vw, 34px);
+}
+
+.actas-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.actas-topbar h3 {
+  margin: 0 0 8px;
+  color: var(--verde-bosque);
+}
+
+.actas-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actas-toolbar,
+.actas-form-section,
+.actas-viewer,
+.actas-list-card {
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.actas-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.3fr) repeat(2, minmax(160px, 0.7fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.actas-toolbar label,
+.actas-form-grid label,
+.actas-repeat-row label {
+  display: grid;
+  gap: 7px;
+  color: var(--texto);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.actas-toolbar input,
+.actas-toolbar select,
+.actas-form-grid input,
+.actas-form-grid select,
+.actas-form-grid textarea,
+.actas-repeat-row input,
+.actas-repeat-row select,
+.actas-repeat-row textarea {
+  width: 100%;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.actas-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.actas-list-card {
+  padding: 16px;
+  min-height: 280px;
+}
+
+.actas-list {
+  display: grid;
+  gap: 12px;
+}
+
+.acta-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 18px;
+  background: rgba(250, 248, 242, 0.78);
+}
+
+.acta-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.acta-card h4 {
+  margin: 0 0 5px;
+  color: var(--verde-bosque);
+  overflow-wrap: anywhere;
+}
+
+.acta-card small,
+.acta-card p {
+  color: var(--texto-suave);
+  font-weight: 800;
+}
+
+.acta-card p {
+  margin: 0;
+}
+
+.acta-state-pill {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(31, 61, 43, 0.1);
+  color: var(--verde-bosque);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.acta-state-pill.finalizada {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.acta-state-pill.aprobada {
+  background: rgba(79, 125, 74, 0.18);
+  color: var(--verde-bosque);
+}
+
+.acta-card-actions,
+.actas-form-actions,
+.actas-viewer-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acta-card-actions button,
+.actas-form-actions button,
+.actas-viewer-actions button,
+.actas-small-button,
+.actas-danger-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.actas-small-button {
+  background: rgba(31, 61, 43, 0.08);
+  color: var(--verde-bosque);
+  border: 1px solid rgba(31, 61, 43, 0.14);
+}
+
+.actas-danger-button,
+.acta-card-actions .danger {
+  background: #9b2c2c;
+}
+
+.actas-editor {
+  display: grid;
+  gap: 16px;
+}
+
+.actas-form-section {
+  padding: 18px;
+}
+
+.actas-form-section h4 {
+  margin: 0 0 14px;
+  color: var(--verde-bosque);
+}
+
+.actas-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.actas-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.actas-repeat-list {
+  display: grid;
+  gap: 10px;
+}
+
+.actas-repeat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid rgba(31, 61, 43, 0.1);
+  border-radius: 16px;
+  background: rgba(250, 248, 242, 0.72);
+}
+
+.actas-repeat-row.two {
+  grid-template-columns: 1.4fr 1fr auto;
+}
+
+.actas-repeat-row.agenda,
+.actas-repeat-row.compromiso {
+  grid-template-columns: 1fr 1.4fr auto;
+}
+
+.actas-repeat-row button {
+  min-width: 42px;
+  height: 42px;
+}
+
+.actas-viewer {
+  padding: 18px;
+}
+
+.actas-viewer h4 {
+  margin: 0 0 8px;
+  color: var(--verde-bosque);
+}
+
+.actas-viewer-content {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.actas-viewer-content section {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(79, 125, 74, 0.08);
+}
+
+.actas-viewer-content h5 {
+  margin: 0 0 8px;
+  color: var(--verde-bosque);
+  font-size: 0.94rem;
+}
+
+.actas-viewer-content p,
+.actas-viewer-content li {
+  color: var(--texto);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.actas-status {
+  margin-top: 0 !important;
+}
+
+.actas-hidden {
+  display: none !important;
+}
+
+@media (max-width: 1160px) {
+  .actas-layout,
+  .actas-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .actas-form-grid,
+  .actas-repeat-row,
+  .actas-repeat-row.two,
+  .actas-repeat-row.agenda,
+  .actas-repeat-row.compromiso {
+    grid-template-columns: 1fr;
+  }
+
+  .actas-topbar,
+  .actas-actions-row,
+  .acta-card-header {
+    display: grid;
+  }
+
+  .acta-card-actions button,
+  .actas-form-actions button,
+  .actas-viewer-actions button,
+  .actas-small-button,
+  .actas-danger-button {
+    width: 100%;
+  }
+}
