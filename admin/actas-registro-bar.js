@@ -126,6 +126,9 @@ function alternarMenuAcciones(actions) {
   if (debeAbrir) {
     menu.classList.remove('is-collapsed');
     toggle.classList.add('is-open');
+    actions.classList.add('is-open');
+    actions.closest('.acta-card-strip')?.classList.add('is-actions-open');
+    actions.closest('.acta-card-horizontal')?.classList.add('is-actions-open');
     toggle.setAttribute('aria-expanded', 'true');
   }
 }
@@ -137,6 +140,9 @@ function cerrarMenuAcciones(actions) {
 
   menu.classList.add('is-collapsed');
   toggle.classList.remove('is-open');
+  actions.classList.remove('is-open');
+  actions.closest('.acta-card-strip')?.classList.remove('is-actions-open');
+  actions.closest('.acta-card-horizontal')?.classList.remove('is-actions-open');
   toggle.setAttribute('aria-expanded', 'false');
 }
 
