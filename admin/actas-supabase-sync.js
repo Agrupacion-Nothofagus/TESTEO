@@ -70,6 +70,7 @@ if (!window.__nothofagusActasSupabaseSync) {
       const token = await getToken();
       if (!token) return;
 
+      const localAntesDeCargar = [...cacheActas];
       const res = await fetch('/api/actas', {
         headers: { authorization: `Bearer ${token}` }
       });
@@ -77,8 +78,20 @@ if (!window.__nothofagusActasSupabaseSync) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No fue posible cargar actas desde Supabase.');
 
+      const remotas = Array.isArray(data.actas) ? data.actas.filter(Boolean) : [];
+
+      if (!remotas.length && localAntesDeCargar.length) {
+        cargaInicialCompletada = true;
+        cacheActas = localAntesDeCargar;
+        originalSetItem.call(window.localStorage, STORAGE_KEY, JSON.stringify(cacheActas));
+        await sincronizarCambios([], localAntesDeCargar);
+        mostrarEstadoActasSync('Actas locales migradas a Supabase.', true);
+        refrescarVistaActas();
+        return;
+      }
+
       sincronizando = true;
-      cacheActas = Array.isArray(data.actas) ? data.actas.filter(Boolean) : [];
+      cacheActas = remotas;
       originalSetItem.call(window.localStorage, STORAGE_KEY, JSON.stringify(cacheActas));
       sincronizando = false;
       cargaInicialCompletada = true;
