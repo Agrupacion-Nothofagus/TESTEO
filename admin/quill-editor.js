@@ -1,5 +1,6 @@
 import './roles-miembros.js?v=20260620-members-dropdown';
 import './users-role-fix.js?v=20260620-final-roles';
+import './actas-admin.js?v=20260622-actas-v1';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
