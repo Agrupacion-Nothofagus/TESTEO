@@ -1,0 +1,81 @@
+.actas-sidebar-group {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(31, 61, 43, 0.1);
+}
+
+.actas-sidebar-group.is-hidden {
+  display: none !important;
+}
+
+.actas-sidebar-toggle {
+  width: 100%;
+}
+
+.actas-toggle-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  min-width: 24px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: currentColor;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 0.24s ease, background 0.24s ease;
+}
+
+.actas-sidebar-toggle.is-open .actas-toggle-caret {
+  transform: rotate(180deg);
+}
+
+.actas-sidebar-menu {
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  margin-top: 2px;
+  padding-left: 8px;
+  overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    max-height 0.34s ease,
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    margin-top 0.24s ease;
+}
+
+.actas-sidebar-menu.is-collapsed {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.actas-sidebar-link {
+  min-height: 42px;
+  padding-left: 14px;
+}
+
+.actas-registro-layout {
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+}
+
+@media (max-width: 1160px) {
+  .actas-registro-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actas-sidebar-menu,
+  .actas-toggle-caret {
+    transition: none;
+  }
+}
