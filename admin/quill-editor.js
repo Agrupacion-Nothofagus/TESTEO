@@ -4,6 +4,7 @@ import './actas-admin.js?v=20260622-actas-split';
 import './actas-sidebar-default.js?v=20260622-actas-collapsed';
 import './actas-registro-bar.js?v=20260622-actas-list-toast';
 import './actas-viewer-fade.js?v=20260622-actas-viewer-fade';
+import './actas-delete-warning.js?v=20260622-actas-delete-warning';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
