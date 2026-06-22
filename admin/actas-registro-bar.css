@@ -15,6 +15,7 @@
 #registro-actas-view .actas-list-card {
   padding: clamp(14px, 1.8vw, 18px);
   min-height: 180px;
+  overflow: visible !important;
 }
 
 #registro-actas-view .actas-viewer {
@@ -52,9 +53,11 @@
 .actas-list {
   display: grid;
   gap: 10px;
+  overflow: visible !important;
 }
 
 .acta-card.acta-card-horizontal {
+  position: relative;
   display: block;
   padding: 0;
   border: 0;
@@ -62,6 +65,11 @@
   background: transparent;
   box-shadow: none;
   overflow: visible;
+  z-index: 1;
+}
+
+.acta-card.acta-card-horizontal.is-actions-open {
+  z-index: 500;
 }
 
 .acta-card-horizontal .acta-card-header,
@@ -72,7 +80,7 @@
 .acta-card-strip {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(100px, 0.72fr) minmax(210px, 1.55fr) minmax(130px, 0.82fr) minmax(88px, auto) minmax(112px, auto);
+  grid-template-columns: minmax(100px, 0.72fr) minmax(210px, 1.55fr) minmax(130px, 0.82fr) minmax(88px, auto) minmax(132px, auto);
   gap: 12px;
   align-items: center;
   min-height: 56px;
@@ -82,6 +90,12 @@
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 8px 20px rgba(31, 61, 43, 0.06);
   box-sizing: border-box;
+  overflow: visible;
+  z-index: 1;
+}
+
+.acta-card-strip.is-actions-open {
+  z-index: 600;
 }
 
 .acta-strip-cell {
@@ -119,14 +133,21 @@
   align-self: center;
   display: block;
   min-width: 0;
-  z-index: 20;
+  z-index: 10;
+}
+
+.acta-card-horizontal .acta-card-actions.acta-actions-dropdown.is-open {
+  z-index: 700;
 }
 
 .acta-actions-toggle {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-width: 112px;
   min-height: 36px;
   padding: 8px 13px;
   border: 0;
@@ -155,15 +176,16 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 40;
+  z-index: 800;
   display: grid;
   gap: 7px;
-  min-width: 172px;
+  width: max-content;
+  min-width: 188px;
   padding: 10px;
   border: 1px solid rgba(31, 61, 43, 0.12);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 34px rgba(31, 61, 43, 0.18);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 34px rgba(31, 61, 43, 0.2);
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -171,6 +193,7 @@
 }
 
 .acta-actions-menu.is-collapsed {
+  display: none;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-8px);
@@ -178,18 +201,36 @@
 
 .acta-actions-menu .acta-action-menu-item {
   width: 100%;
+  min-width: 168px;
   min-height: 36px;
-  padding: 8px 12px;
+  padding: 8px 13px;
+  border: 0;
   border-radius: 12px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
   font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.1;
   text-align: left;
   white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.acta-actions-menu .acta-action-menu-item:hover {
+  background: var(--verde-profundo);
 }
 
 .acta-actions-menu .acta-action-menu-item.danger,
 .acta-actions-menu .danger {
   background: #9b2c2c;
   color: var(--blanco);
+}
+
+.acta-actions-menu .acta-action-menu-item.danger:hover,
+.acta-actions-menu .danger:hover {
+  background: #842424;
 }
 
 #registro-actas-view .actas-viewer .actas-topbar {
@@ -283,6 +324,10 @@
     width: 100%;
     min-width: 0;
     margin-top: 8px;
+  }
+
+  .acta-actions-menu .acta-action-menu-item {
+    min-width: 0;
   }
 
   .acta-actions-menu.is-collapsed {
