@@ -18,7 +18,35 @@
 }
 
 #registro-actas-view .actas-viewer {
-  padding: clamp(18px, 2.4vw, 28px);
+  display: block !important;
+  max-height: 0;
+  margin-top: 0;
+  padding: 0 clamp(18px, 2.4vw, 28px);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    max-height 0.3s ease,
+    padding-top 0.24s ease,
+    padding-bottom 0.24s ease,
+    margin-top 0.24s ease;
+}
+
+#registro-actas-view .actas-viewer.actas-hidden {
+  display: block !important;
+}
+
+#registro-actas-view .actas-viewer.is-visible {
+  max-height: 2600px;
+  margin-top: 0;
+  padding-top: clamp(18px, 2.4vw, 28px);
+  padding-bottom: clamp(18px, 2.4vw, 28px);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .actas-list {
@@ -204,5 +232,12 @@
     left: 16px;
     right: 16px;
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #registro-actas-view .actas-viewer,
+  .actas-save-toast {
+    transition: none;
   }
 }
