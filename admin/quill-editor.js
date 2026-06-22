@@ -4,6 +4,7 @@ import './users-role-fix.js?v=20260620-final-roles';
 import './users-actions-actas-style.js?v=20260622-users-actions-actas';
 import './actas-supabase-sync.js?v=20260622-actas-supabase';
 import './actas-admin.js?v=20260622-actas-supabase';
+import './actas-new-reset-fix.js?v=20260622-actas-new-reset';
 import './actas-sidebar-default.js?v=20260622-actas-collapsed';
 import './actas-registro-bar.js?v=20260622-actas-actions-dropdown';
 import './actas-viewer-fade.js?v=20260622-actas-viewer-fade';
