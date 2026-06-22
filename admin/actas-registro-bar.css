@@ -13,7 +13,7 @@
 }
 
 #registro-actas-view .actas-list-card {
-  padding: clamp(12px, 1.6vw, 18px);
+  padding: clamp(14px, 1.8vw, 18px);
   min-height: 180px;
 }
 
@@ -51,14 +51,14 @@
 
 .actas-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .acta-card.acta-card-horizontal {
   display: block;
   padding: 0;
   border: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   background: transparent;
   box-shadow: none;
   overflow: visible;
@@ -70,38 +70,39 @@
 }
 
 .acta-card-strip {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(95px, 0.72fr) minmax(190px, 1.35fr) minmax(125px, 0.78fr) minmax(86px, auto) minmax(270px, auto);
-  gap: 10px;
+  grid-template-columns: minmax(100px, 0.72fr) minmax(210px, 1.55fr) minmax(130px, 0.82fr) minmax(88px, auto) minmax(112px, auto);
+  gap: 12px;
   align-items: center;
-  min-height: 58px;
-  padding: 9px 12px;
-  border: 1px solid rgba(31, 61, 43, 0.11);
-  border-radius: 16px;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 7px 16px rgba(31, 61, 43, 0.055);
+  box-shadow: 0 8px 20px rgba(31, 61, 43, 0.06);
   box-sizing: border-box;
 }
 
 .acta-strip-cell {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
 .acta-strip-cell span {
   color: var(--texto-suave);
-  font-size: 0.61rem;
+  font-size: 0.62rem;
   font-weight: 900;
-  letter-spacing: 0.055em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .acta-strip-cell strong {
   color: var(--verde-bosque);
-  font-size: clamp(0.82rem, 0.95vw, 0.94rem);
+  font-size: clamp(0.86rem, 0.95vw, 0.95rem);
   font-weight: 900;
-  line-height: 1.14;
+  line-height: 1.18;
   overflow-wrap: anywhere;
 }
 
@@ -109,27 +110,86 @@
   justify-self: start;
   align-self: center;
   padding: 5px 10px;
-  font-size: 0.66rem;
   white-space: nowrap;
 }
 
-.acta-card-horizontal .acta-card-actions {
+.acta-card-horizontal .acta-card-actions.acta-actions-dropdown {
+  position: relative;
   justify-self: end;
   align-self: center;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  display: block;
   min-width: 0;
+  z-index: 20;
 }
 
-.acta-card-horizontal .acta-card-actions button {
-  padding: 7px 10px;
-  min-height: 32px;
+.acta-actions-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 0;
   border-radius: 999px;
-  font-size: 0.7rem;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
   white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(31, 61, 43, 0.14);
+}
+
+.acta-actions-toggle span {
+  display: inline-flex;
+  transition: transform 0.22s ease;
+}
+
+.acta-actions-toggle.is-open span {
+  transform: rotate(180deg);
+}
+
+.acta-actions-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  display: grid;
+  gap: 7px;
+  min-width: 172px;
+  padding: 10px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 34px rgba(31, 61, 43, 0.18);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.acta-actions-menu.is-collapsed {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.acta-actions-menu .acta-action-menu-item {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.acta-actions-menu .acta-action-menu-item.danger,
+.acta-actions-menu .danger {
+  background: #9b2c2c;
+  color: var(--blanco);
 }
 
 #registro-actas-view .actas-viewer .actas-topbar {
@@ -184,43 +244,49 @@
 @media (max-width: 1320px) {
   .acta-card-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-height: 66px;
-    padding: 12px;
   }
 
   .acta-card-horizontal .acta-state-pill {
     justify-self: start;
   }
 
-  .acta-card-horizontal .acta-card-actions {
-    grid-column: 1 / -1;
+  .acta-card-horizontal .acta-card-actions.acta-actions-dropdown {
     justify-self: start;
-    justify-content: flex-start;
-    width: 100%;
+    width: auto;
+  }
+
+  .acta-actions-menu {
+    left: 0;
+    right: auto;
   }
 }
 
 @media (max-width: 760px) {
   #registro-actas-view .actas-list-card {
     padding: 12px;
-    min-height: 160px;
   }
 
   .acta-card-strip {
     grid-template-columns: 1fr;
     min-height: auto;
     padding: 12px;
+    gap: 10px;
   }
 
-  .acta-card-horizontal .acta-card-actions {
-    display: grid;
-    grid-template-columns: 1fr;
+  .acta-card-horizontal .acta-card-actions.acta-actions-dropdown,
+  .acta-actions-toggle {
     width: 100%;
   }
 
-  .acta-card-horizontal .acta-card-actions button,
-  #registro-actas-view .actas-viewer-actions button {
+  .acta-actions-menu {
+    position: static;
     width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+  }
+
+  .acta-actions-menu.is-collapsed {
+    display: none;
   }
 
   #registro-actas-view .actas-viewer .actas-topbar {
@@ -233,6 +299,10 @@
     width: 100%;
   }
 
+  #registro-actas-view .actas-viewer-actions button {
+    width: 100%;
+  }
+
   .actas-save-toast {
     left: 16px;
     right: 16px;
@@ -242,7 +312,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   #registro-actas-view .actas-viewer,
-  .actas-save-toast {
+  .actas-save-toast,
+  .acta-actions-menu,
+  .acta-actions-toggle span {
     transition: none;
   }
 }
