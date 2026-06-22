@@ -1,3 +1,4 @@
+import './publicaciones-sidebar-dropdown.js?v=20260622-publicaciones-dropdown';
 import './roles-miembros.js?v=20260620-members-dropdown';
 import './users-role-fix.js?v=20260620-final-roles';
 import './users-actions-actas-style.js?v=20260622-users-actions-actas';
@@ -6,7 +7,7 @@ import './actas-sidebar-default.js?v=20260622-actas-collapsed';
 import './actas-registro-bar.js?v=20260622-actas-actions-dropdown';
 import './actas-viewer-fade.js?v=20260622-actas-viewer-fade';
 import './actas-delete-warning.js?v=20260622-actas-delete-warning';
-import './admin-single-view.js?v=20260622-single-view';
+import './admin-single-view.js?v=20260622-publicaciones-single-view';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
