@@ -1,17 +1,36 @@
-.actas-list-card {
-  padding: 18px;
+#registro-actas-view .actas-registro-layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 22px;
+  align-items: stretch;
+}
+
+#registro-actas-view .actas-list-card,
+#registro-actas-view .actas-viewer {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#registro-actas-view .actas-list-card {
+  padding: clamp(16px, 2vw, 22px);
+  min-height: 260px;
+}
+
+#registro-actas-view .actas-viewer {
+  padding: clamp(18px, 2.4vw, 28px);
 }
 
 .actas-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .acta-card.acta-card-horizontal {
   display: block;
   padding: 0;
   border: 0;
-  border-radius: 16px;
+  border-radius: 20px;
   background: transparent;
   box-shadow: none;
   overflow: visible;
@@ -24,26 +43,27 @@
 
 .acta-card-strip {
   display: grid;
-  grid-template-columns: minmax(110px, 0.7fr) minmax(220px, 1.4fr) minmax(140px, 0.8fr) auto minmax(250px, auto);
-  gap: 12px;
+  grid-template-columns: minmax(105px, 0.75fr) minmax(210px, 1.35fr) minmax(140px, 0.8fr) minmax(90px, auto) minmax(300px, auto);
+  gap: 14px;
   align-items: center;
-  min-height: 58px;
-  padding: 10px 12px;
+  min-height: 76px;
+  padding: 16px 18px;
   border: 1px solid rgba(31, 61, 43, 0.12);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 8px 18px rgba(31, 61, 43, 0.06);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 24px rgba(31, 61, 43, 0.07);
+  box-sizing: border-box;
 }
 
 .acta-strip-cell {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: 5px;
 }
 
 .acta-strip-cell span {
   color: var(--texto-suave);
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -51,31 +71,61 @@
 
 .acta-strip-cell strong {
   color: var(--verde-bosque);
-  font-size: 0.9rem;
+  font-size: clamp(0.92rem, 1.05vw, 1.02rem);
   font-weight: 900;
-  line-height: 1.2;
+  line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
 .acta-card-horizontal .acta-state-pill {
   justify-self: start;
+  align-self: center;
   white-space: nowrap;
 }
 
 .acta-card-horizontal .acta-card-actions {
   justify-self: end;
+  align-self: center;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 7px;
-  flex-wrap: nowrap;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .acta-card-horizontal .acta-card-actions button {
-  padding: 8px 11px;
-  font-size: 0.74rem;
+  padding: 9px 13px;
+  min-height: 38px;
+  border-radius: 999px;
+  font-size: 0.78rem;
   white-space: nowrap;
-  min-height: 36px;
+}
+
+#registro-actas-view .actas-viewer .actas-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+#registro-actas-view .actas-viewer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#registro-actas-view .actas-viewer-content {
+  display: grid;
+  gap: 16px;
+}
+
+#registro-actas-view .actas-viewer-content section {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 20px;
 }
 
 .actas-save-toast {
@@ -101,27 +151,32 @@
   transform: translateY(0);
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1320px) {
   .acta-card-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .acta-card-horizontal .acta-state-pill,
-  .acta-card-horizontal .acta-card-actions {
+  .acta-card-horizontal .acta-state-pill {
     justify-self: start;
   }
 
   .acta-card-horizontal .acta-card-actions {
     grid-column: 1 / -1;
+    justify-self: start;
     justify-content: flex-start;
-    flex-wrap: wrap;
+    width: 100%;
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
+  #registro-actas-view .actas-list-card {
+    padding: 14px;
+  }
+
   .acta-card-strip {
     grid-template-columns: 1fr;
     min-height: auto;
+    padding: 14px;
   }
 
   .acta-card-horizontal .acta-card-actions {
@@ -130,7 +185,18 @@
     width: 100%;
   }
 
-  .acta-card-horizontal .acta-card-actions button {
+  .acta-card-horizontal .acta-card-actions button,
+  #registro-actas-view .actas-viewer-actions button {
+    width: 100%;
+  }
+
+  #registro-actas-view .actas-viewer .actas-topbar {
+    display: grid;
+  }
+
+  #registro-actas-view .actas-viewer-actions {
+    display: grid;
+    grid-template-columns: 1fr;
     width: 100%;
   }
 
