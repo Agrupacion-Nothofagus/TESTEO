@@ -12,6 +12,8 @@
   line-height: 1.15 !important;
   white-space: normal !important;
   box-sizing: border-box !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .admin-sidebar .sidebar-nav .sidebar-icon-fixed {
@@ -28,6 +30,7 @@
   font-size: 0.9rem !important;
   line-height: 1 !important;
   margin: 0 !important;
+  pointer-events: none !important;
 }
 
 .admin-sidebar .sidebar-nav .sidebar-text-fixed {
@@ -44,6 +47,7 @@
   overflow-wrap: normal !important;
   word-break: normal !important;
   white-space: normal !important;
+  pointer-events: none !important;
 }
 
 .admin-sidebar .sidebar-nav .sidebar-link.is-active .sidebar-icon-fixed,
@@ -55,11 +59,13 @@
 }
 
 .admin-sidebar .sidebar-nav .publicaciones-toggle-caret,
+.admin-sidebar .sidebar-nav .member-toggle-caret,
 .admin-sidebar .sidebar-nav .members-toggle-caret,
 .admin-sidebar .sidebar-nav .tesoreria-toggle-caret,
 .admin-sidebar .sidebar-nav .actas-toggle-caret {
   flex: 0 0 24px !important;
   margin-left: auto !important;
+  pointer-events: none !important;
 }
 
 .admin-sidebar .sidebar-nav [data-publicaciones-menu],
@@ -67,4 +73,5 @@
 .admin-sidebar .sidebar-nav [data-tesoreria-menu],
 .admin-sidebar .sidebar-nav [data-actas-menu] {
   padding-left: 14px !important;
+  pointer-events: auto !important;
 }
