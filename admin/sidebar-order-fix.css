@@ -1,0 +1,70 @@
+.admin-sidebar .sidebar-nav > .sidebar-link,
+.admin-sidebar .sidebar-nav [data-publicaciones-toggle],
+.admin-sidebar .sidebar-nav [data-members-toggle],
+.admin-sidebar .sidebar-nav [data-tesoreria-toggle],
+.admin-sidebar .sidebar-nav [data-actas-toggle] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 42px !important;
+  padding: 10px 12px !important;
+  line-height: 1.15 !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+
+.admin-sidebar .sidebar-nav .sidebar-icon-fixed {
+  flex: 0 0 26px !important;
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  background: rgba(31, 61, 43, 0.08) !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+.admin-sidebar .sidebar-nav .sidebar-text-fixed {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: block !important;
+  color: inherit !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  font: inherit !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.02em !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  white-space: normal !important;
+}
+
+.admin-sidebar .sidebar-nav .sidebar-link.is-active .sidebar-icon-fixed,
+.admin-sidebar .sidebar-nav [data-publicaciones-toggle].is-active .sidebar-icon-fixed,
+.admin-sidebar .sidebar-nav [data-members-toggle].is-active .sidebar-icon-fixed,
+.admin-sidebar .sidebar-nav [data-tesoreria-toggle].is-active .sidebar-icon-fixed,
+.admin-sidebar .sidebar-nav [data-actas-toggle].is-active .sidebar-icon-fixed {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+.admin-sidebar .sidebar-nav .publicaciones-toggle-caret,
+.admin-sidebar .sidebar-nav .members-toggle-caret,
+.admin-sidebar .sidebar-nav .tesoreria-toggle-caret,
+.admin-sidebar .sidebar-nav .actas-toggle-caret {
+  flex: 0 0 24px !important;
+  margin-left: auto !important;
+}
+
+.admin-sidebar .sidebar-nav [data-publicaciones-menu],
+.admin-sidebar .sidebar-nav [data-members-menu],
+.admin-sidebar .sidebar-nav [data-tesoreria-menu],
+.admin-sidebar .sidebar-nav [data-actas-menu] {
+  padding-left: 14px !important;
+}
