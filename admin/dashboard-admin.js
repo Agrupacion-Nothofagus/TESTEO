@@ -1,3 +1,4 @@
+import './dashboard-modern.js?v=20260703-dashboard-modern';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import {
   SUPABASE_URL,
