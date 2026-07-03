@@ -14,7 +14,7 @@ import './actas-registro-bar.js?v=20260622-actas-actions-dropdown';
 import './actas-viewer-fade.js?v=20260622-actas-viewer-fade';
 import './actas-delete-warning.js?v=20260622-actas-delete-warning';
 import './admin-single-view.js?v=20260622-publicaciones-single-view';
-import './sidebar-order.js?v=20260703-sidebar-order';
+import './sidebar-order.js?v=20260703-sidebar-order-fix';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
