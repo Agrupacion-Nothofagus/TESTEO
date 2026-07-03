@@ -120,10 +120,7 @@
   line-height: 1;
 }
 
-.tesoreria-summary-card.egresos strong {
-  color: #9b2c2c;
-}
-
+.tesoreria-summary-card.egresos strong,
 .tesoreria-summary-card.saldo.negative strong {
   color: #9b2c2c;
 }
@@ -141,7 +138,7 @@
 
 .tesoreria-form {
   display: grid;
-  grid-template-columns: minmax(160px, 0.8fr) minmax(220px, 1.3fr) minmax(140px, 0.7fr) auto;
+  grid-template-columns: minmax(140px, 0.7fr) minmax(220px, 1.25fr) minmax(125px, 0.6fr) minmax(190px, 0.9fr) auto;
   gap: 12px;
   align-items: end;
 }
@@ -163,6 +160,17 @@
   color: var(--texto);
   font: inherit;
   box-sizing: border-box;
+}
+
+.tesoreria-form input[type="file"] {
+  padding: 9px 10px;
+  font-size: 0.78rem;
+}
+
+.tesoreria-file-label small {
+  color: var(--texto-suave);
+  font-size: 0.7rem;
+  font-weight: 800;
 }
 
 .tesoreria-form input:focus {
@@ -197,7 +205,7 @@
 
 .tesoreria-row {
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr) 150px auto;
+  grid-template-columns: 105px minmax(0, 1fr) 135px minmax(145px, auto) auto;
   gap: 12px;
   align-items: center;
   padding: 12px;
@@ -227,6 +235,41 @@
   color: #9b2c2c;
 }
 
+.tesoreria-file-link,
+.tesoreria-no-file {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  max-width: 190px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tesoreria-file-link {
+  background: rgba(31, 61, 43, 0.1);
+  color: var(--verde-bosque);
+  border: 1px solid rgba(31, 61, 43, 0.14);
+}
+
+.tesoreria-file-link:hover {
+  background: var(--verde-bosque);
+  color: var(--blanco);
+}
+
+.tesoreria-no-file {
+  background: rgba(31, 61, 43, 0.06);
+  color: var(--texto-suave);
+}
+
 .tesoreria-delete-button {
   background: #9b2c2c !important;
 }
@@ -244,6 +287,22 @@
   margin-top: 0 !important;
 }
 
+@media (max-width: 1260px) {
+  .tesoreria-form,
+  .tesoreria-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tesoreria-form button,
+  .tesoreria-delete-button {
+    width: 100%;
+  }
+
+  .tesoreria-row em {
+    text-align: left;
+  }
+}
+
 @media (max-width: 1100px) {
   .tesoreria-summary-grid,
   .tesoreria-form,
@@ -251,8 +310,10 @@
     grid-template-columns: 1fr;
   }
 
-  .tesoreria-row em {
-    text-align: left;
+  .tesoreria-file-link,
+  .tesoreria-no-file {
+    max-width: 100%;
+    width: 100%;
   }
 }
 
