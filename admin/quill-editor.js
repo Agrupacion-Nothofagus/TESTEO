@@ -1,6 +1,6 @@
 import './publicaciones-sidebar-dropdown.js?v=20260622-publicaciones-dropdown';
 import './roles-miembros.js?v=20260620-members-dropdown';
-import './users-role-fix.js?v=20260620-final-roles';
+import './users-role-fix.js?v=20260622-tesorero-role';
 import './users-actions-actas-style.js?v=20260622-users-actions-actas';
 import './dashboard-admin-access.js?v=20260622-secretariado-no-dashboard-publicaciones';
 import './tesoreria-admin.js?v=20260622-tesoreria-supabase';
