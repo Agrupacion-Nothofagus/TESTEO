@@ -4,6 +4,7 @@ import './users-role-fix.js?v=20260622-tesorero-role';
 import './users-actions-actas-style.js?v=20260622-users-actions-actas';
 import './dashboard-admin-access.js?v=20260622-secretariado-no-dashboard-publicaciones';
 import './tesoreria-admin.js?v=20260622-tesoreria-supabase';
+import './tesoreria-comprobantes.js?v=20260622';
 import './actas-supabase-sync.js?v=20260622-actas-supabase';
 import './actas-admin.js?v=20260622-actas-supabase';
 import './actas-new-reset-fix.js?v=20260622-actas-new-reset';
