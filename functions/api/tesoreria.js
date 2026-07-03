@@ -1,6 +1,9 @@
 const headers = { 'content-type': 'application/json; charset=utf-8' };
 const TABLE = 'tesoreria_movimientos';
+const BUCKET = 'tesoreria-comprobantes';
 const ROLES_TESORERIA = ['administrador', 'admin', 'tesorero', 'tesorera'];
+const TIPOS_ARCHIVO_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'];
+const MAX_ARCHIVO_BYTES = 10 * 1024 * 1024;
 
 export async function onRequest({ request, env }) {
   try {
@@ -39,12 +42,18 @@ async function listMovimientos(cfg) {
   const data = await res.json().catch(() => []);
   if (!res.ok) throw fail(data.message || 'No fue posible listar movimientos de Tesorería.', res.status);
 
-  return reply({ movimientos: (data || []).map(fromDb) });
+  const movimientos = await Promise.all((data || []).map((row) => fromDb(row, cfg)));
+  return reply({ movimientos });
 }
 
 async function saveMovimiento(request, cfg, user) {
-  const body = await request.json().catch(() => ({}));
-  const movimiento = toDb(body, user);
+  const contentType = String(request.headers.get('content-type') || '').toLowerCase();
+  const { fields, file } = contentType.includes('multipart/form-data')
+    ? await readMultipart(request)
+    : { fields: await request.json().catch(() => ({})), file: null };
+
+  const archivo = file ? await uploadComprobante(cfg, file, fields.tipo) : null;
+  const movimiento = toDb(fields, user, archivo);
 
   const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}`, {
     method: 'POST',
@@ -53,9 +62,12 @@ async function saveMovimiento(request, cfg, user) {
   });
 
   const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible guardar el movimiento.', res.status);
+  if (!res.ok) {
+    if (archivo?.archivo_path) await deleteStorageObject(cfg, archivo.archivo_path).catch(() => null);
+    throw fail(data.message || 'No fue posible guardar el movimiento.', res.status);
+  }
 
-  return reply({ movimiento: fromDb(Array.isArray(data) ? data[0] : data) });
+  return reply({ movimiento: await fromDb(Array.isArray(data) ? data[0] : data, cfg) });
 }
 
 async function deleteMovimiento(request, cfg) {
@@ -70,7 +82,99 @@ async function deleteMovimiento(request, cfg) {
   const data = await res.json().catch(() => []);
   if (!res.ok) throw fail(data.message || 'No fue posible eliminar el movimiento.', res.status);
 
-  return reply({ ok: true, movimiento: fromDb(Array.isArray(data) ? data[0] : data) });
+  const row = Array.isArray(data) ? data[0] : data;
+  if (row?.archivo_path) await deleteStorageObject(cfg, row.archivo_path).catch(() => null);
+
+  return reply({ ok: true, movimiento: await fromDb(row, cfg) });
+}
+
+async function readMultipart(request) {
+  const formData = await request.formData();
+  const fields = {
+    tipo: limpiar(formData.get('tipo')),
+    fecha: limpiar(formData.get('fecha')),
+    descripcion: limpiar(formData.get('descripcion')),
+    monto: limpiar(formData.get('monto')),
+    observaciones: limpiar(formData.get('observaciones'))
+  };
+
+  const file = formData.get('archivo');
+  const hasFile = file && typeof file.arrayBuffer === 'function' && Number(file.size || 0) > 0;
+  return { fields, file: hasFile ? file : null };
+}
+
+async function uploadComprobante(cfg, file, tipoMovimiento) {
+  const tipoArchivo = String(file.type || '').toLowerCase();
+  const size = Number(file.size || 0);
+
+  if (!TIPOS_ARCHIVO_PERMITIDOS.includes(tipoArchivo)) {
+    throw fail('El comprobante debe ser PDF, JPG o PNG.', 400);
+  }
+
+  if (size > MAX_ARCHIVO_BYTES) {
+    throw fail('El comprobante no puede superar 10 MB.', 400);
+  }
+
+  const tipo = normalizarTipo(tipoMovimiento) || 'movimiento';
+  const year = new Date().getFullYear();
+  const safeName = sanitizeFileName(file.name || `comprobante-${Date.now()}`);
+  const path = `${tipo}/${year}/${crypto.randomUUID()}-${safeName}`;
+
+  const res = await fetch(`${cfg.url}/storage/v1/object/${BUCKET}/${encodeStoragePath(path)}`, {
+    method: 'POST',
+    headers: {
+      apikey: cfg.key,
+      authorization: `Bearer ${cfg.key}`,
+      'content-type': tipoArchivo,
+      'x-upsert': 'false'
+    },
+    body: await file.arrayBuffer()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw fail(data.message || 'No fue posible subir el comprobante.', res.status);
+
+  return {
+    archivo_path: path,
+    archivo_nombre: file.name || safeName,
+    archivo_tipo: tipoArchivo,
+    archivo_tamano: size
+  };
+}
+
+async function createSignedUrl(cfg, path) {
+  if (!path) return '';
+
+  const res = await fetch(`${cfg.url}/storage/v1/object/sign/${BUCKET}/${encodeStoragePath(path)}`, {
+    method: 'POST',
+    headers: {
+      apikey: cfg.key,
+      authorization: `Bearer ${cfg.key}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ expiresIn: 60 * 60 })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) return '';
+
+  const signed = data.signedURL || data.signedUrl || '';
+  if (!signed) return '';
+  return signed.startsWith('http') ? signed : `${cfg.url}/storage/v1${signed}`;
+}
+
+async function deleteStorageObject(cfg, path) {
+  if (!path) return;
+
+  await fetch(`${cfg.url}/storage/v1/object/${BUCKET}`, {
+    method: 'DELETE',
+    headers: {
+      apikey: cfg.key,
+      authorization: `Bearer ${cfg.key}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ prefixes: [path] })
+  });
 }
 
 async function getCurrentUser(request, cfg) {
@@ -101,7 +205,7 @@ function getPermisos(user, cfg) {
   return { tesoreria: ROLES_TESORERIA.includes(rol) || cfg.admins.includes(email) };
 }
 
-function toDb(item, user) {
+function toDb(item, user, archivo = null) {
   const tipo = normalizarTipo(item.tipo);
   const monto = Number(item.monto || 0);
   if (!tipo) throw fail('Tipo de movimiento inválido.', 400);
@@ -115,14 +219,20 @@ function toDb(item, user) {
     descripcion: limpiar(item.descripcion) || 'Movimiento sin descripción',
     monto,
     observaciones: limpiar(item.observaciones),
+    archivo_path: archivo?.archivo_path || null,
+    archivo_nombre: archivo?.archivo_nombre || null,
+    archivo_tipo: archivo?.archivo_tipo || null,
+    archivo_tamano: archivo?.archivo_tamano || null,
     creado_por: limpiar(item.creadoPor || item.creado_por) || nombre,
     actualizado_por: nombre,
     updated_at: new Date().toISOString()
   };
 }
 
-function fromDb(row = {}) {
+async function fromDb(row = {}, cfg) {
   if (!row) return null;
+
+  const archivoPath = row.archivo_path || '';
 
   return {
     id: row.id || '',
@@ -131,6 +241,11 @@ function fromDb(row = {}) {
     descripcion: row.descripcion || '',
     monto: Number(row.monto || 0),
     observaciones: row.observaciones || '',
+    archivoPath,
+    archivoNombre: row.archivo_nombre || '',
+    archivoTipo: row.archivo_tipo || '',
+    archivoTamano: Number(row.archivo_tamano || 0),
+    archivoUrl: archivoPath ? await createSignedUrl(cfg, archivoPath) : '',
     creadoPor: row.creado_por || '',
     actualizadoPor: row.actualizado_por || '',
     creadoEn: row.created_at || '',
@@ -153,6 +268,22 @@ function supabaseFetch(cfg, path, options = {}) {
 function normalizarTipo(value) {
   const tipo = limpiar(value).toLowerCase();
   return ['ingreso', 'egreso'].includes(tipo) ? tipo : '';
+}
+
+function sanitizeFileName(value) {
+  const cleaned = String(value || 'comprobante')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^[-.]+|[-.]+$/g, '')
+    .slice(0, 90);
+
+  return cleaned || 'comprobante';
+}
+
+function encodeStoragePath(path) {
+  return String(path || '').split('/').map(encodeURIComponent).join('/');
 }
 
 function limpiar(value) {
