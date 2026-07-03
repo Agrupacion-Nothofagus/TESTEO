@@ -1,0 +1,277 @@
+.tesoreria-sidebar-group {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(31, 61, 43, 0.1);
+}
+
+.tesoreria-sidebar-group.is-hidden {
+  display: none !important;
+}
+
+.tesoreria-sidebar-toggle {
+  width: 100%;
+}
+
+.tesoreria-toggle-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  min-width: 24px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: currentColor;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 0.24s ease;
+}
+
+.tesoreria-sidebar-toggle.is-open .tesoreria-toggle-caret {
+  transform: rotate(180deg);
+}
+
+.tesoreria-sidebar-menu {
+  display: grid;
+  gap: 8px;
+  max-height: 230px;
+  margin-top: 2px;
+  padding-left: 8px;
+  overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 0.34s ease, opacity 0.24s ease, transform 0.24s ease, margin-top 0.24s ease;
+}
+
+.tesoreria-sidebar-menu.is-collapsed {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.tesoreria-sidebar-link {
+  min-height: 42px;
+  padding-left: 14px;
+}
+
+.tesoreria-panel {
+  display: grid;
+  gap: 20px;
+  padding: clamp(20px, 3vw, 34px);
+}
+
+.tesoreria-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tesoreria-topbar h3 {
+  margin: 0 0 8px;
+  color: var(--verde-bosque);
+}
+
+.tesoreria-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tesoreria-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tesoreria-summary-card,
+.tesoreria-form-card,
+.tesoreria-list-card {
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.tesoreria-summary-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.tesoreria-summary-card span {
+  color: var(--texto-suave);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tesoreria-summary-card strong {
+  color: var(--verde-bosque);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1;
+}
+
+.tesoreria-summary-card.egresos strong {
+  color: #9b2c2c;
+}
+
+.tesoreria-summary-card.saldo.negative strong {
+  color: #9b2c2c;
+}
+
+.tesoreria-form-card,
+.tesoreria-list-card {
+  padding: 18px;
+}
+
+.tesoreria-form-card h4,
+.tesoreria-list-card h4 {
+  margin: 0 0 14px;
+  color: var(--verde-bosque);
+}
+
+.tesoreria-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.8fr) minmax(220px, 1.3fr) minmax(140px, 0.7fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.tesoreria-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--texto);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.tesoreria-form input {
+  width: 100%;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.tesoreria-form input:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.18);
+  border-color: var(--verde-hoja);
+}
+
+.tesoreria-form button,
+.tesoreria-list-card button,
+.tesoreria-actions-row button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tesoreria-form button:hover,
+.tesoreria-list-card button:hover,
+.tesoreria-actions-row button:hover {
+  background: var(--verde-profundo);
+}
+
+.tesoreria-list {
+  display: grid;
+  gap: 10px;
+}
+
+.tesoreria-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 150px auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(31, 61, 43, 0.1);
+  border-radius: 16px;
+  background: rgba(250, 248, 242, 0.76);
+}
+
+.tesoreria-row small {
+  color: var(--texto-suave);
+  font-weight: 900;
+}
+
+.tesoreria-row strong {
+  color: var(--verde-bosque);
+  overflow-wrap: anywhere;
+}
+
+.tesoreria-row em {
+  color: var(--verde-bosque);
+  font-style: normal;
+  font-weight: 900;
+  text-align: right;
+}
+
+.tesoreria-row.egreso em {
+  color: #9b2c2c;
+}
+
+.tesoreria-delete-button {
+  background: #9b2c2c !important;
+}
+
+.tesoreria-empty {
+  margin: 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(79, 125, 74, 0.08);
+  color: var(--texto-suave);
+  font-weight: 900;
+}
+
+.tesoreria-status {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1100px) {
+  .tesoreria-summary-grid,
+  .tesoreria-form,
+  .tesoreria-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tesoreria-row em {
+    text-align: left;
+  }
+}
+
+@media (max-width: 720px) {
+  .tesoreria-topbar,
+  .tesoreria-actions-row {
+    display: grid;
+  }
+
+  .tesoreria-form button,
+  .tesoreria-list-card button,
+  .tesoreria-actions-row button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tesoreria-sidebar-menu,
+  .tesoreria-toggle-caret {
+    transition: none;
+  }
+}
