@@ -6,6 +6,7 @@ const ROLES_TESORERIA = ['administrador', 'admin', 'tesorero', 'tesorera'];
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let movimientos = [];
+let movimientosLocalesIniciales = [];
 
 if (!window.__nothofagusTesoreriaAdmin) {
   window.__nothofagusTesoreriaAdmin = true;
@@ -18,11 +19,15 @@ async function initTesoreria() {
   const rol = obtenerRol(user);
   if (!ROLES_TESORERIA.includes(rol)) return;
 
-  movimientos = cargarMovimientos();
+  movimientosLocalesIniciales = cargarMovimientosLocales();
+  movimientos = movimientosLocalesIniciales;
+
   instalarVistasTesoreria();
   instalarSidebarTesoreria();
   instalarEventosTesoreria();
   renderTesoreria();
+
+  await cargarMovimientosRemotos();
 
   if (location.hash === '#tesoreria') activarVistaTesoreria('general');
   if (location.hash === '#tesoreria-ingresos') activarVistaTesoreria('ingresos');
@@ -44,13 +49,74 @@ async function obtenerUsuarioActual() {
 }
 
 function obtenerRol(user) {
-  return String(
-    user?.user_metadata?.rol
-    || user?.user_metadata?.role
-    || user?.app_metadata?.rol
-    || user?.app_metadata?.role
-    || ''
-  ).trim().toLowerCase();
+  return String(user?.user_metadata?.rol || user?.user_metadata?.role || user?.app_metadata?.rol || user?.app_metadata?.role || '').trim().toLowerCase();
+}
+
+async function getToken() {
+  if (!client) return '';
+  const { data } = await client.auth.getSession();
+  return data?.session?.access_token || '';
+}
+
+async function apiTesoreria(path = '/api/tesoreria', options = {}) {
+  const token = await getToken();
+  if (!token) throw new Error('Sesión no disponible para Tesorería.');
+
+  const response = await fetch(path, {
+    ...options,
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json; charset=utf-8',
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || 'Error en Tesorería.');
+  return data;
+}
+
+async function cargarMovimientosRemotos() {
+  try {
+    mostrarEstadoTesoreria('ingreso', 'Cargando movimientos desde Supabase...', true);
+    const data = await apiTesoreria();
+    const remotos = Array.isArray(data.movimientos) ? data.movimientos.filter(Boolean) : [];
+
+    if (!remotos.length && movimientosLocalesIniciales.length) {
+      await migrarLocalesASupabase(movimientosLocalesIniciales);
+      const recarga = await apiTesoreria();
+      movimientos = Array.isArray(recarga.movimientos) ? recarga.movimientos.filter(Boolean) : [];
+      guardarMovimientosLocales(movimientos);
+      renderTesoreria();
+      mostrarEstadoTesoreria('ingreso', 'Movimientos locales migrados a Supabase.', true);
+      mostrarEstadoTesoreria('egreso', 'Movimientos locales migrados a Supabase.', true);
+      return;
+    }
+
+    movimientos = remotos;
+    guardarMovimientosLocales(movimientos);
+    renderTesoreria();
+    limpiarEstadosTesoreria();
+  } catch (error) {
+    mostrarEstadoTesoreria('ingreso', error.message || 'No fue posible cargar Tesorería desde Supabase.', false);
+    mostrarEstadoTesoreria('egreso', error.message || 'No fue posible cargar Tesorería desde Supabase.', false);
+  }
+}
+
+async function migrarLocalesASupabase(items) {
+  for (const item of items) {
+    if (!item?.tipo || !item?.descripcion || !Number(item?.monto)) continue;
+    await apiTesoreria('/api/tesoreria', {
+      method: 'POST',
+      body: JSON.stringify({
+        tipo: item.tipo,
+        fecha: item.fecha || new Date().toISOString().slice(0, 10),
+        descripcion: item.descripcion,
+        monto: Number(item.monto),
+        observaciones: item.observaciones || ''
+      })
+    });
+  }
 }
 
 function instalarSidebarTesoreria() {
@@ -178,7 +244,7 @@ function instalarEventosTesoreria() {
   }, true);
 }
 
-function guardarMovimiento(event) {
+async function guardarMovimiento(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const tipo = form.dataset.tesoreriaForm;
@@ -191,29 +257,37 @@ function guardarMovimiento(event) {
     return;
   }
 
-  movimientos.unshift({
-    id: crypto.randomUUID(),
-    tipo,
-    descripcion,
-    monto,
-    fecha,
-    creadoEn: new Date().toISOString()
-  });
+  try {
+    mostrarEstadoTesoreria(tipo, 'Guardando movimiento en Supabase...', true);
+    const data = await apiTesoreria('/api/tesoreria', {
+      method: 'POST',
+      body: JSON.stringify({ tipo, descripcion, monto, fecha })
+    });
 
-  guardarMovimientos(movimientos);
-  form.reset();
-  form.fecha.valueAsDate = new Date();
-  renderTesoreria();
-  mostrarEstadoTesoreria(tipo, `${tipo === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado correctamente.`, true);
+    if (data.movimiento) movimientos.unshift(data.movimiento);
+    guardarMovimientosLocales(movimientos);
+    form.reset();
+    form.fecha.valueAsDate = new Date();
+    renderTesoreria();
+    mostrarEstadoTesoreria(tipo, `${tipo === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado correctamente.`, true);
+  } catch (error) {
+    mostrarEstadoTesoreria(tipo, error.message || 'No fue posible guardar el movimiento.', false);
+  }
 }
 
-function eliminarMovimiento(id) {
+async function eliminarMovimiento(id) {
   const item = movimientos.find((mov) => mov.id === id);
   if (!item) return;
   if (!confirm(`¿Eliminar el movimiento "${item.descripcion}"?`)) return;
-  movimientos = movimientos.filter((mov) => mov.id !== id);
-  guardarMovimientos(movimientos);
-  renderTesoreria();
+
+  try {
+    await apiTesoreria(`/api/tesoreria?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    movimientos = movimientos.filter((mov) => mov.id !== id);
+    guardarMovimientosLocales(movimientos);
+    renderTesoreria();
+  } catch (error) {
+    mostrarEstadoTesoreria(item.tipo, error.message || 'No fue posible eliminar el movimiento.', false);
+  }
 }
 
 function activarVistaTesoreria(tipo) {
@@ -312,7 +386,7 @@ function closeMenu(menuSelector, toggleSelector) {
   toggle.setAttribute('aria-expanded', 'false');
 }
 
-function cargarMovimientos() {
+function cargarMovimientosLocales() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     return Array.isArray(parsed) ? parsed : [];
@@ -321,7 +395,7 @@ function cargarMovimientos() {
   }
 }
 
-function guardarMovimientos(items) {
+function guardarMovimientosLocales(items) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
@@ -331,6 +405,13 @@ function mostrarEstadoTesoreria(tipo, message, ok) {
   box.textContent = message;
   box.classList.toggle('success', Boolean(ok));
   box.classList.toggle('error', !ok);
+}
+
+function limpiarEstadosTesoreria() {
+  document.querySelectorAll('[data-tesoreria-status]').forEach((box) => {
+    box.textContent = '';
+    box.classList.remove('success', 'error');
+  });
 }
 
 function setText(selector, value) {
