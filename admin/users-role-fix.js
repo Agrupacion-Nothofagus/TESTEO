@@ -5,7 +5,8 @@ const ROLE_OPTIONS = [
   { value: 'administrador', label: 'Administrador' },
   { value: 'editor', label: 'Editor' },
   { value: 'lector', label: 'Lectura' },
-  { value: 'gestor_miembros', label: 'Secretariado' }
+  { value: 'gestor_miembros', label: 'Secretariado' },
+  { value: 'tesorero', label: 'Tesorero' }
 ];
 
 const usersList = document.querySelector('#users-list');
@@ -113,6 +114,7 @@ function normalizeRole(value) {
   if (role === 'admin') return 'administrador';
   if (role === 'lectura') return 'lector';
   if (role === 'secretariado') return 'gestor_miembros';
+  if (role === 'tesorera') return 'tesorero';
 
   return ROLE_OPTIONS.some((option) => option.value === role) ? role : 'editor';
 }
