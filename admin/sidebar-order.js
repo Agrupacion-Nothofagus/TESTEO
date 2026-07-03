@@ -69,7 +69,7 @@ if (!window.__nothofagusSidebarOrder) {
   function normalizeButton(button, icon, text) {
     if (!button) return;
 
-    const caret = button.querySelector('.publicaciones-toggle-caret, .members-toggle-caret, .tesoreria-toggle-caret, .actas-toggle-caret');
+    const caret = button.querySelector('.publicaciones-toggle-caret, .member-toggle-caret, .members-toggle-caret, .tesoreria-toggle-caret, .actas-toggle-caret');
     const hiddenChildren = Array.from(button.children).filter((child) => child.classList?.contains('sidebar-label-text'));
     hiddenChildren.forEach((child) => child.remove());
 
@@ -78,7 +78,7 @@ if (!window.__nothofagusSidebarOrder) {
     });
 
     let iconNode = button.querySelector(':scope > .sidebar-icon-fixed');
-    const firstSpan = button.querySelector(':scope > span:not(.sidebar-text-fixed):not(.publicaciones-toggle-caret):not(.members-toggle-caret):not(.tesoreria-toggle-caret):not(.actas-toggle-caret)');
+    const firstSpan = button.querySelector(':scope > span:not(.sidebar-text-fixed):not(.publicaciones-toggle-caret):not(.member-toggle-caret):not(.members-toggle-caret):not(.tesoreria-toggle-caret):not(.actas-toggle-caret)');
 
     if (!iconNode && firstSpan) {
       iconNode = firstSpan;
