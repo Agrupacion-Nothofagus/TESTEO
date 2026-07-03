@@ -2,7 +2,7 @@ const headers = {
   'content-type': 'application/json; charset=utf-8'
 };
 
-const ROLES_PERMITIDOS = ['administrador', 'editor', 'lector', 'gestor_miembros'];
+const ROLES_PERMITIDOS = ['administrador', 'editor', 'lector', 'gestor_miembros', 'tesorero'];
 const DOMINIO_INSTITUCIONAL = '@agrupacionnothofagus.cl';
 
 export async function onRequest({ request, env }) {
@@ -177,6 +177,7 @@ function cleanUser(user) {
 
 function normalizeRole(rol) {
   const value = String(rol || 'editor').trim().toLowerCase();
+  if (value === 'tesorera') return 'tesorero';
   return ROLES_PERMITIDOS.includes(value) ? value : 'editor';
 }
 
