@@ -1,20 +1,14 @@
 // Orden fijo del sidebar administrativo.
-// Mantiene los grupos desplegables existentes y deja Usuarios al final.
+// Mantiene grupos desplegables y evita que el texto herede estilo de ícono.
 if (!window.__nothofagusSidebarOrder) {
   window.__nothofagusSidebarOrder = true;
 
-  const ORDER = [
-    'dashboard',
-    'publicaciones',
-    'miembros',
-    'tesoreria',
-    'actas',
-    'usuarios'
-  ];
+  const ORDER = ['dashboard', 'publicaciones', 'miembros', 'tesoreria', 'actas', 'usuarios'];
 
   let ordering = false;
   let timer = null;
 
+  loadSidebarOrderStyles();
   scheduleSidebarOrder();
   [120, 350, 800, 1500, 2600].forEach((delay) => window.setTimeout(scheduleSidebarOrder, delay));
 
@@ -22,6 +16,14 @@ if (!window.__nothofagusSidebarOrder) {
   if (nav) {
     const observer = new MutationObserver(() => scheduleSidebarOrder());
     observer.observe(nav, { childList: true, subtree: false });
+  }
+
+  function loadSidebarOrderStyles() {
+    if (document.querySelector('link[href="sidebar-order-fix.css"]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'sidebar-order-fix.css';
+    document.head.appendChild(link);
   }
 
   function scheduleSidebarOrder() {
@@ -36,11 +38,10 @@ if (!window.__nothofagusSidebarOrder) {
     if (!nav) return;
 
     ordering = true;
-
     normalizeSidebarLabels();
 
     const items = {
-      dashboard: findDashboardButton(),
+      dashboard: document.querySelector('[data-admin-view="dashboard-view"]'),
       publicaciones: document.querySelector('[data-publicaciones-sidebar]'),
       miembros: document.querySelector('[data-members-sidebar]'),
       tesoreria: document.querySelector('[data-tesoreria-sidebar]'),
@@ -57,7 +58,7 @@ if (!window.__nothofagusSidebarOrder) {
   }
 
   function normalizeSidebarLabels() {
-    normalizeButton(findDashboardButton(), '🏠', 'Panel de control');
+    normalizeButton(document.querySelector('[data-admin-view="dashboard-view"]'), '🏠', 'Panel de control');
     normalizeButton(document.querySelector('[data-publicaciones-toggle]'), '📚', 'Publicaciones');
     normalizeButton(document.querySelector('[data-members-toggle]'), '🤝', 'Miembros');
     normalizeButton(document.querySelector('[data-tesoreria-toggle]'), '💰', 'Tesorería');
@@ -65,31 +66,40 @@ if (!window.__nothofagusSidebarOrder) {
     normalizeButton(document.querySelector('[data-admin-view="usuarios-view"]'), '👤', 'Administrar usuarios');
   }
 
-  function findDashboardButton() {
-    return document.querySelector('[data-admin-view="dashboard-view"]');
-  }
-
   function normalizeButton(button, icon, text) {
     if (!button) return;
 
     const caret = button.querySelector('.publicaciones-toggle-caret, .members-toggle-caret, .tesoreria-toggle-caret, .actas-toggle-caret');
+    const hiddenChildren = Array.from(button.children).filter((child) => child.classList?.contains('sidebar-label-text'));
+    hiddenChildren.forEach((child) => child.remove());
+
     button.childNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) node.textContent = '';
+      if (node.nodeType === Node.TEXT_NODE) node.remove();
     });
 
-    let iconNode = button.querySelector(':scope > span');
+    let iconNode = button.querySelector(':scope > .sidebar-icon-fixed');
+    const firstSpan = button.querySelector(':scope > span:not(.sidebar-text-fixed):not(.publicaciones-toggle-caret):not(.members-toggle-caret):not(.tesoreria-toggle-caret):not(.actas-toggle-caret)');
+
+    if (!iconNode && firstSpan) {
+      iconNode = firstSpan;
+      iconNode.classList.add('sidebar-icon-fixed');
+    }
+
     if (!iconNode) {
       iconNode = document.createElement('span');
+      iconNode.className = 'sidebar-icon-fixed';
       button.prepend(iconNode);
     }
+
     iconNode.textContent = icon;
 
-    let labelNode = button.querySelector(':scope > .sidebar-label-text');
+    let labelNode = button.querySelector(':scope > .sidebar-text-fixed');
     if (!labelNode) {
-      labelNode = document.createElement('span');
-      labelNode.className = 'sidebar-label-text';
+      labelNode = document.createElement('strong');
+      labelNode.className = 'sidebar-text-fixed';
       iconNode.after(labelNode);
     }
+
     labelNode.textContent = text;
 
     if (caret && caret.parentElement === button) button.appendChild(caret);
