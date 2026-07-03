@@ -287,10 +287,64 @@
   margin-top: 0 !important;
 }
 
+.tesoreria-form-card .tesoreria-form {
+  grid-template-columns: minmax(145px, 0.78fr) minmax(260px, 1.45fr) minmax(130px, 0.68fr) minmax(230px, 1fr) minmax(92px, auto) !important;
+  align-items: start !important;
+  column-gap: 12px;
+  row-gap: 12px;
+}
+
+.tesoreria-form-card .tesoreria-form label {
+  min-height: 82px;
+  align-content: start;
+  grid-template-rows: 18px 46px 16px;
+  gap: 5px;
+}
+
+.tesoreria-form-card .tesoreria-form label:not(.tesoreria-file-label)::after {
+  content: '';
+  display: block;
+  min-height: 16px;
+}
+
+.tesoreria-form-card .tesoreria-form input:not([type="file"]) {
+  height: 46px;
+  min-height: 46px;
+}
+
+.tesoreria-form-card .tesoreria-file-label {
+  min-width: 0;
+}
+
+.tesoreria-form-card .tesoreria-file-label input[type="file"] {
+  height: 46px;
+  min-height: 46px;
+  max-width: 100%;
+  padding: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tesoreria-form-card .tesoreria-file-label small {
+  min-height: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tesoreria-form-card .tesoreria-form > button[type="submit"] {
+  align-self: start;
+  height: 46px;
+  min-height: 46px;
+  margin-top: 23px;
+  padding: 0 18px;
+  white-space: nowrap;
+}
+
 @media (max-width: 1260px) {
   .tesoreria-form,
-  .tesoreria-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .tesoreria-row,
+  .tesoreria-form-card .tesoreria-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   .tesoreria-form button,
@@ -306,14 +360,31 @@
 @media (max-width: 1100px) {
   .tesoreria-summary-grid,
   .tesoreria-form,
-  .tesoreria-row {
-    grid-template-columns: 1fr;
+  .tesoreria-row,
+  .tesoreria-form-card .tesoreria-form {
+    grid-template-columns: 1fr !important;
   }
 
   .tesoreria-file-link,
   .tesoreria-no-file {
     max-width: 100%;
     width: 100%;
+  }
+
+  .tesoreria-form-card .tesoreria-form label {
+    min-height: auto;
+  }
+
+  .tesoreria-form-card .tesoreria-form label:not(.tesoreria-file-label)::after {
+    display: none;
+  }
+
+  .tesoreria-form-card .tesoreria-form > button[type="submit"] {
+    margin-top: 0;
+  }
+
+  .tesoreria-form-card .tesoreria-file-label small {
+    white-space: normal;
   }
 }
 
