@@ -86,7 +86,7 @@
                 <button type="button" class="dashboard-action-button" data-dashboard-open-view="nueva-view">Crear publicación</button>
                 <button type="button" class="dashboard-action-button" data-dashboard-open-view="usuarios-view">Administrar usuarios</button>
                 <button type="button" class="dashboard-action-button" data-dashboard-open-view="members-pending-view">Revisar solicitudes</button>
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="actas-view">Registro de Actas</button>
+                <button type="button" class="dashboard-action-button" data-dashboard-open-view="registro-actas-view">Registro de Actas</button>
               </div>
             </article>
           </div>
@@ -298,6 +298,7 @@
                   <option value="lector">Lectura</option>
                   <option value="administrador">Administrador</option>
                   <option value="gestor_miembros">Secretariado</option>
+                  <option value="tesorero">Tesorero</option>
                 </select>
               </label>
 
@@ -318,11 +319,12 @@
   </main>
 
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-  <script type="module" src="admin.js?v=20260622-actas-v1"></script>
-  <script type="module" src="dashboard-admin.js?v=20260622-actas-v1"></script>
-  <script type="module" src="users-table-ui.js?v=20260622-actas-v1"></script>
-  <script type="module" src="users-admin.js?v=20260622-actas-v1"></script>
-  <script type="module" src="admin-users-access-fix.js?v=20260622-actas-v1"></script>
-  <script type="module" src="quill-editor.js?v=20260622-actas-v1"></script>
+  <script src="sidebar-safe-clicks.js?v=20260703-final" defer></script>
+  <script type="module" src="admin.js?v=20260703-final"></script>
+  <script type="module" src="dashboard-admin.js?v=20260703-final"></script>
+  <script type="module" src="users-table-ui.js?v=20260703-final"></script>
+  <script type="module" src="users-admin.js?v=20260703-final"></script>
+  <script type="module" src="admin-users-access-fix.js?v=20260703-final"></script>
+  <script type="module" src="modules-clean.js?v=20260703-final"></script>
 </body>
 </html>
