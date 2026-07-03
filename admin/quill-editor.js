@@ -5,6 +5,7 @@ import './users-actions-actas-style.js?v=20260622-users-actions-actas';
 import './dashboard-admin-access.js?v=20260622-secretariado-no-dashboard-publicaciones';
 import './tesoreria-admin.js?v=20260622-tesoreria-supabase';
 import './tesoreria-comprobantes.js?v=20260622';
+import './tesoreria-alignment-loader.js?v=20260622';
 import './actas-supabase-sync.js?v=20260622-actas-supabase';
 import './actas-admin.js?v=20260622-actas-supabase';
 import './actas-new-reset-fix.js?v=20260622-actas-new-reset';
@@ -13,6 +14,7 @@ import './actas-registro-bar.js?v=20260622-actas-actions-dropdown';
 import './actas-viewer-fade.js?v=20260622-actas-viewer-fade';
 import './actas-delete-warning.js?v=20260622-actas-delete-warning';
 import './admin-single-view.js?v=20260622-publicaciones-single-view';
+import './sidebar-order.js?v=20260703-sidebar-order';
 import './miembros-delete.js?v=20260620-observer-fix';
 import './miembros-admin.js?v=20260620-observer-fix';
 
