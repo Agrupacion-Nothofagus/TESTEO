@@ -9,7 +9,12 @@ initSafeDashboard();
 function initSafeDashboard() {
   const hero = document.querySelector('#dashboard-view .dashboard-hero-card');
   if (hero) {
-    hero.innerHTML = '<p class="section-tag">Vista operativa</p><p>Resumen rápido del estado institucional: publicaciones, solicitudes, miembros y usuarios.</p>';
+    hero.remove();
+  }
+
+  const heroWrap = document.querySelector('#dashboard-view .dashboard-hero');
+  if (heroWrap) {
+    heroWrap.classList.add('dashboard-hero-compact');
   }
 
   document.querySelectorAll('[data-dashboard-open-view]').forEach((button) => {
