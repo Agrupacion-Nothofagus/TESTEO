@@ -21,7 +21,7 @@
   if (!document.querySelector('link[data-visual-colors-restore]')) {
     const colors = document.createElement('link');
     colors.rel = 'stylesheet';
-    colors.href = '../visual-colors-restore.css?v=20260704-colors-restore';
+    colors.href = '../visual-colors-restore.css?v=20260704-f6f4de';
     colors.dataset.visualColorsRestore = 'true';
     document.head.appendChild(colors);
   }
