@@ -17,10 +17,7 @@
   function handleDashboardShortcut(event) {
     const button = event.target.closest?.('[data-dashboard-open-view]');
     if (!button) return;
-
-    const viewId = button.dataset.dashboardOpenView;
-    const handled = routeToView(viewId);
-
+    const handled = routeToView(button.dataset.dashboardOpenView);
     if (handled) stop(event);
   }
 
@@ -52,13 +49,18 @@
       return;
     }
 
-    // Tesorería y Actas tienen lógica propia de carga, hash y renderizado.
-    // No se interceptan sus botones internos para no bloquear sus listeners nativos.
-    if (el.matches('[data-tesoreria-open], [data-actas-open]')) return;
+    if (el.matches('[data-tesoreria-open]')) {
+      closeMany(['publicaciones', 'miembros', 'actas']);
+      return;
+    }
+
+    if (el.matches('[data-actas-open]')) {
+      closeMany(['publicaciones', 'miembros', 'tesoreria']);
+      return;
+    }
 
     if (el.matches('[data-admin-view]')) {
-      const viewId = el.dataset.adminView;
-      const handled = routeToView(viewId, el);
+      const handled = routeToView(el.dataset.adminView, el);
       if (handled) stop(event);
     }
   }
@@ -87,7 +89,6 @@
 
     const selector = selectors[viewId];
     if (!selector) return null;
-
     const button = document.querySelector(selector);
     if (!button || button.classList.contains('is-hidden')) return null;
     return button;
@@ -129,7 +130,6 @@
     const menu = document.querySelector(pair[0]);
     const toggleButton = document.querySelector(pair[1]);
     if (!menu || !toggleButton || menu.classList.contains('is-hidden')) return;
-
     menu.classList.remove('is-collapsed');
     menu.style.maxHeight = '520px';
     menu.style.opacity = '1';
@@ -144,7 +144,6 @@
     const menu = document.querySelector(pair[0]);
     const toggleButton = document.querySelector(pair[1]);
     if (!menu || !toggleButton) return;
-
     menu.classList.add('is-collapsed');
     menu.style.maxHeight = '';
     menu.style.opacity = '';
@@ -206,7 +205,6 @@
 
   function dispatchViewEvents(viewId) {
     window.dispatchEvent(new CustomEvent('nothofagus:admin-view', { detail: { viewId } }));
-
     if (String(viewId).startsWith('members-')) {
       window.dispatchEvent(new CustomEvent('nothofagus:members-view', { detail: { viewId } }));
     }
@@ -214,6 +212,6 @@
 
   function cssEscape(value) {
     if (window.CSS?.escape) return window.CSS.escape(value);
-    return String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+    return String(value).replaceAll('"', '\\"');
   }
 })();
