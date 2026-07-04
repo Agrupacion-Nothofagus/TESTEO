@@ -13,7 +13,7 @@
   if (!document.querySelector('link[data-visual-optimization]')) {
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = '../visual-optimization.css?v=20260704-visual';
+    css.href = '../visual-optimization.css?v=20260704-responsive-only';
     css.dataset.visualOptimization = 'true';
     document.head.appendChild(css);
   }
@@ -21,7 +21,7 @@
   if (!document.querySelector('link[data-visual-colors-restore]')) {
     const colors = document.createElement('link');
     colors.rel = 'stylesheet';
-    colors.href = '../visual-colors-restore.css?v=20260704-light-palette';
+    colors.href = '../visual-colors-restore.css?v=20260704-original-neutral';
     colors.dataset.visualColorsRestore = 'true';
     document.head.appendChild(colors);
   }
