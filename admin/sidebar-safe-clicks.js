@@ -84,7 +84,8 @@
       'registro-actas-view': '[data-actas-open="registro"]',
       'tesoreria-general-view': '[data-tesoreria-open="general"]',
       'tesoreria-ingresos-view': '[data-tesoreria-open="ingresos"]',
-      'tesoreria-egresos-view': '[data-tesoreria-open="egresos"]'
+      'tesoreria-egresos-view': '[data-tesoreria-open="egresos"]',
+      'tesoreria-cuotas-view': '[data-tesoreria-open="cuotas"]'
     };
 
     const selector = selectors[viewId];
