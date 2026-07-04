@@ -1,5 +1,5 @@
-/* Paleta institucional original.
-   Este archivo solo restaura variables de color. No fuerza fondos, cards, textos ni botones. */
+/* Paleta institucional original + corrección de legibilidad.
+   Mantiene la paleta base y usa #F6F4DE solo para textos sobre superficies oscuras. */
 :root,
 html,
 html:root {
@@ -12,6 +12,147 @@ html:root {
   --blanco: #ffffff;
   --texto: #1f2d24;
   --texto-suave: #5f6f63;
+  --texto-claro: #F6F4DE;
   --borde: #dfe8dc;
   --sombra: 0 12px 30px rgba(31, 61, 43, 0.12);
+}
+
+/* Textos sobre paneles/secciones oscuras del sitio público. */
+html body main:not(.admin-dashboard) > .section,
+html body main:not(.admin-dashboard) > .section h1,
+html body main:not(.admin-dashboard) > .section h2,
+html body main:not(.admin-dashboard) > .section h3,
+html body main:not(.admin-dashboard) > .section h4,
+html body main:not(.admin-dashboard) > .section p,
+html body main:not(.admin-dashboard) > .section .section-tag,
+html body main:not(.admin-dashboard) > .section .slider-indicator,
+html body main:not(.admin-dashboard) > .section .slider-empty {
+  color: var(--texto-claro) !important;
+}
+
+/* Mantener legibilidad de cards claras internas. */
+html body main:not(.admin-dashboard) .card,
+html body main:not(.admin-dashboard) .card *,
+html body main:not(.admin-dashboard) .document-item,
+html body main:not(.admin-dashboard) .document-item *,
+html body main:not(.admin-dashboard) .publication-slide,
+html body main:not(.admin-dashboard) .publication-slide *,
+html body main:not(.admin-dashboard) .contact-form-panel,
+html body main:not(.admin-dashboard) .contact-form-panel *,
+html body main:not(.admin-dashboard) .member-form-panel,
+html body main:not(.admin-dashboard) .member-form-panel * {
+  color: var(--texto) !important;
+}
+
+html body main:not(.admin-dashboard) .card h3,
+html body main:not(.admin-dashboard) .publication-content h3 {
+  color: var(--verde-bosque) !important;
+}
+
+html body main:not(.admin-dashboard) .card p,
+html body main:not(.admin-dashboard) .publication-content p,
+html body main:not(.admin-dashboard) .contact-form-panel p,
+html body main:not(.admin-dashboard) .member-form-panel p {
+  color: var(--texto-suave) !important;
+}
+
+/* Textos sobre paneles oscuros del administrador. */
+html body:has(.admin-dashboard) .admin-sidebar,
+html body:has(.admin-dashboard) .admin-header,
+html body:has(.admin-dashboard) .admin-panel,
+html body:has(.admin-dashboard) .dashboard-widget,
+html body:has(.admin-dashboard) .dashboard-stat-card,
+html body:has(.admin-dashboard) .dashboard-hero-card,
+html body:has(.admin-dashboard) .dashboard-quick-card,
+html body:has(.admin-dashboard) .tesoreria-summary-card,
+html body:has(.admin-dashboard) .tesoreria-form-card,
+html body:has(.admin-dashboard) .tesoreria-list-card,
+html body:has(.admin-dashboard) .cuotas-summary-card,
+html body:has(.admin-dashboard) .cuotas-table-card,
+html body:has(.admin-dashboard) .list-card,
+html body:has(.admin-dashboard) .editor-card,
+html body:has(.admin-dashboard) .users-card {
+  color: var(--texto-claro) !important;
+}
+
+html body:has(.admin-dashboard) .admin-sidebar h1,
+html body:has(.admin-dashboard) .admin-sidebar h2,
+html body:has(.admin-dashboard) .admin-sidebar h3,
+html body:has(.admin-dashboard) .admin-sidebar h4,
+html body:has(.admin-dashboard) .admin-sidebar p,
+html body:has(.admin-dashboard) .admin-sidebar span,
+html body:has(.admin-dashboard) .admin-sidebar strong,
+html body:has(.admin-dashboard) .admin-header h1,
+html body:has(.admin-dashboard) .admin-header h2,
+html body:has(.admin-dashboard) .admin-header h3,
+html body:has(.admin-dashboard) .admin-header h4,
+html body:has(.admin-dashboard) .admin-header p,
+html body:has(.admin-dashboard) .admin-header span,
+html body:has(.admin-dashboard) .admin-header strong,
+html body:has(.admin-dashboard) .admin-panel h1,
+html body:has(.admin-dashboard) .admin-panel h2,
+html body:has(.admin-dashboard) .admin-panel h3,
+html body:has(.admin-dashboard) .admin-panel h4,
+html body:has(.admin-dashboard) .admin-panel p,
+html body:has(.admin-dashboard) .admin-panel span,
+html body:has(.admin-dashboard) .admin-panel small,
+html body:has(.admin-dashboard) .admin-panel strong,
+html body:has(.admin-dashboard) .sidebar-link,
+html body:has(.admin-dashboard) .sidebar-link span,
+html body:has(.admin-dashboard) .section-tag,
+html body:has(.admin-dashboard) .panel-heading,
+html body:has(.admin-dashboard) .panel-heading * {
+  color: var(--texto-claro) !important;
+}
+
+/* Mantener contraste correcto en tarjetas claras dentro del admin. */
+html body:has(.admin-dashboard) .post-admin-card,
+html body:has(.admin-dashboard) .post-admin-card *,
+html body:has(.admin-dashboard) .user-card,
+html body:has(.admin-dashboard) .user-card *,
+html body:has(.admin-dashboard) .cuotas-table tbody tr,
+html body:has(.admin-dashboard) .cuotas-table tbody tr *,
+html body:has(.admin-dashboard) .users-table tbody tr,
+html body:has(.admin-dashboard) .users-table tbody tr * {
+  color: var(--texto) !important;
+}
+
+html body:has(.admin-dashboard) .post-admin-card h3,
+html body:has(.admin-dashboard) .post-admin-card strong,
+html body:has(.admin-dashboard) .user-card h3,
+html body:has(.admin-dashboard) .user-card strong {
+  color: var(--verde-bosque) !important;
+}
+
+html body:has(.admin-dashboard) .post-admin-card p,
+html body:has(.admin-dashboard) .post-admin-card small,
+html body:has(.admin-dashboard) .user-card p,
+html body:has(.admin-dashboard) .user-card small {
+  color: var(--texto-suave) !important;
+}
+
+/* Botones y estados activos sobre verde oscuro. */
+html body .sidebar-link:hover,
+html body .sidebar-link.is-active,
+html body .sidebar-link:hover *,
+html body .sidebar-link.is-active *,
+html body .btn-secondary,
+html body .contact-card,
+html body .admin-access,
+html body .sidebar-site-link,
+html body .tesoreria-actions-row button,
+html body .cuotas-toolbar button,
+html body .cuotas-actions button:not(.secondary):not(.danger),
+html body .cuotas-modal-actions button:not(.secondary):not(.danger) {
+  color: var(--texto-claro) !important;
+}
+
+/* Botones blancos: mantener texto verde legible. */
+html body .btn-primary,
+html body .sidebar-logout,
+html body .secondary-admin-button,
+html body .cuotas-button.secondary,
+html body .cuotas-actions button.secondary,
+html body .cuotas-modal-actions button.secondary {
+  color: var(--verde-bosque) !important;
 }
