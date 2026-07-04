@@ -11,6 +11,18 @@
   margin-bottom: 22px;
 }
 
+.dashboard-hero.dashboard-hero-compact {
+  grid-template-columns: 1fr;
+}
+
+.dashboard-hero.dashboard-hero-compact .dashboard-quick-card {
+  align-content: start;
+}
+
+.dashboard-hero.dashboard-hero-compact .dashboard-quick-actions {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+}
+
 .dashboard-hero-card,
 .dashboard-quick-card,
 .dashboard-widget,
@@ -217,47 +229,4 @@
 
 .dashboard-status {
   margin-top: 18px !important;
-}
-
-@media (max-width: 1100px) {
-  .dashboard-hero,
-  .dashboard-content-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .dashboard-panel {
-    padding: 18px;
-  }
-
-  .dashboard-stats-grid,
-  .dashboard-member-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-list-item {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-list-item em {
-    justify-self: start;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-hero-card,
-  .dashboard-quick-card,
-  .dashboard-widget,
-  .dashboard-stat-card {
-    border-radius: 20px;
-  }
-
-  .dashboard-hero-card h3 {
-    font-size: clamp(2rem, 14vw, 3rem);
-  }
 }
