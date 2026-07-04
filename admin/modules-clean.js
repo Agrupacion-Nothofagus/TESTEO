@@ -1,3 +1,4 @@
+import './admin-visual-optimization-loader.js?v=20260704-visual';
 import './publicaciones-sidebar-dropdown.js?v=20260703-clean';
 import './roles-miembros.js?v=20260703-clean';
 import './users-role-fix.js?v=20260703-clean';
