@@ -1,6 +1,6 @@
 /* Capa visual global limpia: responsive, tipografía y consistencia sin alterar paleta de colores. */
 :root {
-  --font-ui: 'Roboto', 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+  --font-ui: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
   --radius-xs: 0.75rem;
   --radius-sm: 1rem;
   --radius-md: 1.25rem;
