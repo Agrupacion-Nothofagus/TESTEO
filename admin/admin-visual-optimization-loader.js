@@ -2,18 +2,18 @@
   if (window.__nothofagusAdminVisualOptimization) return;
   window.__nothofagusAdminVisualOptimization = true;
 
-  if (!document.querySelector('link[data-visual-font="roboto"]')) {
+  if (!document.querySelector('link[data-visual-font="plus-jakarta"]')) {
     const font = document.createElement('link');
     font.rel = 'stylesheet';
-    font.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&display=swap';
-    font.dataset.visualFont = 'roboto';
+    font.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap';
+    font.dataset.visualFont = 'plus-jakarta';
     document.head.appendChild(font);
   }
 
   if (!document.querySelector('link[data-visual-optimization]')) {
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = '../visual-optimization.css?v=20260704-responsive-only';
+    css.href = '../visual-optimization.css?v=20260704-plus-jakarta-responsive';
     css.dataset.visualOptimization = 'true';
     document.head.appendChild(css);
   }
