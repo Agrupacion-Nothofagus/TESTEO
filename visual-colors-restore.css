@@ -1,0 +1,193 @@
+/* Restauración de paleta institucional original.
+   Mantiene la optimización responsive, pero evita que la capa visual cambie colores base. */
+:root {
+  --verde-bosque: #1f3d2b;
+  --verde-profundo: #13251b;
+  --verde-hoja: #4f7d4a;
+  --beige: #f5f1e8;
+  --beige-claro: #faf8f2;
+  --blanco: #ffffff;
+  --texto: #1f2d24;
+  --texto-suave: #5f6f63;
+  --borde: #dfe8dc;
+  --sombra: 0 12px 30px rgba(31, 61, 43, 0.12);
+}
+
+body {
+  background: var(--beige-claro);
+  color: var(--texto);
+}
+
+.section:not(.section-highlight),
+.card,
+.document-item,
+.publication-slide,
+.contact-form-panel,
+.member-form-panel,
+.admin-sidebar,
+.admin-header,
+.admin-panel,
+.editor-card,
+.list-card,
+.users-card,
+.dashboard-widget,
+.dashboard-stat-card,
+.dashboard-hero-card,
+.dashboard-quick-card,
+.tesoreria-summary-card,
+.tesoreria-form-card,
+.tesoreria-list-card,
+.cuotas-summary-card,
+.cuotas-table-card {
+  background-color: var(--blanco) !important;
+  color: var(--texto) !important;
+  border-color: var(--borde) !important;
+}
+
+.card,
+.document-item,
+.publication-slide,
+.post-admin-card,
+.tesoreria-row,
+.cuotas-history-row,
+.integrated-finance-movement {
+  background-color: var(--beige-claro) !important;
+}
+
+.section-highlight {
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+}
+
+.section-highlight p,
+.section-highlight .section-tag {
+  color: #edf5ed !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+.admin-header h2,
+.admin-panel h3,
+.panel-heading h3,
+.card h3,
+.publication-content h3,
+.sidebar-brand h1,
+.admin-session-card strong,
+.integrated-finance-card strong,
+.tesoreria-summary-card strong,
+.cuotas-summary-card strong {
+  color: var(--verde-bosque) !important;
+}
+
+.hero h1,
+.hero p,
+.section-highlight h1,
+.section-highlight h2,
+.section-highlight h3,
+.section-highlight h4,
+.sidebar-link:hover,
+.sidebar-link.is-active,
+.btn-primary,
+.btn-secondary,
+.contact-card,
+.admin-access,
+.sidebar-site-link,
+.tesoreria-actions-row button,
+.cuotas-button,
+.cuotas-toolbar button,
+.cuotas-actions button:not(.secondary):not(.danger),
+.cuotas-modal-actions button:not(.secondary):not(.danger) {
+  color: var(--blanco) !important;
+}
+
+p,
+.section p,
+.admin-header p,
+.admin-panel p,
+.publication-content p,
+.slider-indicator,
+.slider-empty,
+.integrated-finance-note,
+.cuotas-summary-card span,
+.tesoreria-summary-card span,
+.integrated-finance-card span {
+  color: var(--texto-suave) !important;
+}
+
+input,
+select,
+textarea,
+.admin-form input,
+.admin-form textarea,
+.admin-form select,
+.tesoreria-form input,
+.tesoreria-form select,
+.tesoreria-form textarea,
+.cuotas-toolbar input,
+.cuotas-toolbar select,
+.cuotas-form input,
+.cuotas-form select,
+.cuotas-form textarea,
+.user-admin-form input,
+.user-admin-form select,
+.user-admin-form textarea {
+  background: var(--blanco) !important;
+  color: var(--texto) !important;
+  border-color: var(--borde) !important;
+}
+
+button,
+.btn,
+.contact-card,
+.admin-access,
+.sidebar-site-link,
+.slider-control,
+.tesoreria-actions-row button,
+.tesoreria-form button,
+.cuotas-button,
+.cuotas-toolbar button,
+.cuotas-actions button:not(.secondary):not(.danger),
+.cuotas-modal-actions button:not(.secondary):not(.danger),
+.post-admin-actions button {
+  background-color: var(--verde-bosque) !important;
+}
+
+.btn-primary {
+  background-color: var(--beige) !important;
+  color: var(--verde-profundo) !important;
+}
+
+.btn-secondary {
+  background-color: transparent !important;
+  color: var(--beige) !important;
+  border-color: var(--beige) !important;
+}
+
+.secondary-admin-button,
+.sidebar-logout,
+.cuotas-button.secondary,
+.cuotas-actions button.secondary,
+.cuotas-modal-actions button.secondary {
+  background-color: var(--blanco) !important;
+  color: var(--verde-bosque) !important;
+  border-color: var(--verde-bosque) !important;
+}
+
+.danger,
+.cuotas-button.danger,
+.cuotas-actions button.danger,
+.post-admin-actions .danger,
+.tesoreria-delete-button {
+  background-color: #9b2c2c !important;
+  color: var(--blanco) !important;
+}
+
+.admin-dashboard body,
+body:has(.admin-dashboard) {
+  background:
+    radial-gradient(circle at top left, rgba(79, 125, 74, 0.28), transparent 34%),
+    linear-gradient(rgba(19, 37, 27, 0.78), rgba(19, 37, 27, 0.62)),
+    url("fondo.jpg");
+}
