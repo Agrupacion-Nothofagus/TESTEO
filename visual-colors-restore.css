@@ -214,13 +214,87 @@ html body:has(.admin-dashboard) .cuotas-history-row small {
   color: var(--texto-suave) !important;
 }
 
-/* Formularios. */
+/* Formularios, filtros, buscadores y selects. */
 html body input,
 html body select,
-html body textarea {
-  background: rgba(255, 255, 255, 0.92) !important;
+html body textarea,
+html body .admin-form input,
+html body .admin-form select,
+html body .admin-form textarea,
+html body .tesoreria-form input,
+html body .tesoreria-form select,
+html body .tesoreria-form textarea,
+html body .cuotas-toolbar input,
+html body .cuotas-toolbar select,
+html body .cuotas-form input,
+html body .cuotas-form select,
+html body .cuotas-form textarea,
+html body .user-admin-form input,
+html body .user-admin-form select,
+html body .user-admin-form textarea,
+html body [data-members-filter],
+html body [data-filter],
+html body [data-cuotas-filter] {
+  background-color: #ffffff !important;
   color: var(--texto) !important;
-  border-color: rgba(47, 95, 66, 0.18) !important;
+  border-color: rgba(47, 95, 66, 0.24) !important;
+  caret-color: var(--verde-profundo) !important;
+}
+
+html body input::placeholder,
+html body textarea::placeholder,
+html body .admin-form input::placeholder,
+html body .tesoreria-form input::placeholder,
+html body .cuotas-toolbar input::placeholder,
+html body .cuotas-form input::placeholder,
+html body .user-admin-form input::placeholder {
+  color: #6f8171 !important;
+  opacity: 1 !important;
+}
+
+html body select option,
+html body select optgroup {
+  background-color: #ffffff !important;
+  color: var(--texto) !important;
+}
+
+html body select option:checked,
+html body select option:hover,
+html body select option:focus {
+  background-color: var(--verde-suave) !important;
+  color: var(--verde-profundo) !important;
+}
+
+html body label,
+html body .filter-label,
+html body .admin-form label,
+html body .tesoreria-form label,
+html body .cuotas-toolbar label,
+html body .cuotas-form label,
+html body .user-admin-form label {
+  color: var(--verde-profundo) !important;
+}
+
+html body input[type="date"]::-webkit-calendar-picker-indicator,
+html body input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: none !important;
+  opacity: 0.75;
+}
+
+html body input:focus,
+html body select:focus,
+html body textarea:focus {
+  border-color: var(--verde-hoja) !important;
+  box-shadow: 0 0 0 3px rgba(111, 159, 100, 0.22) !important;
+}
+
+html body .filters-bar,
+html body .members-filter-bar,
+html body .admin-filters,
+html body .cuotas-toolbar,
+html body .tesoreria-toolbar {
+  background: rgba(246, 244, 222, 0.82) !important;
+  border-color: rgba(47, 95, 66, 0.16) !important;
 }
 
 /* Botones. */
