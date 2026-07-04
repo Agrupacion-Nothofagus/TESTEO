@@ -1,0 +1,484 @@
+.cuotas-panel {
+  display: grid;
+  gap: 20px;
+  animation: cuotasFadeIn 0.28s ease both;
+}
+
+.cuotas-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cuotas-summary-card {
+  display: grid;
+  gap: 8px;
+  min-height: 112px;
+  padding: 16px;
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.cuotas-summary-card span {
+  color: var(--texto-suave);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cuotas-summary-card strong {
+  color: var(--verde-bosque);
+  font-size: clamp(1.25rem, 2.2vw, 1.85rem);
+  line-height: 1;
+}
+
+.cuotas-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(150px, 0.55fr)) auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 22px;
+  background: rgba(250, 248, 242, 0.72);
+}
+
+.cuotas-toolbar label,
+.cuotas-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--texto);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.cuotas-toolbar input,
+.cuotas-toolbar select,
+.cuotas-form input,
+.cuotas-form select,
+.cuotas-form textarea {
+  width: 100%;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.cuotas-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.cuotas-toolbar input:focus,
+.cuotas-toolbar select:focus,
+.cuotas-form input:focus,
+.cuotas-form select:focus,
+.cuotas-form textarea:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.18);
+  border-color: var(--verde-hoja);
+}
+
+.cuotas-table-card {
+  overflow: hidden;
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+}
+
+.cuotas-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cuotas-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.cuotas-table th,
+.cuotas-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(31, 61, 43, 0.09);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cuotas-table th {
+  color: var(--texto-suave);
+  background: rgba(79, 125, 74, 0.08);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cuotas-table td {
+  color: var(--texto);
+  font-size: 0.88rem;
+}
+
+.cuotas-member-name {
+  display: grid;
+  gap: 4px;
+}
+
+.cuotas-member-name strong {
+  color: var(--verde-bosque);
+}
+
+.cuotas-member-name small {
+  color: var(--texto-suave);
+  font-weight: 800;
+}
+
+.cuotas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.cuotas-button,
+.cuotas-toolbar button,
+.cuotas-actions button,
+.cuotas-modal-actions button,
+.cuotas-history button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+}
+
+.cuotas-button:hover,
+.cuotas-toolbar button:hover,
+.cuotas-actions button:hover,
+.cuotas-modal-actions button:hover,
+.cuotas-history button:hover {
+  background: var(--verde-profundo);
+  transform: translateY(-1px);
+}
+
+.cuotas-button.secondary,
+.cuotas-actions button.secondary,
+.cuotas-modal-actions button.secondary {
+  background: rgba(31, 61, 43, 0.09);
+  color: var(--verde-bosque);
+}
+
+.cuotas-button.danger,
+.cuotas-actions button.danger,
+.cuotas-history button.danger {
+  background: #9b2c2c;
+}
+
+.cuotas-button:disabled,
+.cuotas-actions button:disabled,
+.cuotas-modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.cuotas-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.cuotas-badge.al_dia {
+  background: rgba(47, 125, 76, 0.12);
+  color: #24663e;
+}
+
+.cuotas-badge.atrasado {
+  background: rgba(155, 44, 44, 0.12);
+  color: #8a2424;
+}
+
+.cuotas-badge.parcial {
+  background: rgba(169, 118, 35, 0.14);
+  color: #8a5b12;
+}
+
+.cuotas-badge.pagada_anual {
+  background: rgba(31, 61, 43, 0.13);
+  color: var(--verde-bosque);
+}
+
+.cuotas-badge.exento {
+  background: rgba(80, 88, 105, 0.12);
+  color: #4d5869;
+}
+
+.cuotas-empty {
+  margin: 0;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(79, 125, 74, 0.08);
+  color: var(--texto-suave);
+  font-weight: 900;
+}
+
+.cuotas-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(13, 29, 19, 0.48);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.cuotas-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cuotas-modal {
+  width: min(980px, 100%);
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 28px;
+  background: rgba(250, 248, 242, 0.98);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.26);
+  transform: translateY(14px) scale(0.98);
+  transition: transform 0.22s ease;
+}
+
+.cuotas-modal-backdrop.is-open .cuotas-modal {
+  transform: translateY(0) scale(1);
+}
+
+.cuotas-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 22px 0;
+}
+
+.cuotas-modal-header h3 {
+  margin: 4px 0 6px;
+  color: var(--verde-bosque);
+}
+
+.cuotas-modal-close {
+  align-self: start;
+  border: 0;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  background: rgba(31, 61, 43, 0.1);
+  color: var(--verde-bosque);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.cuotas-form {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.cuotas-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cuotas-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.cuotas-checkline {
+  display: flex !important;
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px !important;
+  padding: 12px 14px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.cuotas-checkline input {
+  width: auto !important;
+}
+
+.cuotas-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cuotas-history {
+  display: grid;
+  gap: 10px;
+  padding: 0 22px 22px;
+}
+
+.cuotas-history-row {
+  display: grid;
+  grid-template-columns: 90px 95px 1fr 130px auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(31, 61, 43, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cuotas-history-row strong {
+  color: var(--verde-bosque);
+}
+
+.cuotas-history-row small {
+  color: var(--texto-suave);
+  font-weight: 800;
+}
+
+.cuotas-file-link {
+  color: var(--verde-bosque);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.cuotas-file-link:hover {
+  text-decoration: underline;
+}
+
+.cuotas-own-note {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(31, 61, 43, 0.08);
+  color: var(--texto-suave);
+  font-weight: 900;
+}
+
+@keyframes cuotasFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1360px) {
+  .cuotas-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cuotas-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .cuotas-summary-grid,
+  .cuotas-toolbar,
+  .cuotas-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cuotas-table {
+    min-width: 0;
+  }
+
+  .cuotas-table thead {
+    display: none;
+  }
+
+  .cuotas-table,
+  .cuotas-table tbody,
+  .cuotas-table tr,
+  .cuotas-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .cuotas-table tr {
+    margin: 12px;
+    border: 1px solid rgba(31, 61, 43, 0.12);
+    border-radius: 18px;
+    background: rgba(250, 248, 242, 0.78);
+    overflow: hidden;
+  }
+
+  .cuotas-table td {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 10px;
+    border-bottom: 1px solid rgba(31, 61, 43, 0.08);
+  }
+
+  .cuotas-table td::before {
+    content: attr(data-label);
+    color: var(--texto-suave);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cuotas-actions,
+  .cuotas-modal-actions {
+    display: grid;
+  }
+
+  .cuotas-actions button,
+  .cuotas-modal-actions button {
+    width: 100%;
+  }
+
+  .cuotas-history-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .cuotas-table td {
+    grid-template-columns: 1fr;
+  }
+
+  .cuotas-modal-header {
+    display: grid;
+  }
+
+  .cuotas-modal-close {
+    justify-self: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cuotas-panel,
+  .cuotas-modal-backdrop,
+  .cuotas-modal,
+  .cuotas-button,
+  .cuotas-actions button {
+    animation: none;
+    transition: none;
+  }
+}
