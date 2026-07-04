@@ -97,7 +97,7 @@
 
 .dashboard-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 14px;
   margin-bottom: 18px;
 }
@@ -119,8 +119,9 @@
 
 .dashboard-stat-card strong {
   color: var(--verde-bosque);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.6rem, 3.2vw, 3rem);
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .dashboard-stat-card small {
@@ -131,7 +132,7 @@
 
 .dashboard-content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 16px;
 }
 
@@ -144,6 +145,27 @@
   margin: 0 0 14px;
   color: var(--verde-bosque);
   font-size: 1.15rem;
+}
+
+.dashboard-widget-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dashboard-widget-heading h4 {
+  margin: 0;
+}
+
+.dashboard-widget-heading span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.12);
+  color: var(--verde-bosque);
+  font-size: 0.74rem;
+  font-weight: 900;
 }
 
 .dashboard-list {
@@ -190,33 +212,49 @@
   text-transform: uppercase;
 }
 
-.dashboard-member-summary {
+.dashboard-member-summary,
+.dashboard-treasury-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.dashboard-member-summary article {
+.dashboard-member-summary article,
+.dashboard-treasury-grid article {
   padding: 16px;
   border-radius: 18px;
   background: rgba(79, 125, 74, 0.08);
   text-align: center;
 }
 
-.dashboard-member-summary strong {
+.dashboard-member-summary strong,
+.dashboard-treasury-grid strong {
   display: block;
   color: var(--verde-bosque);
-  font-size: 2rem;
-  line-height: 1;
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
-.dashboard-member-summary span {
+.dashboard-member-summary span,
+.dashboard-treasury-grid span {
   display: block;
-  margin-top: 7px;
+  margin-bottom: 7px;
   color: var(--texto-suave);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.dashboard-treasury-widget {
+  grid-column: span 2;
+}
+
+.dashboard-treasury-note {
+  margin: 14px 0 0;
+  color: var(--texto-suave);
+  font-weight: 800;
+  line-height: 1.45;
 }
 
 .dashboard-visits-note,
@@ -229,4 +267,25 @@
 
 .dashboard-status {
   margin-top: 18px !important;
+}
+
+@media (max-width: 920px) {
+  .dashboard-treasury-widget {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-member-summary,
+  .dashboard-treasury-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-list-item {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-list-item em {
+    justify-self: start;
+  }
 }
