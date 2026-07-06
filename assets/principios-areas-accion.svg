@@ -1,79 +1,134 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 430" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 600" role="img" aria-labelledby="title desc">
   <title id="title">Principios y áreas de acción de Agrupación Nothofagus</title>
   <desc id="desc">Diagrama con principios base a la izquierda, áreas de acción a la derecha y el símbolo institucional al centro.</desc>
   <defs>
     <linearGradient id="nodeGradient" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#1f3d2b"/>
-      <stop offset="1" stop-color="#13251b"/>
+      <stop offset="0" stop-color="#245538"/>
+      <stop offset="0.52" stop-color="#123923"/>
+      <stop offset="1" stop-color="#092015"/>
     </linearGradient>
-    <linearGradient id="logoGradient" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#1f3d2b"/>
-      <stop offset="1" stop-color="#13251b"/>
-    </linearGradient>
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#1f3d2b" flood-opacity="0.16"/>
+    <radialGradient id="logoGradient" cx="50%" cy="42%" r="60%">
+      <stop offset="0" stop-color="#2b6440"/>
+      <stop offset="0.58" stop-color="#163d28"/>
+      <stop offset="1" stop-color="#071d13"/>
+    </radialGradient>
+    <filter id="nodeShadow" x="-20%" y="-35%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#1f3d2b" flood-opacity="0.20"/>
+    </filter>
+    <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#13251b" flood-opacity="0.26"/>
     </filter>
     <style>
-      .label-title{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;fill:#1f3d2b}
-      .node-text{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:25px;font-weight:700;fill:#f5f1e8}
-      .line{fill:none;stroke:#4f7d4a;stroke-width:3;stroke-linecap:round;opacity:.7}
-      .node{fill:url(#nodeGradient);stroke:#4f7d4a;stroke-width:2.4}
+      .heading{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:38px;font-weight:900;fill:#13251b;letter-spacing:-.03em}
+      .node-text{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:30px;font-weight:900;fill:#f5f1e8;letter-spacing:-.02em}
+      .line{fill:none;stroke:#2f7044;stroke-width:3.2;stroke-linecap:round;opacity:.88}
+      .node{fill:url(#nodeGradient);stroke:#4f7d4a;stroke-width:3.2}
+      .node-inner{fill:none;stroke:rgba(245,241,232,.36);stroke-width:1.5}
+      .dot{fill:#1f3d2b;stroke:#4f7d4a;stroke-width:1.8}
+      .decor{stroke:#1f3d2b;stroke-width:2.2;stroke-linecap:round;opacity:.9}
+      .decor-leaf{fill:none;stroke:#4f7d4a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     </style>
   </defs>
 
-  <text x="210" y="48" text-anchor="middle" class="label-title">Principios Base</text>
-  <text x="885" y="48" text-anchor="middle" class="label-title">Áreas de Acción</text>
+  <!-- Decorative headings -->
+  <text x="300" y="72" text-anchor="middle" class="heading">Principios Base</text>
+  <line x1="120" y1="104" x2="266" y2="104" class="decor"/>
+  <line x1="334" y1="104" x2="480" y2="104" class="decor"/>
+  <g class="decor-leaf" transform="translate(300 103)">
+    <path d="M0 10 V-16"/>
+    <path d="M0 -16 C-12 -5 -11 8 0 16 C11 8 12 -5 0 -16Z"/>
+    <path d="M-3 14 C-18 12 -25 2 -25 -9 C-11 -8 -3 -1 -3 14Z"/>
+    <path d="M3 14 C18 12 25 2 25 -9 C11 -8 3 -1 3 14Z"/>
+  </g>
 
-  <!-- Left connectors -->
-  <path class="line" d="M355 84 C420 84 438 176 512 207"/>
-  <path class="line" d="M335 156 C410 156 442 192 512 207"/>
-  <path class="line" d="M325 226 C410 226 448 218 512 215"/>
-  <path class="line" d="M340 296 C415 296 445 238 512 224"/>
-  <path class="line" d="M360 366 C425 366 450 255 512 232"/>
+  <text x="1200" y="72" text-anchor="middle" class="heading">Áreas de Acción</text>
+  <line x1="1020" y1="104" x2="1166" y2="104" class="decor"/>
+  <line x1="1234" y1="104" x2="1380" y2="104" class="decor"/>
+  <g class="decor-leaf" transform="translate(1200 103)">
+    <path d="M0 10 V-16"/>
+    <path d="M0 -16 C-12 -5 -11 8 0 16 C11 8 12 -5 0 -16Z"/>
+    <path d="M-3 14 C-18 12 -25 2 -25 -9 C-11 -8 -3 -1 -3 14Z"/>
+    <path d="M3 14 C18 12 25 2 25 -9 C11 -8 3 -1 3 14Z"/>
+  </g>
 
-  <!-- Right connectors -->
-  <path class="line" d="M588 207 C660 176 685 84 750 84"/>
-  <path class="line" d="M588 211 C656 193 690 156 770 156"/>
-  <path class="line" d="M588 215 C656 220 700 226 790 226"/>
-  <path class="line" d="M588 224 C650 238 690 296 775 296"/>
-  <path class="line" d="M588 232 C650 255 690 366 750 366"/>
+  <!-- Connectors behind nodes -->
+  <path class="line" d="M500 158 C565 158 610 266 655 286"/>
+  <path class="line" d="M500 245 C585 245 616 282 656 296"/>
+  <path class="line" d="M500 332 C590 332 620 316 656 306"/>
+  <path class="line" d="M500 419 C585 419 618 328 656 318"/>
+  <path class="line" d="M500 506 C574 506 612 340 660 330"/>
+
+  <path class="line" d="M844 286 C890 266 935 158 1000 158"/>
+  <path class="line" d="M844 296 C884 282 915 245 1000 245"/>
+  <path class="line" d="M844 306 C880 316 910 332 1000 332"/>
+  <path class="line" d="M844 318 C882 328 915 419 1000 419"/>
+  <path class="line" d="M840 330 C888 340 926 506 1000 506"/>
 
   <!-- Left nodes -->
-  <rect class="node" x="84" y="60" width="282" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="70" y="134" width="284" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="58" y="208" width="280" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="70" y="282" width="284" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="106" y="356" width="270" height="54" rx="9" filter="url(#softShadow)"/>
+  <rect class="node" x="120" y="124" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="126" y="130" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="507" cy="158" r="7"/>
 
-  <text x="225" y="95" text-anchor="middle" class="node-text">Fraternidad</text>
-  <text x="212" y="169" text-anchor="middle" class="node-text">Tolerancia</text>
-  <text x="198" y="243" text-anchor="middle" class="node-text">Laicismo</text>
-  <text x="212" y="317" text-anchor="middle" class="node-text">Libre examen</text>
-  <text x="241" y="391" text-anchor="middle" class="node-text">Solidaridad social</text>
+  <rect class="node" x="120" y="211" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="126" y="217" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="507" cy="245" r="7"/>
+
+  <rect class="node" x="120" y="298" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="126" y="304" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="507" cy="332" r="7"/>
+
+  <rect class="node" x="120" y="385" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="126" y="391" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="507" cy="419" r="7"/>
+
+  <rect class="node" x="120" y="472" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="126" y="478" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="507" cy="506" r="7"/>
+
+  <text x="310" y="169" text-anchor="middle" class="node-text">Fraternidad</text>
+  <text x="310" y="256" text-anchor="middle" class="node-text">Tolerancia</text>
+  <text x="310" y="343" text-anchor="middle" class="node-text">Laicismo</text>
+  <text x="310" y="430" text-anchor="middle" class="node-text">Libre examen</text>
+  <text x="310" y="517" text-anchor="middle" class="node-text">Solidaridad social</text>
 
   <!-- Right nodes -->
-  <rect class="node" x="748" y="60" width="282" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="770" y="134" width="270" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="790" y="208" width="270" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="775" y="282" width="284" height="54" rx="9" filter="url(#softShadow)"/>
-  <rect class="node" x="750" y="356" width="270" height="54" rx="9" filter="url(#softShadow)"/>
+  <rect class="node" x="1000" y="124" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="1006" y="130" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="993" cy="158" r="7"/>
 
-  <text x="889" y="95" text-anchor="middle" class="node-text">Educación</text>
-  <text x="905" y="169" text-anchor="middle" class="node-text">Salud</text>
-  <text x="925" y="243" text-anchor="middle" class="node-text">Medio ambiente</text>
-  <text x="917" y="317" text-anchor="middle" class="node-text">Cultura y artes</text>
-  <text x="885" y="391" text-anchor="middle" class="node-text">Justicia y comunidad</text>
+  <rect class="node" x="1000" y="211" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="1006" y="217" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="993" cy="245" r="7"/>
 
-  <!-- Center mark -->
-  <circle cx="550" cy="215" r="54" fill="url(#logoGradient)" filter="url(#softShadow)"/>
-  <circle cx="550" cy="215" r="54" fill="none" stroke="#4f7d4a" stroke-width="2" opacity=".55"/>
-  <g fill="none" stroke="#f5f1e8" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M550 253 V176"/>
-    <path d="M550 176 C531 192 531 217 550 228 C569 217 569 192 550 176Z"/>
-    <path d="M547 252 C514 252 498 232 498 210 C527 212 544 226 547 252Z"/>
-    <path d="M553 252 C586 252 602 232 602 210 C573 212 556 226 553 252Z"/>
-    <path d="M520 238 C533 234 542 239 548 252"/>
-    <path d="M580 238 C567 234 558 239 552 252"/>
-    <path d="M510 255 H590"/>
+  <rect class="node" x="1000" y="298" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="1006" y="304" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="993" cy="332" r="7"/>
+
+  <rect class="node" x="1000" y="385" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="1006" y="391" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="993" cy="419" r="7"/>
+
+  <rect class="node" x="1000" y="472" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
+  <rect class="node-inner" x="1006" y="478" width="368" height="56" rx="10"/>
+  <circle class="dot" cx="993" cy="506" r="7"/>
+
+  <text x="1190" y="169" text-anchor="middle" class="node-text">Educación</text>
+  <text x="1190" y="256" text-anchor="middle" class="node-text">Salud</text>
+  <text x="1190" y="343" text-anchor="middle" class="node-text">Medio ambiente</text>
+  <text x="1190" y="430" text-anchor="middle" class="node-text">Cultura y artes</text>
+  <text x="1190" y="517" text-anchor="middle" class="node-text">Justicia y comunidad</text>
+
+  <!-- Center institutional mark -->
+  <circle cx="750" cy="306" r="92" fill="url(#logoGradient)" filter="url(#logoShadow)"/>
+  <circle cx="750" cy="306" r="82" fill="none" stroke="#f5f1e8" stroke-width="4" opacity=".95"/>
+  <circle cx="750" cy="306" r="96" fill="none" stroke="#1f3d2b" stroke-width="3" opacity=".92"/>
+  <g fill="none" stroke="#f5f1e8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M750 374 V242"/>
+    <path d="M750 242 C722 267 723 306 750 324 C777 306 778 267 750 242Z"/>
+    <path d="M745 372 C690 369 665 335 665 298 C711 302 738 324 745 372Z"/>
+    <path d="M755 372 C810 369 835 335 835 298 C789 302 762 324 755 372Z"/>
+    <path d="M695 351 C719 344 737 352 746 373"/>
+    <path d="M805 351 C781 344 763 352 754 373"/>
+    <path d="M690 380 H810"/>
   </g>
 </svg>
