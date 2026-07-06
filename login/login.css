@@ -40,6 +40,7 @@ body {
 }
 
 .login-logo {
+  content: url("../assets/logo-nothofagus-institucional.svg?v=20260706-logo");
   width: min(240px, 72%);
   aspect-ratio: 1 / 1;
   object-fit: contain;
