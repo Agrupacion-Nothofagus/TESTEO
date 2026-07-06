@@ -1,4 +1,4 @@
-import './sidebar-safe-clicks.js?v=20260703-safe-clicks';
+import './sidebar-safe-clicks.js?v=20260706-nonblocking';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabaseConfigurado } from '../scripts/supabase-config.js';
 
