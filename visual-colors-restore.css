@@ -4,3 +4,21 @@
 :root {
   color-scheme: light;
 }
+
+/* Logo institucional actualizado.
+   Solo reemplaza el archivo visual del logo; no altera colores, layout ni lógica. */
+.logo-principal,
+.sidebar-logo {
+  content: url("assets/logo-nothofagus-institucional.svg?v=20260706-logo");
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.logo-principal {
+  width: clamp(7.5rem, 14vw, 11rem) !important;
+}
+
+.sidebar-logo {
+  width: clamp(3.6rem, 5vw, 4.3rem) !important;
+  height: clamp(3.6rem, 5vw, 4.3rem) !important;
+}
