@@ -3,68 +3,258 @@ const headers = {
 };
 
 const SITE_BASE_URL = 'https://raw.githubusercontent.com/Agrupacion-Nothofagus/TESTEO/main';
-const LOGO_URL = `${SITE_BASE_URL}/logo.png`;
+const LOGO_URL = `${SITE_BASE_URL}/assets/logo-nothofagus-institucional.svg`;
 const BACKGROUND_URL = `${SITE_BASE_URL}/fondo.jpg`;
+const ESTADOS_CONTACTO = ['nuevo', 'leido', 'respondido', 'archivado'];
 
-export async function onRequestPost({ request, env }) {
+export async function onRequest({ request, env }) {
   try {
-    const body = await request.json();
+    if (request.method === 'OPTIONS') return reply({ ok: true });
+    if (request.method === 'POST') return createContactMessage(request, env);
 
-    const nombre = String(body.nombre || '').trim();
-    const telefono = String(body.telefono || '').trim();
-    const correo = String(body.correo || '').trim();
-    const asunto = String(body.asunto || '').trim();
-    const mensaje = String(body.mensaje || '').trim();
+    const cfg = config(env);
+    const session = await currentUser(request, cfg);
+    allowFormAccess(session, cfg);
 
-    if (!nombre || !telefono || !correo || !asunto || !mensaje) {
-      return reply({ error: 'Todos los campos son obligatorios.' }, 400);
-    }
+    if (request.method === 'GET') return listContactMessages(cfg);
+    if (request.method === 'PATCH') return updateContactMessage(request, cfg);
+    if (request.method === 'DELETE') return deleteContactMessage(request, cfg);
 
-    if (!/^\+569\d{8}$/.test(telefono)) {
-      return reply({ error: 'El teléfono debe usar formato +569XXXXXXXX.' }, 400);
-    }
-
-    if (!isEmail(correo)) {
-      return reply({ error: 'El correo electrónico no es válido.' }, 400);
-    }
-
-    if (!env.RESEND_API_KEY || !env.CONTACT_TO_EMAIL || !env.CONTACT_FROM_EMAIL) {
-      return reply({ error: 'Faltan variables de correo en Cloudflare.' }, 500);
-    }
-
-    const html = buildContactEmail({ nombre, telefono, correo, asunto, mensaje });
-    const text = buildContactText({ nombre, telefono, correo, asunto, mensaje });
-
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${env.RESEND_API_KEY}`,
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: env.CONTACT_FROM_EMAIL,
-        to: [env.CONTACT_TO_EMAIL],
-        reply_to: correo,
-        subject: `Mensaje web Nothofagus: ${asunto}`,
-        html,
-        text
-      })
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      return reply({ error: data.message || 'No fue posible enviar el correo.' }, res.status);
-    }
-
-    return reply({ ok: true });
+    return reply({ error: 'Método no permitido.' }, 405);
   } catch (error) {
-    return reply({ error: error.message || 'Error interno.' }, 500);
+    return reply({ error: error.message || 'Error interno.' }, error.status || 500);
   }
 }
 
-export async function onRequestOptions() {
+async function createContactMessage(request, env) {
+  const body = await request.json();
+
+  const mensajeContacto = {
+    nombre: limpiar(body.nombre),
+    telefono: limpiar(body.telefono),
+    correo: limpiar(body.correo).toLowerCase(),
+    asunto: limpiar(body.asunto),
+    mensaje: limpiar(body.mensaje),
+    estado: 'nuevo',
+    observaciones: '',
+    origen: 'formulario_contacto'
+  };
+
+  validarContacto(mensajeContacto);
+
+  const cfg = hasSupabase(env) ? config(env) : null;
+  let savedMessage = null;
+  let saved = false;
+  let emailSent = false;
+  let emailWarning = '';
+
+  if (cfg) {
+    savedMessage = await saveContactMessage(cfg, mensajeContacto);
+    saved = true;
+  }
+
+  if (hasEmailConfig(env)) {
+    try {
+      await sendContactEmail(env, mensajeContacto);
+      emailSent = true;
+    } catch (error) {
+      emailWarning = error.message || 'No fue posible enviar el correo.';
+      if (!saved) throw fail(emailWarning, 500);
+    }
+  } else if (!saved) {
+    throw fail('Faltan variables de Supabase o correo para recibir el mensaje.', 500);
+  }
+
+  return reply({ ok: true, saved, emailSent, warning: emailWarning, mensaje: savedMessage });
+}
+
+async function listContactMessages(cfg) {
+  const res = await callSupabase(cfg, '/rest/v1/contacto_mensajes?select=*&order=created_at.desc&limit=500');
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible listar los formularios de contacto.', res.status);
+
+  return reply({ mensajes: Array.isArray(data) ? data.map(normalizarMensajeSalida) : [] });
+}
+
+async function updateContactMessage(request, cfg) {
+  const body = await request.json();
+  const id = limpiar(body.id);
+  if (!id) throw fail('Falta el ID del mensaje.', 400);
+
+  const estado = normalizarEstado(body.estado || body.status || 'leido');
+  const observaciones = limpiar(body.observaciones || body.notes || '');
+  const payload = {
+    estado,
+    observaciones,
+    updated_at: new Date().toISOString()
+  };
+
+  if (estado === 'respondido') payload.respondido_at = new Date().toISOString();
+
+  const res = await callSupabase(cfg, `/rest/v1/contacto_mensajes?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible actualizar el mensaje.', res.status);
+
+  const item = Array.isArray(data) ? data[0] : data;
+  return reply({ mensaje: normalizarMensajeSalida(item) });
+}
+
+async function deleteContactMessage(request, cfg) {
+  const url = new URL(request.url);
+  const id = limpiar(url.searchParams.get('id'));
+  if (!id) throw fail('Falta el ID del mensaje.', 400);
+
+  const res = await callSupabase(cfg, `/rest/v1/contacto_mensajes?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' }
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw fail(data.message || 'No fue posible eliminar el mensaje.', res.status);
+  }
+
   return reply({ ok: true });
+}
+
+async function saveContactMessage(cfg, mensajeContacto) {
+  const res = await callSupabase(cfg, '/rest/v1/contacto_mensajes', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(mensajeContacto)
+  });
+
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible guardar el mensaje de contacto.', res.status);
+
+  return normalizarMensajeSalida(Array.isArray(data) ? data[0] : data);
+}
+
+async function sendContactEmail(env, mensajeContacto) {
+  const html = buildContactEmail(mensajeContacto);
+  const text = buildContactText(mensajeContacto);
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: env.CONTACT_FROM_EMAIL,
+      to: [env.CONTACT_TO_EMAIL],
+      reply_to: mensajeContacto.correo,
+      subject: `Mensaje web Nothofagus: ${mensajeContacto.asunto}`,
+      html,
+      text
+    })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw fail(data.message || 'No fue posible enviar el correo.', res.status);
+}
+
+async function currentUser(request, cfg) {
+  const token = String(request.headers.get('authorization') || '')
+    .replace(/^Bearer\s+/i, '')
+    .trim();
+
+  if (!token) throw fail('Sesión no enviada.', 401);
+
+  const res = await fetch(`${cfg.url}/auth/v1/user`, {
+    headers: {
+      apikey: cfg.key,
+      authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw fail('Sesión inválida o expirada.', 401);
+  return res.json();
+}
+
+function allowFormAccess(user, cfg) {
+  const email = String(user.email || '').toLowerCase();
+  const rol = String(
+    user.user_metadata?.rol
+    || user.user_metadata?.role
+    || user.app_metadata?.rol
+    || user.app_metadata?.role
+    || ''
+  ).trim().toLowerCase();
+
+  const allowedRoles = ['administrador', 'admin', 'gestor_miembros', 'secretario', 'secretaria', 'secretariado'];
+  const esAdminEmail = cfg.admins.includes(email);
+  if (!esAdminEmail && !allowedRoles.includes(rol)) throw fail('No autorizado para revisar formularios.', 403);
+}
+
+function config(env) {
+  const url = env.SUPABASE_URL;
+  const key = env.SUPABASE_ADMIN_KEY;
+  const admins = String(env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (!url || !key) throw fail('Faltan variables SUPABASE_URL o SUPABASE_ADMIN_KEY.', 500);
+  return { url, key, admins };
+}
+
+function hasSupabase(env) {
+  return Boolean(env.SUPABASE_URL && env.SUPABASE_ADMIN_KEY);
+}
+
+function hasEmailConfig(env) {
+  return Boolean(env.RESEND_API_KEY && env.CONTACT_TO_EMAIL && env.CONTACT_FROM_EMAIL);
+}
+
+function validarContacto(item) {
+  if (!item.nombre || !item.telefono || !item.correo || !item.asunto || !item.mensaje) {
+    throw fail('Todos los campos son obligatorios.', 400);
+  }
+
+  if (!/^\+569\d{8}$/.test(item.telefono)) {
+    throw fail('El teléfono debe usar formato +569XXXXXXXX.', 400);
+  }
+
+  if (!isEmail(item.correo)) {
+    throw fail('El correo electrónico no es válido.', 400);
+  }
+}
+
+function normalizarEstado(value) {
+  const estado = String(value || '').trim().toLowerCase();
+  return ESTADOS_CONTACTO.includes(estado) ? estado : 'leido';
+}
+
+function normalizarMensajeSalida(item) {
+  if (!item) return item;
+  return {
+    ...item,
+    estado: normalizarEstado(item.estado || 'nuevo'),
+    observaciones: item.observaciones || '',
+    origen: item.origen || 'formulario_contacto'
+  };
+}
+
+function limpiar(value) {
+  return String(value || '').trim().slice(0, 5000);
+}
+
+function callSupabase(cfg, path, options = {}) {
+  return fetch(`${cfg.url}${path}`, {
+    ...options,
+    headers: {
+      ...headers,
+      apikey: cfg.key,
+      authorization: `Bearer ${cfg.key}`,
+      ...(options.headers || {})
+    }
+  });
 }
 
 function buildContactEmail({ nombre, telefono, correo, asunto, mensaje }) {
@@ -214,10 +404,7 @@ function buildContactText({ nombre, telefono, correo, asunto, mensaje }) {
 }
 
 function reply(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers
-  });
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
 function isEmail(value) {
@@ -231,4 +418,10 @@ function escapeHTML(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
+}
+
+function fail(message, status) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
 }
