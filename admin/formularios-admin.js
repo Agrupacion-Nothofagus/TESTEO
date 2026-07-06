@@ -4,6 +4,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const VIEW_ID = 'formularios-view';
 const ESTADOS = ['nuevo', 'leido', 'respondido', 'archivado'];
+const ROLES_FORMULARIOS = ['administrador', 'admin', 'gestor_miembros', 'secretariado'];
 let mensajes = [];
 let cargado = false;
 
@@ -111,8 +112,7 @@ async function aplicarPermisos() {
 }
 
 function puedeVerFormularios(user) {
-  const rol = obtenerRol(user);
-  return ['administrador', 'admin', 'gestor_miembros', 'secretario', 'secretaria', 'secretariado'].includes(rol);
+  return ROLES_FORMULARIOS.includes(obtenerRol(user));
 }
 
 async function cargarMensajes(force = false) {
