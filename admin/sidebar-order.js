@@ -3,7 +3,7 @@
 if (!window.__nothofagusSidebarOrder) {
   window.__nothofagusSidebarOrder = true;
 
-  const ORDER = ['dashboard', 'publicaciones', 'miembros', 'tesoreria', 'actas', 'usuarios'];
+  const ORDER = ['dashboard', 'miembros', 'tesoreria', 'actas', 'publicaciones', 'usuarios'];
 
   let ordering = false;
   let timer = null;
@@ -42,10 +42,10 @@ if (!window.__nothofagusSidebarOrder) {
 
     const items = {
       dashboard: document.querySelector('[data-admin-view="dashboard-view"]'),
-      publicaciones: document.querySelector('[data-publicaciones-sidebar]'),
       miembros: document.querySelector('[data-members-sidebar]'),
       tesoreria: document.querySelector('[data-tesoreria-sidebar]'),
       actas: document.querySelector('[data-actas-sidebar]'),
+      publicaciones: document.querySelector('[data-publicaciones-sidebar]'),
       usuarios: document.querySelector('[data-admin-view="usuarios-view"]')
     };
 
@@ -59,10 +59,10 @@ if (!window.__nothofagusSidebarOrder) {
 
   function normalizeSidebarLabels() {
     normalizeButton(document.querySelector('[data-admin-view="dashboard-view"]'), '🏠', 'Panel de control');
-    normalizeButton(document.querySelector('[data-publicaciones-toggle]'), '📚', 'Publicaciones');
     normalizeButton(document.querySelector('[data-members-toggle]'), '🤝', 'Miembros');
     normalizeButton(document.querySelector('[data-tesoreria-toggle]'), '💰', 'Tesorería');
     normalizeButton(document.querySelector('[data-actas-toggle]'), '📝', 'Actas');
+    normalizeButton(document.querySelector('[data-publicaciones-toggle]'), '📚', 'Publicaciones');
     normalizeButton(document.querySelector('[data-admin-view="usuarios-view"]'), '👤', 'Administrar usuarios');
   }
 
