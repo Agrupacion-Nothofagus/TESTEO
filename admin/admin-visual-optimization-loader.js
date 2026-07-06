@@ -25,4 +25,11 @@
     colors.dataset.visualColorsRestore = 'true';
     document.head.appendChild(colors);
   }
+
+  if (!window.__nothofagusFormulariosAdminModule) {
+    window.__nothofagusFormulariosAdminModule = true;
+    import('./formularios-admin.js?v=20260706-formularios').catch((error) => {
+      console.error('No fue posible cargar Formularios:', error);
+    });
+  }
 })();
