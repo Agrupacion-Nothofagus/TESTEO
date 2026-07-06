@@ -17,9 +17,8 @@
   function handleDashboardShortcut(event) {
     const button = event.target.closest?.('[data-dashboard-open-view]');
     if (!button) return;
-
-    const viewId = button.dataset.dashboardOpenView;
-    window.requestAnimationFrame(() => routeToView(viewId));
+    const handled = routeToView(button.dataset.dashboardOpenView);
+    if (handled) stop(event);
   }
 
   function handleSidebarClick(event) {
@@ -27,59 +26,87 @@
     if (!el) return;
 
     if (el.matches('[data-publicaciones-toggle]')) {
-      closeMany(['miembros', 'tesoreria', 'actas']);
+      stop(event);
+      toggle('publicaciones', ['miembros', 'tesoreria', 'actas']);
       return;
     }
 
     if (el.matches('[data-members-toggle]')) {
-      closeMany(['publicaciones', 'tesoreria', 'actas']);
+      stop(event);
+      toggle('miembros', ['publicaciones', 'tesoreria', 'actas']);
       return;
     }
 
     if (el.matches('[data-tesoreria-toggle]')) {
-      closeMany(['publicaciones', 'miembros', 'actas']);
+      stop(event);
+      toggle('tesoreria', ['publicaciones', 'miembros', 'actas']);
       return;
     }
 
     if (el.matches('[data-actas-toggle]')) {
-      closeMany(['publicaciones', 'miembros', 'tesoreria']);
+      stop(event);
+      toggle('actas', ['publicaciones', 'miembros', 'tesoreria']);
       return;
     }
 
     if (el.matches('[data-tesoreria-open]')) {
       closeMany(['publicaciones', 'miembros', 'actas']);
-      const viewId = getTesoreriaViewId(el.dataset.tesoreriaOpen);
-      window.requestAnimationFrame(() => routeToView(viewId, el));
       return;
     }
 
     if (el.matches('[data-actas-open]')) {
       closeMany(['publicaciones', 'miembros', 'tesoreria']);
-      const viewId = el.dataset.actasOpen === 'crear' ? 'crear-acta-view' : 'registro-actas-view';
-      window.requestAnimationFrame(() => routeToView(viewId, el));
       return;
     }
 
     if (el.matches('[data-admin-view]')) {
-      const viewId = el.dataset.adminView;
-      syncMenusForView(viewId);
-      window.requestAnimationFrame(() => routeToView(viewId, el));
+      const handled = routeToView(el.dataset.adminView, el);
+      if (handled) stop(event);
     }
   }
 
   function routeToView(viewId, sourceButton = null) {
     if (!viewId) return false;
 
+    const delegatedButton = getDelegatedModuleButton(viewId);
+    if (delegatedButton) {
+      delegatedButton.click();
+      return true;
+    }
+
     const trigger = sourceButton || document.querySelector(`.sidebar-nav [data-admin-view="${cssEscape(viewId)}"]`);
     return openView(viewId, trigger);
   }
 
-  function getTesoreriaViewId(tipo) {
-    const normalized = String(tipo || 'general').trim();
-    if (normalized === 'ingresos') return 'tesoreria-ingresos-view';
-    if (normalized === 'egresos') return 'tesoreria-egresos-view';
-    if (normalized === 'cuotas') return 'tesoreria-cuotas-view';
-    return 'tesoreria-general-view';
+  function getDelegatedModuleButton(viewId) {
+    const selectors = {
+      'crear-acta-view': '[data-actas-open="crear"]',
+      'registro-actas-view': '[data-actas-open="registro"]',
+      'tesoreria-general-view': '[data-tesoreria-open="general"]',
+      'tesoreria-ingresos-view': '[data-tesoreria-open="ingresos"]',
+      'tesoreria-egresos-view': '[data-tesoreria-open="egresos"]',
+      'tesoreria-cuotas-view': '[data-tesoreria-open="cuotas"]'
+    };
+
+    const selector = selectors[viewId];
+    if (!selector) return null;
+    const button = document.querySelector(selector);
+    if (!button || button.classList.contains('is-hidden')) return null;
+    return button;
+  }
+
+  function stop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
+  }
+
+  function toggle(key, closeKeys) {
+    const menu = document.querySelector(pairs[key]?.[0]);
+    if (!menu) return;
+    const shouldOpen = menu.classList.contains('is-collapsed');
+    closeMany(closeKeys);
+    shouldOpen ? openMenu(key) : closeMenu(key);
   }
 
   function syncMenusForView(viewId) {
@@ -92,18 +119,6 @@
     if (String(viewId).startsWith('members-')) {
       openMenu('miembros');
       closeMany(['publicaciones', 'tesoreria', 'actas']);
-      return;
-    }
-
-    if (String(viewId).startsWith('tesoreria-')) {
-      openMenu('tesoreria');
-      closeMany(['publicaciones', 'miembros', 'actas']);
-      return;
-    }
-
-    if (viewId === 'crear-acta-view' || viewId === 'registro-actas-view') {
-      openMenu('actas');
-      closeMany(['publicaciones', 'miembros', 'tesoreria']);
       return;
     }
 
@@ -147,6 +162,8 @@
     if (!view || view.classList.contains('is-hidden')) return false;
     if (trigger && trigger.classList.contains('is-hidden')) return false;
 
+    syncMenusForView(viewId);
+
     document.querySelectorAll('.admin-view').forEach((item) => {
       item.classList.toggle('is-active', item.id === viewId);
     });
@@ -155,14 +172,14 @@
       panel.classList.remove('is-hidden');
     });
 
-    setActiveSidebarState(viewId, trigger);
+    setActiveSidebarState(viewId);
     updateHeader(view);
     dispatchViewEvents(viewId);
 
     return true;
   }
 
-  function setActiveSidebarState(viewId, trigger = null) {
+  function setActiveSidebarState(viewId) {
     const isPublicaciones = viewId === 'gestion-view' || viewId === 'nueva-view';
     const isMiembros = String(viewId).startsWith('members-');
     const isTesoreria = String(viewId).startsWith('tesoreria-');
@@ -172,16 +189,6 @@
 
     document.querySelectorAll('.sidebar-nav [data-admin-view]').forEach((button) => {
       button.classList.toggle('is-active', button.dataset.adminView === viewId);
-    });
-
-    document.querySelectorAll('.sidebar-nav [data-tesoreria-open]').forEach((button) => {
-      const targetView = getTesoreriaViewId(button.dataset.tesoreriaOpen);
-      button.classList.toggle('is-active', targetView === viewId || button === trigger);
-    });
-
-    document.querySelectorAll('.sidebar-nav [data-actas-open]').forEach((button) => {
-      const targetView = button.dataset.actasOpen === 'crear' ? 'crear-acta-view' : 'registro-actas-view';
-      button.classList.toggle('is-active', targetView === viewId || button === trigger);
     });
 
     document.querySelector('[data-publicaciones-toggle]')?.classList.toggle('is-active', isPublicaciones);
