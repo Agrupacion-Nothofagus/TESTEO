@@ -1,5 +1,5 @@
 .admin-sidebar {
-  gap: 14px !important;
+  gap: 12px !important;
   padding: 16px !important;
   overflow: hidden !important;
 }
@@ -7,7 +7,7 @@
 .sidebar-brand {
   flex-shrink: 0;
   gap: 10px !important;
-  padding-bottom: 12px !important;
+  padding-bottom: 10px !important;
 }
 
 .sidebar-logo {
@@ -30,10 +30,10 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 4px;
+  padding-right: 2px;
   display: grid;
   align-content: start;
-  gap: 6px !important;
+  gap: 2px !important;
 }
 
 .sidebar-nav::-webkit-scrollbar {
@@ -46,14 +46,16 @@
 }
 
 .sidebar-link {
-  min-height: 40px !important;
-  padding: 9px 10px !important;
+  min-height: 38px !important;
+  padding: 8px 12px 8px 24px !important;
   border-radius: 14px !important;
   background: transparent !important;
   color: var(--texto) !important;
-  gap: 8px !important;
+  gap: 9px !important;
   font-size: 0.88rem !important;
   line-height: 1.15 !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
 
 .sidebar-link span {
@@ -76,16 +78,42 @@
   background: rgba(255, 255, 255, 0.18) !important;
 }
 
-.sidebar-member-group {
-  gap: 5px !important;
-  margin: 4px 0 0 !important;
-  padding-top: 6px !important;
+.publicaciones-sidebar-group,
+.sidebar-member-group,
+.tesoreria-sidebar-group,
+.actas-sidebar-group {
+  gap: 2px !important;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
 }
 
-.sidebar-group-title {
-  padding: 0 8px !important;
-  font-size: 0.68rem !important;
-  line-height: 1.1 !important;
+.publicaciones-sidebar-menu,
+.sidebar-member-menu,
+.tesoreria-sidebar-menu,
+.actas-sidebar-menu {
+  gap: 2px !important;
+  margin-top: 0 !important;
+  padding-left: 12px !important;
+}
+
+.publicaciones-sidebar-menu .sidebar-link,
+.sidebar-member-menu .sidebar-link,
+.tesoreria-sidebar-menu .sidebar-link,
+.actas-sidebar-menu .sidebar-link {
+  min-height: 34px !important;
+  padding-left: 18px !important;
+  font-size: 0.82rem !important;
+}
+
+.publicaciones-toggle-caret,
+.member-toggle-caret,
+.members-toggle-caret,
+.tesoreria-toggle-caret,
+.actas-toggle-caret {
+  margin-left: auto !important;
+  min-width: 22px !important;
+  height: 20px !important;
 }
 
 .member-sidebar-counter {
@@ -97,7 +125,7 @@
 
 .sidebar-footer {
   flex-shrink: 0;
-  margin-top: 8px !important;
+  margin-top: 6px !important;
   gap: 8px !important;
 }
 
@@ -110,7 +138,7 @@
 
 @media (max-height: 760px) and (min-width: 981px) {
   .admin-sidebar {
-    gap: 10px !important;
+    gap: 8px !important;
     padding: 12px !important;
   }
 
@@ -120,7 +148,7 @@
   }
 
   .sidebar-brand {
-    padding-bottom: 9px !important;
+    padding-bottom: 8px !important;
   }
 
   .sidebar-brand p {
@@ -131,9 +159,13 @@
     font-size: 0.98rem !important;
   }
 
+  .sidebar-nav {
+    gap: 1px !important;
+  }
+
   .sidebar-link {
-    min-height: 36px !important;
-    padding: 8px 9px !important;
+    min-height: 34px !important;
+    padding: 7px 10px 7px 22px !important;
     font-size: 0.82rem !important;
   }
 
