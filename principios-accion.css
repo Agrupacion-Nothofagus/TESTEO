@@ -11,13 +11,13 @@
 .principios-diagrama-wrap {
   width: 100%;
   margin-top: 0.5rem;
-  padding: clamp(0.75rem, 2vw, 1.25rem);
+  padding: clamp(0.5rem, 1.5vw, 1rem);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   border: 1px solid rgba(31, 61, 43, 0.12);
   border-radius: 22px;
-  background: rgba(250, 248, 242, 0.72);
+  background: transparent;
 }
 
 .principios-diagrama {
@@ -25,12 +25,11 @@
   width: min(100%, 980px);
   height: auto;
   margin: 0 auto;
-  border-radius: 16px;
 }
 
 @media (max-width: 760px) {
   .principios-diagrama-wrap {
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
 
   .principios-diagrama {
