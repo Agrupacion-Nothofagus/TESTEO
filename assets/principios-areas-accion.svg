@@ -3,9 +3,8 @@
   <desc id="desc">Diagrama con principios base a la izquierda, áreas de acción a la derecha y el símbolo institucional al centro.</desc>
   <defs>
     <linearGradient id="nodeGradient" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#245538"/>
-      <stop offset="0.52" stop-color="#123923"/>
-      <stop offset="1" stop-color="#092015"/>
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f5f1e8"/>
     </linearGradient>
     <radialGradient id="logoGradient" cx="50%" cy="42%" r="60%">
       <stop offset="0" stop-color="#2b6440"/>
@@ -13,18 +12,17 @@
       <stop offset="1" stop-color="#071d13"/>
     </radialGradient>
     <filter id="nodeShadow" x="-20%" y="-35%" width="140%" height="170%">
-      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#1f3d2b" flood-opacity="0.20"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#1f3d2b" flood-opacity="0.14"/>
     </filter>
     <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#13251b" flood-opacity="0.26"/>
     </filter>
     <style>
       .heading{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:38px;font-weight:900;fill:#13251b;letter-spacing:-.03em}
-      .node-text{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:30px;font-weight:900;fill:#f5f1e8;letter-spacing:-.02em}
-      .line{fill:none;stroke:#2f7044;stroke-width:3.2;stroke-linecap:round;opacity:.88}
-      .node{fill:url(#nodeGradient);stroke:#4f7d4a;stroke-width:3.2}
-      .node-inner{fill:none;stroke:rgba(245,241,232,.36);stroke-width:1.5}
-      .dot{fill:#1f3d2b;stroke:#4f7d4a;stroke-width:1.8}
+      .node-text{font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;font-size:30px;font-weight:500;fill:#1f2d24;letter-spacing:-.02em}
+      .line{fill:none;stroke:#9bad9f;stroke-width:3.2;stroke-linecap:round;opacity:.9}
+      .node{fill:url(#nodeGradient);stroke:#9bad9f;stroke-width:3.2}
+      .dot{fill:#9bad9f;stroke:#4f7d4a;stroke-width:1.8}
       .decor{stroke:#1f3d2b;stroke-width:2.2;stroke-linecap:round;opacity:.9}
       .decor-leaf{fill:none;stroke:#4f7d4a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     </style>
@@ -65,24 +63,19 @@
   <path class="line" d="M840 330 C888 340 926 506 1000 506"/>
 
   <!-- Left nodes -->
-  <rect class="node" x="120" y="124" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="126" y="130" width="368" height="56" rx="10"/>
+  <rect class="node" x="120" y="124" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="507" cy="158" r="7"/>
 
-  <rect class="node" x="120" y="211" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="126" y="217" width="368" height="56" rx="10"/>
+  <rect class="node" x="120" y="211" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="507" cy="245" r="7"/>
 
-  <rect class="node" x="120" y="298" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="126" y="304" width="368" height="56" rx="10"/>
+  <rect class="node" x="120" y="298" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="507" cy="332" r="7"/>
 
-  <rect class="node" x="120" y="385" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="126" y="391" width="368" height="56" rx="10"/>
+  <rect class="node" x="120" y="385" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="507" cy="419" r="7"/>
 
-  <rect class="node" x="120" y="472" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="126" y="478" width="368" height="56" rx="10"/>
+  <rect class="node" x="120" y="472" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="507" cy="506" r="7"/>
 
   <text x="310" y="169" text-anchor="middle" class="node-text">Fraternidad</text>
@@ -92,24 +85,19 @@
   <text x="310" y="517" text-anchor="middle" class="node-text">Solidaridad social</text>
 
   <!-- Right nodes -->
-  <rect class="node" x="1000" y="124" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="1006" y="130" width="368" height="56" rx="10"/>
+  <rect class="node" x="1000" y="124" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="993" cy="158" r="7"/>
 
-  <rect class="node" x="1000" y="211" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="1006" y="217" width="368" height="56" rx="10"/>
+  <rect class="node" x="1000" y="211" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="993" cy="245" r="7"/>
 
-  <rect class="node" x="1000" y="298" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="1006" y="304" width="368" height="56" rx="10"/>
+  <rect class="node" x="1000" y="298" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="993" cy="332" r="7"/>
 
-  <rect class="node" x="1000" y="385" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="1006" y="391" width="368" height="56" rx="10"/>
+  <rect class="node" x="1000" y="385" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="993" cy="419" r="7"/>
 
-  <rect class="node" x="1000" y="472" width="380" height="68" rx="13" filter="url(#nodeShadow)"/>
-  <rect class="node-inner" x="1006" y="478" width="368" height="56" rx="10"/>
+  <rect class="node" x="1000" y="472" width="380" height="68" rx="9" filter="url(#nodeShadow)"/>
   <circle class="dot" cx="993" cy="506" r="7"/>
 
   <text x="1190" y="169" text-anchor="middle" class="node-text">Educación</text>
