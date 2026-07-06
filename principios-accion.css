@@ -22,18 +22,14 @@
 
 .principios-diagrama {
   display: block;
-  width: min(100%, 980px);
+  width: min(100%, 1180px);
   height: auto;
   margin: 0 auto;
 }
 
-@media (max-width: 760px) {
-  .principios-diagrama-wrap {
-    padding: 0.5rem;
-  }
-
+@media (max-width: 920px) {
   .principios-diagrama {
-    min-width: 820px;
+    min-width: 980px;
   }
 }
 
