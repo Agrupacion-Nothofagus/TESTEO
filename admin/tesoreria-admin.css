@@ -214,6 +214,18 @@
   background: rgba(250, 248, 242, 0.76);
 }
 
+.tesoreria-row.is-deleted {
+  border-color: rgba(155, 44, 44, 0.22);
+  background: linear-gradient(135deg, rgba(155, 44, 44, 0.08), rgba(250, 248, 242, 0.86));
+  opacity: 0.82;
+}
+
+.tesoreria-row.is-deleted strong,
+.tesoreria-row.is-deleted em {
+  text-decoration: line-through;
+  color: #6b6258;
+}
+
 .tesoreria-row small {
   color: var(--texto-suave);
   font-weight: 900;
@@ -272,6 +284,21 @@
 
 .tesoreria-delete-button {
   background: #9b2c2c !important;
+}
+
+.tesoreria-deleted-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(155, 44, 44, 0.1);
+  color: #7f1d1d;
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .tesoreria-empty {
@@ -348,7 +375,8 @@
   }
 
   .tesoreria-form button,
-  .tesoreria-delete-button {
+  .tesoreria-delete-button,
+  .tesoreria-deleted-badge {
     width: 100%;
   }
 
@@ -358,52 +386,7 @@
 }
 
 @media (max-width: 1100px) {
-  .tesoreria-summary-grid,
-  .tesoreria-form,
-  .tesoreria-row,
-  .tesoreria-form-card .tesoreria-form {
-    grid-template-columns: 1fr !important;
-  }
-
-  .tesoreria-file-link,
-  .tesoreria-no-file {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .tesoreria-form-card .tesoreria-form label {
-    min-height: auto;
-  }
-
-  .tesoreria-form-card .tesoreria-form label:not(.tesoreria-file-label)::after {
-    display: none;
-  }
-
-  .tesoreria-form-card .tesoreria-form > button[type="submit"] {
-    margin-top: 0;
-  }
-
-  .tesoreria-form-card .tesoreria-file-label small {
-    white-space: normal;
-  }
-}
-
-@media (max-width: 720px) {
-  .tesoreria-topbar,
-  .tesoreria-actions-row {
-    display: grid;
-  }
-
-  .tesoreria-form button,
-  .tesoreria-list-card button,
-  .tesoreria-actions-row button {
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tesoreria-sidebar-menu,
-  .tesoreria-toggle-caret {
-    transition: none;
+  .tesoreria-summary-grid {
+    grid-template-columns: 1fr;
   }
 }
