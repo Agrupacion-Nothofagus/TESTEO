@@ -1,4 +1,5 @@
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
+import './tesoreria-cuotas-comprobante-detalles.js?v=20260710';
 import './dashboard-admin-panel-update.js?v=20260709';
 import './tesoreria-general-saas.js?v=20260710';
 import './tesoreria-cuotas-nomina-fix.js?v=20260709';
