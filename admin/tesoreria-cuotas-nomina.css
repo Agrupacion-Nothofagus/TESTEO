@@ -1,0 +1,252 @@
+/* Nómina editable y reordenamiento superior de Tesorería > Registro de pagos. */
+
+#tesoreria-cuotas-view .cuotas-overview-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 440px) !important;
+  gap: clamp(18px, 2vw, 28px) !important;
+  align-items: stretch !important;
+}
+
+#tesoreria-cuotas-view .cuotas-overview-main {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: clamp(14px, 1.8vw, 20px) !important;
+  align-content: start !important;
+}
+
+#tesoreria-cuotas-view .cuotas-overview-main .cuotas-kpi-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(170px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-overview-main .cuotas-secondary-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-overview-side {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 16px !important;
+  align-content: start !important;
+}
+
+#tesoreria-cuotas-view .cuotas-overview-side [data-cuotas-month-summary] {
+  min-height: 250px !important;
+  display: grid !important;
+  align-content: center !important;
+  border-radius: 22px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button {
+  width: min(72%, 340px) !important;
+  min-height: 58px !important;
+  justify-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 14px 28px !important;
+  background: #1f3d2b !important;
+  color: #ffffff !important;
+  box-shadow: 0 16px 30px rgba(31, 61, 43, 0.2) !important;
+  font: inherit !important;
+  font-size: clamp(1rem, 1.2vw, 1.18rem) !important;
+  font-weight: 850 !important;
+  cursor: pointer !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button:hover {
+  background: #2f673c !important;
+  box-shadow: 0 20px 36px rgba(31, 61, 43, 0.26) !important;
+  transform: translateY(-1px) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.55 !important;
+  transform: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-recent-card,
+#tesoreria-cuotas-view .cuotas-annual-summary-card {
+  min-height: 220px !important;
+  overflow: hidden !important;
+}
+
+#tesoreria-cuotas-view .cuotas-annual-summary-card .cuotas-chart-fake {
+  max-width: 100% !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-modal {
+  width: min(1180px, calc(100vw - 36px)) !important;
+  max-height: min(86vh, 860px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-form {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+  gap: 14px !important;
+  padding: 20px 24px 24px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-help {
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(79, 125, 74, 0.2) !important;
+  border-radius: 14px !important;
+  background: rgba(79, 125, 74, 0.08) !important;
+  color: #5f6f63 !important;
+  font-size: 0.88rem !important;
+  font-weight: 760 !important;
+  line-height: 1.45 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table-wrap {
+  min-height: 0 !important;
+  overflow: auto !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table {
+  width: 100% !important;
+  min-width: 980px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table th,
+#tesoreria-cuotas-view .cuotas-nomina-table td {
+  padding: 12px 10px !important;
+  border-bottom: 1px solid #edf2ea !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  background: #faf8f2 !important;
+  color: #5f6f63 !important;
+  font-size: 0.68rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-persona strong {
+  display: block !important;
+  color: #1f3d2b !important;
+  font-size: 0.9rem !important;
+  line-height: 1.15 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-persona small {
+  display: block !important;
+  margin-top: 3px !important;
+  color: #5f6f63 !important;
+  font-size: 0.72rem !important;
+  font-weight: 780 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table input,
+#tesoreria-cuotas-view .cuotas-nomina-table select {
+  width: 100% !important;
+  min-height: 38px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 12px !important;
+  padding: 8px 10px !important;
+  background: #fffdf7 !important;
+  color: #1f2d24 !important;
+  font: inherit !important;
+  font-size: 0.82rem !important;
+  font-weight: 780 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table input[type='number'] {
+  min-width: 108px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-exento {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 0.78rem !important;
+  font-weight: 850 !important;
+  color: #1f3d2b !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-exento input {
+  width: 18px !important;
+  min-height: 18px !important;
+  height: 18px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-status {
+  min-height: 22px !important;
+  margin: 0 !important;
+  color: #5f6f63 !important;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-status.success { color: #1f3d2b !important; }
+#tesoreria-cuotas-view .cuotas-nomina-status.error { color: #8f1d15 !important; }
+
+#tesoreria-cuotas-view .cuotas-nomina-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-actions button {
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+}
+
+@media (max-width: 1380px) {
+  #tesoreria-cuotas-view .cuotas-overview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-overview-side [data-cuotas-month-summary] {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 960px) {
+  #tesoreria-cuotas-view .cuotas-overview-main .cuotas-kpi-grid,
+  #tesoreria-cuotas-view .cuotas-overview-main .cuotas-secondary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-nomina-button {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 620px) {
+  #tesoreria-cuotas-view .cuotas-nomina-form {
+    padding: 16px !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-nomina-actions,
+  #tesoreria-cuotas-view .cuotas-nomina-actions button {
+    width: 100% !important;
+  }
+}
