@@ -58,7 +58,7 @@
 
   if (!window.__nothofagusCuotasActionsDropdownModule) {
     window.__nothofagusCuotasActionsDropdownModule = true;
-    import('./tesoreria-cuotas-actions-dropdown.js?v=20260706').catch((error) => {
+    import('./tesoreria-cuotas-actions-dropdown.js?v=20260706b').catch((error) => {
       console.error('No fue posible cargar acciones de cuotas:', error);
     });
   }
