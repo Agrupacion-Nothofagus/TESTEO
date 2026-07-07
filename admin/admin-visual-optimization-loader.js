@@ -106,6 +106,14 @@
     document.head.appendChild(paymentPanel);
   }
 
+  if (!document.querySelector('link[data-cuotas-responsive-fix]')) {
+    const cuotasFix = document.createElement('link');
+    cuotasFix.rel = 'stylesheet';
+    cuotasFix.href = 'tesoreria-cuotas-responsive-fix.css?v=20260707';
+    cuotasFix.dataset.cuotasResponsiveFix = 'true';
+    document.head.appendChild(cuotasFix);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
