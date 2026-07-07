@@ -25,14 +25,14 @@
   padding: 14px 15px !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 11px !important;
   background: #1f3d2b !important;
   color: #ffffff !important;
   font: inherit !important;
   font-size: 1rem !important;
   font-weight: 900 !important;
-  text-align: left !important;
+  text-align: center !important;
   box-shadow: none !important;
 }
 
