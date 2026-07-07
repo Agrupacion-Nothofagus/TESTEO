@@ -1,6 +1,7 @@
 const headers = { 'content-type': 'application/json; charset=utf-8' };
 const MEMBERS_TABLE = 'tesoreria_cuotas_miembros';
 const PAYMENTS_TABLE = 'tesoreria_cuotas_pagos';
+const MEMBER_REGISTRY_TABLE = 'solicitudes_miembros';
 const BUCKET = 'tesoreria-comprobantes';
 const MEMBER_STATES = ['estudiante', 'trabajador', 'cesante'];
 const MEMBER_ACCOUNT_STATES = ['activo', 'inactivo'];
@@ -44,6 +45,11 @@ function getConfig(env) {
 
 async function listCuotas(request, cfg, user, permisos) {
   const year = getYear(new URL(request.url).searchParams.get('anio'));
+
+  if (!permisos.ownOnly) {
+    await syncActiveRegistryMembers(cfg, user, year);
+  }
+
   const members = await listMembers(cfg, user, permisos);
   const payments = await listPayments(cfg, year);
   const allowedIds = new Set(members.map((item) => item.id));
@@ -144,6 +150,116 @@ async function deletePayment(request, cfg, permisos) {
   if (row?.comprobante_path) await deleteStorageObject(cfg, row.comprobante_path).catch(() => null);
 
   return reply({ ok: true, pago: await fromPaymentDb(row, cfg) });
+}
+
+async function syncActiveRegistryMembers(cfg, user, year) {
+  const activeMembers = await listActiveRegistryMembers(cfg);
+  if (!activeMembers.length) return { created: 0, updated: 0 };
+
+  const cuotasMembers = await listAllCuotasMembers(cfg);
+  const byEmail = new Map();
+
+  cuotasMembers.forEach((item) => {
+    const email = normalizeEmail(item.correo);
+    if (email && !byEmail.has(email)) byEmail.set(email, item);
+  });
+
+  let created = 0;
+  let updated = 0;
+
+  for (const socio of activeMembers) {
+    const email = normalizeEmail(socio.correo);
+    const nombre = limpiar(socio.nombre);
+    if (!email || !nombre) continue;
+
+    const existing = byEmail.get(email);
+    const payload = registryMemberToCuotasDb(socio, existing, user, year);
+
+    if (existing?.id) {
+      if (!memberPayloadChanged(existing, payload)) continue;
+      const res = await supabaseFetch(cfg, `/rest/v1/${MEMBERS_TABLE}?id=eq.${encodeURIComponent(existing.id)}`, {
+        method: 'PATCH',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => []);
+      if (!res.ok) throw fail(data.message || `No fue posible sincronizar a ${nombre} en cuotas.`, res.status);
+      updated += 1;
+    } else {
+      const insertPayload = { ...payload, creado_por: getNombreUsuario(user) };
+      const res = await supabaseFetch(cfg, `/rest/v1/${MEMBERS_TABLE}`, {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify(insertPayload)
+      });
+      const data = await res.json().catch(() => []);
+      if (!res.ok) throw fail(data.message || `No fue posible agregar a ${nombre} a la matriz de cuotas.`, res.status);
+      const inserted = Array.isArray(data) ? data[0] : data;
+      if (inserted?.correo) byEmail.set(normalizeEmail(inserted.correo), inserted);
+      created += 1;
+    }
+  }
+
+  return { created, updated };
+}
+
+async function listActiveRegistryMembers(cfg) {
+  const query = `/rest/v1/${MEMBER_REGISTRY_TABLE}?select=*&estado=eq.miembro&or=(estado_socio.eq.activo,estado_socio.is.null)&order=nombre.asc&limit=1000`;
+  const res = await supabaseFetch(cfg, query);
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible revisar los socios activos.', res.status);
+  return Array.isArray(data) ? data : [];
+}
+
+async function listAllCuotasMembers(cfg) {
+  const res = await supabaseFetch(cfg, `/rest/v1/${MEMBERS_TABLE}?select=*&order=nombre.asc&limit=1000`);
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible listar miembros de cuotas.', res.status);
+  return Array.isArray(data) ? data : [];
+}
+
+function registryMemberToCuotasDb(socio, existing, user, year) {
+  const inferredState = existing?.estado_miembro ? normalizeMemberState(existing.estado_miembro) : inferMemberStateFromRegistry(socio);
+  const existingCuota = Number(existing?.cuota_mensual || 0);
+  const cuotaMensual = existingCuota > 0 ? existingCuota : defaultCuotaForState(inferredState);
+  const observaciones = limpiar(existing?.observaciones || socio.observaciones_internas || socio.observaciones || 'Sincronizado automáticamente desde Miembros.');
+
+  return {
+    nombre: limpiar(socio.nombre),
+    rut: limpiar(socio.rut_documento || socio.rut),
+    correo: normalizeEmail(socio.correo),
+    telefono: limpiar(socio.telefono),
+    estado_miembro: inferredState,
+    estado_cuenta: 'activo',
+    cuota_mensual: cuotaMensual,
+    anio: year,
+    observaciones,
+    exento: Boolean(existing?.exento),
+    actualizado_por: getNombreUsuario(user),
+    updated_at: new Date().toISOString()
+  };
+}
+
+function memberPayloadChanged(existing = {}, payload = {}) {
+  const comparisons = [
+    ['nombre', 'text'],
+    ['rut', 'text'],
+    ['correo', 'email'],
+    ['telefono', 'text'],
+    ['estado_miembro', 'text'],
+    ['estado_cuenta', 'text'],
+    ['cuota_mensual', 'number'],
+    ['anio', 'number'],
+    ['observaciones', 'text'],
+    ['exento', 'boolean']
+  ];
+
+  return comparisons.some(([key, type]) => {
+    if (type === 'number') return Number(existing[key] || 0) !== Number(payload[key] || 0);
+    if (type === 'boolean') return Boolean(existing[key]) !== Boolean(payload[key]);
+    if (type === 'email') return normalizeEmail(existing[key]) !== normalizeEmail(payload[key]);
+    return limpiar(existing[key]) !== limpiar(payload[key]);
+  });
 }
 
 async function listMembers(cfg, user, permisos) {
@@ -408,6 +524,17 @@ function supabaseFetch(cfg, path, options = {}) {
   });
 }
 
+function inferMemberStateFromRegistry(socio = {}) {
+  const text = `${socio.ocupacion || ''} ${socio.categoria_socio || ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/cesante|desemplead|sin trabajo|buscando trabajo/.test(text)) return 'cesante';
+  if (/estudiante|universitari|liceo|colegio|instituto|tecnico/.test(text)) return 'estudiante';
+  return 'trabajador';
+}
+
+function defaultCuotaForState(state) {
+  return state === 'trabajador' ? 6000 : 3000;
+}
+
 function normalizeMemberState(value) {
   const state = limpiar(value).toLowerCase();
   return MEMBER_STATES.includes(state) ? state : 'estudiante';
@@ -450,6 +577,10 @@ function sanitizeFileName(value) {
 
 function encodeStoragePath(path) {
   return String(path || '').split('/').map(encodeURIComponent).join('/');
+}
+
+function normalizeEmail(value) {
+  return limpiar(value).toLowerCase();
 }
 
 function limpiar(value) {
