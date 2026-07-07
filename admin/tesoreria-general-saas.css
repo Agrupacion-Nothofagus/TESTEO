@@ -1,0 +1,311 @@
+/* Dashboard administrativo tipo SaaS para Tesorería > General */
+
+#tesoreria-general-view .treasury-saas-dashboard {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+#tesoreria-general-view .treasury-saas-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 18px;
+  align-items: stretch;
+  padding: clamp(20px, 2.4vw, 30px);
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(79, 125, 74, 0.2), transparent 34%),
+    linear-gradient(135deg, #fffdf7 0%, rgba(250, 248, 242, 0.94) 48%, rgba(232, 239, 226, 0.88) 100%);
+  box-shadow: 0 18px 42px rgba(31, 61, 43, 0.1);
+}
+
+#tesoreria-general-view .treasury-saas-hero h3 {
+  margin: 0;
+  color: #1f3d2b;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+#tesoreria-general-view .treasury-saas-hero p {
+  max-width: 720px;
+  margin: 12px 0 0;
+  color: #5f6f63;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+#tesoreria-general-view .treasury-saas-kicker,
+#tesoreria-general-view .treasury-saas-card span,
+#tesoreria-general-view .treasury-saas-chart-title span {
+  color: #4f7d4a;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#tesoreria-general-view .treasury-saas-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+#tesoreria-general-view .treasury-saas-hero-actions button,
+#tesoreria-general-view .treasury-saas-card button,
+#tesoreria-general-view .treasury-saas-quick button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #1f3d2b;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 950;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+#tesoreria-general-view .treasury-saas-hero-actions button.secondary,
+#tesoreria-general-view .treasury-saas-quick button.secondary {
+  background: rgba(31, 61, 43, 0.09);
+  color: #1f3d2b;
+}
+
+#tesoreria-general-view .treasury-saas-hero-actions button:hover,
+#tesoreria-general-view .treasury-saas-card button:hover,
+#tesoreria-general-view .treasury-saas-quick button:hover {
+  transform: translateY(-1px);
+  background: #163020;
+  color: #ffffff;
+}
+
+#tesoreria-general-view .treasury-saas-snapshot {
+  display: grid;
+  gap: 12px;
+}
+
+#tesoreria-general-view .treasury-saas-balance {
+  display: grid;
+  align-content: center;
+  min-height: 100%;
+  padding: 18px;
+  border-radius: 24px;
+  background: #1f3d2b;
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+#tesoreria-general-view .treasury-saas-balance span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.75rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#tesoreria-general-view .treasury-saas-balance strong {
+  display: block;
+  margin-top: 10px;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+#tesoreria-general-view .treasury-saas-balance small {
+  display: block;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+#tesoreria-general-view .treasury-saas-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#tesoreria-general-view .treasury-saas-card,
+#tesoreria-general-view .treasury-saas-panel {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 32px rgba(31, 61, 43, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+#tesoreria-general-view .treasury-saas-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #1f3d2b;
+  font-size: clamp(1.35rem, 2.4vw, 2.3rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+#tesoreria-general-view .treasury-saas-card small {
+  display: block;
+  margin-top: 8px;
+  color: #5f6f63;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+#tesoreria-general-view .treasury-saas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+  gap: 16px;
+  align-items: start;
+}
+
+#tesoreria-general-view .treasury-saas-panel h4 {
+  margin: 0;
+  color: #1f3d2b;
+  font-size: 1.05rem;
+}
+
+#tesoreria-general-view .treasury-saas-chart-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+#tesoreria-general-view .treasury-saas-chart {
+  display: grid;
+  gap: 10px;
+}
+
+#tesoreria-general-view .treasury-saas-bar-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  color: #5f6f63;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+#tesoreria-general-view .treasury-saas-bar-track {
+  position: relative;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(31, 61, 43, 0.08);
+}
+
+#tesoreria-general-view .treasury-saas-bar-income,
+#tesoreria-general-view .treasury-saas-bar-expense {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+}
+
+#tesoreria-general-view .treasury-saas-bar-income {
+  left: 0;
+  background: #4f7d4a;
+}
+
+#tesoreria-general-view .treasury-saas-bar-expense {
+  right: 0;
+  background: #b46939;
+  opacity: 0.82;
+}
+
+#tesoreria-general-view .treasury-saas-side {
+  display: grid;
+  gap: 16px;
+}
+
+#tesoreria-general-view .treasury-saas-health {
+  display: grid;
+  gap: 10px;
+}
+
+#tesoreria-general-view .treasury-saas-health article,
+#tesoreria-general-view .treasury-saas-recent article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(79, 125, 74, 0.08);
+}
+
+#tesoreria-general-view .treasury-saas-health strong,
+#tesoreria-general-view .treasury-saas-recent strong {
+  color: #1f3d2b;
+  font-size: 0.9rem;
+}
+
+#tesoreria-general-view .treasury-saas-health span,
+#tesoreria-general-view .treasury-saas-recent span {
+  color: #5f6f63;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+#tesoreria-general-view .treasury-saas-health em,
+#tesoreria-general-view .treasury-saas-recent em {
+  color: #1f3d2b;
+  font-style: normal;
+  font-weight: 950;
+  overflow-wrap: anywhere;
+}
+
+#tesoreria-general-view .treasury-saas-recent {
+  display: grid;
+  gap: 10px;
+}
+
+#tesoreria-general-view .treasury-saas-recent article.egreso em {
+  color: #8f3a20;
+}
+
+#tesoreria-general-view .treasury-saas-empty {
+  margin: 0;
+  color: #5f6f63;
+  font-weight: 800;
+}
+
+#tesoreria-general-view .treasury-saas-quick {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1180px) {
+  #tesoreria-general-view .treasury-saas-hero,
+  #tesoreria-general-view .treasury-saas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #tesoreria-general-view .treasury-saas-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  #tesoreria-general-view .treasury-saas-kpi-grid,
+  #tesoreria-general-view .treasury-saas-bar-row,
+  #tesoreria-general-view .treasury-saas-health article,
+  #tesoreria-general-view .treasury-saas-recent article {
+    grid-template-columns: 1fr;
+  }
+
+  #tesoreria-general-view .treasury-saas-hero-actions button,
+  #tesoreria-general-view .treasury-saas-quick button {
+    width: 100%;
+  }
+}
