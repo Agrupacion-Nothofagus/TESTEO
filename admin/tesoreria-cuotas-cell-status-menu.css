@@ -1,0 +1,178 @@
+/* Menú directo para cambiar estado visual de cada punto mensual en la matriz. */
+
+#tesoreria-cuotas-view .month-cell {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+#tesoreria-cuotas-view .payment-status-dot {
+  cursor: pointer !important;
+}
+
+#tesoreria-cuotas-view .payment-status-dot.is-manual-status {
+  outline: 2px solid rgba(31, 61, 43, 0.18) !important;
+  outline-offset: 3px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu {
+  position: fixed !important;
+  z-index: 900 !important;
+  width: 176px !important;
+  display: grid !important;
+  gap: 6px !important;
+  padding: 8px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 16px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 20px 54px rgba(31, 61, 43, 0.22) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu::before {
+  content: 'Cambiar estado';
+  display: block;
+  padding: 4px 8px 6px;
+  color: #5f6f63;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu button {
+  width: 100% !important;
+  min-height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  padding: 8px 10px !important;
+  background: #faf8f2 !important;
+  color: #1f2d24 !important;
+  font: inherit !important;
+  font-size: 0.8rem !important;
+  font-weight: 900 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu button:hover {
+  background: rgba(79, 125, 74, 0.12) !important;
+  color: #1f3d2b !important;
+  transform: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu button::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 999px;
+  background: #cfd8ce;
+}
+
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='pagado']::before { background: #4f7d4a; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='pendiente']::before { background: #c99637; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='atrasado']::before { background: #b84a3a; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='sin_registro']::before { background: #cfd8ce; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='detalles']::before {
+  content: 'i';
+  display: grid;
+  place-items: center;
+  background: #1f3d2b;
+  color: #ffffff;
+  font-size: 0.64rem;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 950 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 18px !important;
+  background: rgba(15, 33, 24, 0.38) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-panel {
+  width: min(460px, calc(100vw - 28px)) !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 22px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 28px 70px rgba(31, 61, 43, 0.26) !important;
+  overflow: hidden !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  align-items: flex-start !important;
+  padding: 20px 22px !important;
+  background: linear-gradient(135deg, #1f3d2b, #4f7d4a) !important;
+  color: #ffffff !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-head h4 {
+  margin: 0 !important;
+  color: #ffffff !important;
+  font-size: 1.22rem !important;
+  line-height: 1.1 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-head p {
+  margin: 6px 0 0 !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  font-weight: 800 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-close {
+  width: 36px !important;
+  height: 36px !important;
+  border: 1px solid rgba(246, 244, 222, 0.38) !important;
+  border-radius: 999px !important;
+  background: rgba(246, 244, 222, 0.12) !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-body {
+  display: grid !important;
+  gap: 12px !important;
+  padding: 20px 22px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-body dl {
+  display: grid !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-body dl div {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  background: #faf8f2 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-body dt {
+  color: #5f6f63 !important;
+  font-weight: 850 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-cell-details-body dd {
+  margin: 0 !important;
+  color: #1f2d24 !important;
+  font-weight: 950 !important;
+  text-align: right !important;
+}
+
+@media (max-width: 900px) {
+  #tesoreria-cuotas-view .cuotas-status-menu {
+    width: min(220px, calc(100vw - 28px)) !important;
+  }
+}
