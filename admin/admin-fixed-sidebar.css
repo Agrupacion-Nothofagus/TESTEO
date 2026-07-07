@@ -1,0 +1,72 @@
+/* Mantiene el sidebar fijo en escritorio mientras se navega verticalmente.
+   En tablet/móvil vuelve a flujo normal para no tapar contenido. */
+
+@media (min-width: 921px) {
+  .admin-dashboard {
+    display: block !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 80 !important;
+    width: var(--teurgia-zoom-sidebar, 284px) !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  .admin-content {
+    width: calc(100% - var(--teurgia-zoom-sidebar, 284px)) !important;
+    min-width: 0 !important;
+    margin-left: var(--teurgia-zoom-sidebar, 284px) !important;
+  }
+
+  .admin-header {
+    left: var(--teurgia-zoom-sidebar, 284px) !important;
+    width: calc(100% - var(--teurgia-zoom-sidebar, 284px)) !important;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1240px) {
+  .admin-sidebar {
+    width: 248px !important;
+  }
+
+  .admin-content {
+    width: calc(100% - 248px) !important;
+    margin-left: 248px !important;
+  }
+
+  .admin-header {
+    left: 248px !important;
+    width: calc(100% - 248px) !important;
+  }
+}
+
+@media (max-width: 920px) {
+  .admin-sidebar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  .admin-content,
+  .admin-header {
+    width: 100% !important;
+    margin-left: 0 !important;
+    left: auto !important;
+  }
+}
