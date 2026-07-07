@@ -1,0 +1,290 @@
+/* Capa de alejamiento visual: simula una lectura similar a zoom 80%.
+   No usa transform global ni altera lógica; reduce densidad visual, tamaños y espaciados. */
+
+:root {
+  --teurgia-zoom-sidebar: 284px;
+  --teurgia-zoom-page-x: clamp(28px, 3vw, 46px);
+  --teurgia-zoom-card-gap: 16px;
+}
+
+body {
+  font-size: 14px !important;
+}
+
+.admin-dashboard {
+  grid-template-columns: var(--teurgia-zoom-sidebar) minmax(0, 1fr) !important;
+}
+
+.admin-sidebar {
+  width: var(--teurgia-zoom-sidebar) !important;
+  padding: 24px 18px !important;
+  gap: 18px !important;
+}
+
+.sidebar-brand {
+  grid-template-columns: 48px minmax(0, 1fr) !important;
+  gap: 12px !important;
+}
+
+.sidebar-logo {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+}
+
+.sidebar-brand h1 {
+  font-size: 1.02rem !important;
+}
+
+.sidebar-brand p {
+  font-size: 0.72rem !important;
+}
+
+.sidebar-nav {
+  gap: 8px !important;
+}
+
+.sidebar-nav::before {
+  margin-bottom: 4px !important;
+  font-size: 0.68rem !important;
+}
+
+.sidebar-link,
+.publicaciones-sidebar-toggle,
+.members-sidebar-toggle,
+.tesoreria-sidebar-toggle,
+.actas-sidebar-toggle {
+  min-height: 42px !important;
+  padding: 10px 12px !important;
+  gap: 10px !important;
+  border-radius: 12px !important;
+  font-size: 0.88rem !important;
+}
+
+.sidebar-link span,
+.publicaciones-sidebar-toggle span,
+.members-sidebar-toggle span,
+.tesoreria-sidebar-toggle span,
+.actas-sidebar-toggle span {
+  width: 24px !important;
+  height: 24px !important;
+  flex-basis: 24px !important;
+  font-size: 0.92rem !important;
+}
+
+.publicaciones-sidebar-menu,
+.sidebar-member-menu,
+.tesoreria-sidebar-menu,
+.actas-sidebar-menu {
+  gap: 6px !important;
+  padding-left: 28px !important;
+}
+
+.publicaciones-sidebar-menu .sidebar-link,
+.sidebar-member-menu .sidebar-link,
+.tesoreria-sidebar-menu .sidebar-link,
+.actas-sidebar-menu .sidebar-link {
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+  font-size: 0.82rem !important;
+}
+
+.sidebar-site-link,
+.sidebar-logout {
+  min-height: 42px !important;
+  font-size: 0.86rem !important;
+}
+
+.admin-header {
+  min-height: 92px !important;
+  padding: 18px var(--teurgia-zoom-page-x) 16px !important;
+}
+
+.admin-header h2 {
+  font-size: clamp(1.7rem, 2.4vw, 2.2rem) !important;
+  margin-bottom: 4px !important;
+}
+
+#admin-view-description,
+.admin-header p {
+  font-size: 0.88rem !important;
+}
+
+.admin-session-card {
+  font-size: 0.88rem !important;
+}
+
+.admin-view.is-active {
+  padding: 30px var(--teurgia-zoom-page-x) 44px !important;
+}
+
+#dashboard-view .dashboard-quick-card,
+.dashboard-quick-card {
+  min-height: 86px !important;
+  padding: 20px 24px !important;
+  border-radius: 16px !important;
+}
+
+#dashboard-view .dashboard-quick-card > strong,
+.dashboard-quick-card > strong {
+  font-size: clamp(1.28rem, 2vw, 1.78rem) !important;
+  margin-bottom: 5px !important;
+}
+
+.dashboard-action-button {
+  min-height: 40px !important;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  font-size: 0.86rem !important;
+}
+
+.dashboard-stats-grid,
+.tesoreria-summary-grid,
+.cuotas-summary-grid,
+.formularios-summary-grid,
+.dashboard-content-grid {
+  gap: var(--teurgia-zoom-card-gap) !important;
+}
+
+.dashboard-stat-card,
+.tesoreria-summary-card,
+.cuotas-summary-card,
+.formularios-summary-card {
+  min-height: 140px !important;
+  padding: 20px !important;
+  gap: 10px !important;
+}
+
+.dashboard-stat-card span,
+.tesoreria-summary-card span,
+.cuotas-summary-card span,
+.formularios-summary-card span {
+  font-size: 0.82rem !important;
+}
+
+.dashboard-stat-card strong,
+.tesoreria-summary-card strong,
+.cuotas-summary-card strong,
+.formularios-summary-card strong {
+  font-size: clamp(1.65rem, 2.4vw, 2.2rem) !important;
+}
+
+.dashboard-widget {
+  min-height: 190px !important;
+  padding: 20px !important;
+  border-radius: 13px !important;
+}
+
+.dashboard-widget h4,
+.panel-heading h3,
+.list-card h3,
+.editor-card h3,
+.users-card h3,
+.tesoreria-panel h3,
+.members-card h3,
+.formularios-panel h3 {
+  font-size: clamp(0.98rem, 1.3vw, 1.2rem) !important;
+}
+
+.dashboard-list-item,
+.dashboard-member-summary article,
+.dashboard-treasury-grid article,
+.formulario-field,
+.member-summary-grid div,
+.tesoreria-row,
+.cuotas-table tr,
+.actas-record-row,
+.member-request-card,
+.member-row-card,
+.formulario-card,
+.tesoreria-list-card,
+.cuotas-table-card,
+.actas-registro-card,
+.post-card,
+.user-row,
+.users-admin-list article,
+.admin-record-row {
+  border-radius: 11px !important;
+}
+
+.admin-panel,
+.tesoreria-panel,
+.members-card,
+.formularios-panel,
+.list-card,
+.editor-card,
+.users-card {
+  font-size: 0.9rem !important;
+}
+
+.member-filter-bar,
+.formularios-toolbar,
+.cuotas-toolbar,
+.tesoreria-toolbar,
+.actas-filter-bar,
+.posts-filter-bar {
+  gap: 10px !important;
+  border-radius: 12px !important;
+}
+
+input,
+select,
+textarea {
+  min-height: 38px !important;
+  font-size: 0.88rem !important;
+}
+
+button,
+.secondary-admin-button,
+.admin-actions button,
+.formulario-actions button,
+.formulario-actions a,
+.member-quick-actions button,
+.member-request-actions button,
+.tesoreria-form button,
+.cuotas-actions button,
+.payment-actions-toggle {
+  min-height: 38px !important;
+  padding: 8px 13px !important;
+  border-radius: 12px !important;
+  font-size: 0.86rem !important;
+}
+
+@media (min-width: 1500px) {
+  .dashboard-stats-grid,
+  .tesoreria-summary-grid,
+  .cuotas-summary-grid,
+  .formularios-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-content-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1240px) {
+  .admin-dashboard {
+    grid-template-columns: 248px minmax(0, 1fr) !important;
+  }
+
+  .admin-sidebar {
+    width: 248px !important;
+  }
+}
+
+@media (max-width: 920px) {
+  body {
+    font-size: 15px !important;
+  }
+
+  .admin-dashboard {
+    display: block !important;
+  }
+
+  .admin-header,
+  .admin-view.is-active {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+}
