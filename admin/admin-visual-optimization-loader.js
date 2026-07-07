@@ -42,6 +42,14 @@
     document.head.appendChild(treasury);
   }
 
+  if (!document.querySelector('link[data-dashboard-teurgia-style]')) {
+    const dashboard = document.createElement('link');
+    dashboard.rel = 'stylesheet';
+    dashboard.href = 'dashboard-teurgia-style.css?v=20260706';
+    dashboard.dataset.dashboardTeurgiaStyle = 'true';
+    document.head.appendChild(dashboard);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
