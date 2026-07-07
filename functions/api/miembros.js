@@ -40,10 +40,17 @@ function config(env) {
 }
 
 async function createSolicitud(request, cfg) {
-  const body = await request.json();
+  const body = await request.json().catch(() => ({}));
 
   const sitioWeb = limpiar(body.sitio_web);
   if (sitioWeb) return reply({ ok: true });
+
+  const registroDirecto = Boolean(body.registro_directo) || normalizarEstado(body.estado) === 'miembro';
+
+  if (registroDirecto) {
+    const session = await currentUser(request, cfg);
+    allowMembersAccess(session, cfg);
+  }
 
   const areas = normalizarLista(body.areas_participacion);
   const solicitud = {
@@ -73,15 +80,20 @@ async function createSolicitud(request, cfg) {
     experiencia_descripcion: limpiar(body.experiencia_descripcion),
     declaracion_final: Boolean(body.declaracion_final),
     intereses: areas.join(', '),
-    estado: 'pendiente',
-    observaciones: '',
+    estado: registroDirecto ? 'miembro' : 'pendiente',
+    observaciones: limpiar(body.observaciones || body.observaciones_internas),
     observacion_rechazo: '',
-    observaciones_internas: '',
-    estado_socio: 'activo',
-    fecha_ingreso: null
+    observaciones_internas: limpiar(body.observaciones_internas || body.observaciones),
+    estado_socio: normalizarEstadoSocio(body.estado_socio || 'activo'),
+    fecha_ingreso: registroDirecto ? limpiar(body.fecha_ingreso) || new Date().toISOString() : null
   };
 
-  validarSolicitud(solicitud);
+  if (registroDirecto) {
+    completarRegistroDirecto(solicitud);
+    validarRegistroDirecto(solicitud);
+  } else {
+    validarSolicitud(solicitud);
+  }
 
   const res = await callSupabase(cfg, '/rest/v1/solicitudes_miembros', {
     method: 'POST',
@@ -192,6 +204,35 @@ function allowMembersAccess(user, cfg) {
   const esGestor = rol === 'gestor_miembros';
 
   if (!esAdmin && !esGestor) throw fail('No autorizado para gestionar miembros.', 403);
+}
+
+function completarRegistroDirecto(solicitud) {
+  if (!solicitud.vinculo_organizacion) solicitud.vinculo_organizacion = 'Registro directo desde panel administrativo';
+  if (!solicitud.motivacion) solicitud.motivacion = 'Registro directo de socio/a realizado desde el panel administrativo.';
+  if (!solicitud.aporte) solicitud.aporte = 'Registro administrativo interno.';
+  if (!solicitud.areas_participacion.length) solicitud.areas_participacion = ['Registro administrativo'];
+  if (!solicitud.intereses) solicitud.intereses = solicitud.areas_participacion.join(', ');
+  solicitud.declaracion_final = true;
+}
+
+function validarRegistroDirecto(solicitud) {
+  const requeridos = [
+    solicitud.nombre,
+    solicitud.rut_documento,
+    solicitud.fecha_nacimiento,
+    solicitud.edad,
+    solicitud.comuna,
+    solicitud.telefono,
+    solicitud.correo,
+    solicitud.ocupacion,
+    solicitud.categoria_socio
+  ];
+
+  if (requeridos.some((item) => !String(item || '').trim())) throw fail('Faltan campos obligatorios para agregar el miembro.', 400);
+  if (!/^\+569\d{8}$/.test(solicitud.telefono)) throw fail('El teléfono debe tener formato +569XXXXXXXX.', 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(solicitud.correo)) throw fail('El correo electrónico no es válido.', 400);
+  if (solicitud.edad < 12 || solicitud.edad > 120) throw fail('La edad ingresada no es válida.', 400);
+  if (solicitud.menor_edad) validarAdultoResponsable(solicitud);
 }
 
 function validarSolicitud(solicitud) {
