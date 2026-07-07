@@ -1,5 +1,5 @@
-/* Mantiene el sidebar fijo en escritorio mientras se navega verticalmente.
-   En tablet/móvil vuelve a flujo normal para no tapar contenido. */
+/* Mantiene el sidebar y el admin header fijos en escritorio.
+   El header se extiende desde el borde derecho del sidebar hasta el borde derecho real de la ventana. */
 
 @media (min-width: 921px) {
   .admin-dashboard {
@@ -15,7 +15,7 @@
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    z-index: 80 !important;
+    z-index: 90 !important;
     width: var(--teurgia-zoom-sidebar, 284px) !important;
     height: 100vh !important;
     min-height: 100vh !important;
@@ -25,14 +25,25 @@
   }
 
   .admin-content {
-    width: calc(100% - var(--teurgia-zoom-sidebar, 284px)) !important;
+    width: auto !important;
+    max-width: none !important;
     min-width: 0 !important;
     margin-left: var(--teurgia-zoom-sidebar, 284px) !important;
+    padding-top: 70px !important;
   }
 
   .admin-header {
+    position: fixed !important;
+    top: 0 !important;
     left: var(--teurgia-zoom-sidebar, 284px) !important;
-    width: calc(100% - var(--teurgia-zoom-sidebar, 284px)) !important;
+    right: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    z-index: 85 !important;
+  }
+
+  .admin-view.is-active {
+    padding-top: 24px !important;
   }
 }
 
@@ -42,13 +53,15 @@
   }
 
   .admin-content {
-    width: calc(100% - 248px) !important;
+    width: auto !important;
     margin-left: 248px !important;
+    padding-top: 66px !important;
   }
 
   .admin-header {
     left: 248px !important;
-    width: calc(100% - 248px) !important;
+    right: 0 !important;
+    width: auto !important;
   }
 }
 
@@ -66,7 +79,14 @@
   .admin-content,
   .admin-header {
     width: 100% !important;
+    max-width: 100% !important;
     margin-left: 0 !important;
+    padding-top: 0 !important;
     left: auto !important;
+    right: auto !important;
+  }
+
+  .admin-header {
+    position: relative !important;
   }
 }
