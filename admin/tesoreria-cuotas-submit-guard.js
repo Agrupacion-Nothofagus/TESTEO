@@ -2,6 +2,14 @@
   if (window.__nothofagusCuotasSubmitGuard) return;
   window.__nothofagusCuotasSubmitGuard = true;
 
+  if (!document.querySelector('link[data-cuotas-submit-guard]')) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'tesoreria-cuotas-submit-guard.css?v=20260707';
+    css.dataset.cuotasSubmitGuard = 'true';
+    document.head.appendChild(css);
+  }
+
   document.addEventListener('submit', (event) => {
     const form = event.target;
     if (!form?.matches?.('[data-cuotas-payment-form]')) return;
