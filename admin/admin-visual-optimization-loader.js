@@ -82,6 +82,14 @@
     document.head.appendChild(zoom);
   }
 
+  if (!document.querySelector('link[data-admin-nothofagus-institutional-colors]')) {
+    const institutional = document.createElement('link');
+    institutional.rel = 'stylesheet';
+    institutional.href = 'admin-nothofagus-institutional-colors.css?v=20260706';
+    institutional.dataset.adminNothofagusInstitutionalColors = 'true';
+    document.head.appendChild(institutional);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
