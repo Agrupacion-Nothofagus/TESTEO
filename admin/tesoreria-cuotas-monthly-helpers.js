@@ -1,6 +1,6 @@
 (() => {
-  if (window.__nothofagusCuotasMonthlyHelpers) return;
-  window.__nothofagusCuotasMonthlyHelpers = true;
+  if (window.__nothofagusCuotasMonthlyHelpersLoaded) return;
+  window.__nothofagusCuotasMonthlyHelpersLoaded = true;
 
   document.addEventListener('click', (event) => {
     const clear = event.target.closest?.('[data-cuotas-clear-filter]');
