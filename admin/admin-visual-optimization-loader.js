@@ -66,6 +66,14 @@
     document.head.appendChild(components);
   }
 
+  if (!document.querySelector('link[data-admin-teurgia-exact-layout]')) {
+    const teurgia = document.createElement('link');
+    teurgia.rel = 'stylesheet';
+    teurgia.href = 'admin-teurgia-exact-layout.css?v=20260706-exact';
+    teurgia.dataset.adminTeurgiaExactLayout = 'true';
+    document.head.appendChild(teurgia);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
