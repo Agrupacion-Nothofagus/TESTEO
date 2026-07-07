@@ -1,0 +1,127 @@
+.cuotas-table-wrap,
+.cuotas-table,
+.cuotas-table tbody,
+.cuotas-table tr,
+.cuotas-table td[data-label="Acciones"] {
+  overflow: visible !important;
+}
+
+.cuotas-table td[data-label="Acciones"] {
+  position: relative !important;
+  justify-self: end !important;
+  align-self: center !important;
+  min-width: 148px !important;
+}
+
+.cuotas-actions {
+  position: relative !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  width: max-content !important;
+  min-width: 146px !important;
+  overflow: visible !important;
+}
+
+.cuotas-actions-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-width: 146px !important;
+  min-height: 46px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  background: var(--verde-bosque) !important;
+  color: var(--blanco) !important;
+  font: inherit !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-shadow: 0 10px 20px rgba(31, 61, 43, 0.12) !important;
+}
+
+.cuotas-actions-toggle-icon {
+  font-size: 1.05rem !important;
+  line-height: 1 !important;
+}
+
+.cuotas-actions-menu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 90 !important;
+  display: none !important;
+  min-width: 230px !important;
+  padding: 8px !important;
+  border: 1px solid rgba(31, 61, 43, 0.13) !important;
+  border-radius: 18px !important;
+  background: var(--blanco) !important;
+  box-shadow: 0 18px 40px rgba(31, 61, 43, 0.16) !important;
+}
+
+.cuotas-actions.is-open .cuotas-actions-menu {
+  display: grid !important;
+  gap: 6px !important;
+}
+
+.cuotas-actions-menu button {
+  width: 100% !important;
+  min-height: 40px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+  background: rgba(31, 61, 43, 0.07) !important;
+  color: var(--verde-bosque) !important;
+  font: inherit !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  white-space: normal !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.cuotas-actions-menu button:hover:not(:disabled),
+.cuotas-actions-menu button:focus-visible:not(:disabled) {
+  background: var(--verde-bosque) !important;
+  color: var(--blanco) !important;
+  outline: none !important;
+}
+
+.cuotas-actions-menu button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.52 !important;
+}
+
+@media (max-width: 1280px) {
+  .cuotas-table td[data-label="Acciones"] {
+    justify-self: stretch !important;
+    min-width: 0 !important;
+  }
+
+  .cuotas-actions {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .cuotas-actions-toggle {
+    width: 100% !important;
+  }
+
+  .cuotas-actions-menu {
+    width: min(100%, 280px) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .cuotas-actions-menu {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-top: 8px !important;
+    box-shadow: 0 12px 26px rgba(31, 61, 43, 0.1) !important;
+  }
+}
