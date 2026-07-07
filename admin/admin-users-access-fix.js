@@ -1,5 +1,6 @@
+import './tesoreria-cuotas-retired-flow.js?v=20260710';
 import './dashboard-admin-panel-update.js?v=20260709';
-import './tesoreria-general-saas.js?v=20260709';
+import './tesoreria-general-saas.js?v=20260710';
 import './tesoreria-cuotas-nomina-fix.js?v=20260709';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
