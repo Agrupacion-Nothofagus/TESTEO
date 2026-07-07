@@ -50,6 +50,22 @@
     document.head.appendChild(dashboard);
   }
 
+  if (!document.querySelector('link[data-admin-dashboard-system]')) {
+    const system = document.createElement('link');
+    system.rel = 'stylesheet';
+    system.href = 'admin-dashboard-system.css?v=20260706-sidebar-clean';
+    system.dataset.adminDashboardSystem = 'true';
+    document.head.appendChild(system);
+  }
+
+  if (!document.querySelector('link[data-admin-soft-components]')) {
+    const components = document.createElement('link');
+    components.rel = 'stylesheet';
+    components.href = 'admin-soft-components.css?v=20260706-clean-minimal';
+    components.dataset.adminSoftComponents = 'true';
+    document.head.appendChild(components);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
