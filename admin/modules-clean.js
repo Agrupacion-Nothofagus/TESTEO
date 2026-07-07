@@ -19,3 +19,4 @@ import './actas-delete-warning.js?v=20260703-clean';
 import './admin-single-view.js?v=20260703-clean';
 import './miembros-delete.js?v=20260703-clean';
 import './miembros-admin.js?v=20260703-clean';
+import './miembros-quick-create.js?v=20260706';
