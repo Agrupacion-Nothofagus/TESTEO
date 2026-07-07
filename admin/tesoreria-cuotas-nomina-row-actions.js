@@ -14,9 +14,12 @@
     const row = button.closest('[data-nomina-row]');
     if (!row) return;
     const status = document.querySelector('#tesoreria-cuotas-view [data-cuotas-nomina-status]');
-    row.remove();
+    const account = row.querySelector('[data-field="estado_cuenta"]');
+    if (account) account.value = 'inactivo';
+    row.style.display = 'none';
+    row.dataset.nominaMarkedInactive = 'true';
     if (status) {
-      status.textContent = 'Integrante retirado de esta vista.';
+      status.textContent = 'Integrante marcado para eliminar. Presiona Guardar nómina para aplicar el cambio.';
       status.classList.add('success');
       status.classList.remove('error');
     }
