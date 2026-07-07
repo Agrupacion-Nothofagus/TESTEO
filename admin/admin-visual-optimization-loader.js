@@ -74,6 +74,14 @@
     document.head.appendChild(teurgia);
   }
 
+  if (!document.querySelector('link[data-admin-teurgia-zoom-80]')) {
+    const zoom = document.createElement('link');
+    zoom.rel = 'stylesheet';
+    zoom.href = 'admin-teurgia-zoom-80.css?v=20260706';
+    zoom.dataset.adminTeurgiaZoom80 = 'true';
+    document.head.appendChild(zoom);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
