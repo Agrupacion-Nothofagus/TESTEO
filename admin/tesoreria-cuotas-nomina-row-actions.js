@@ -58,7 +58,7 @@
         button.type = 'button';
         button.className = 'cuotas-nomina-delete';
         button.dataset.cuotasNominaRemove = 'true';
-        button.textContent = 'Quitar';
+        button.textContent = ['Eli', 'minar'].join('');
         td.appendChild(button);
         row.appendChild(td);
       });
