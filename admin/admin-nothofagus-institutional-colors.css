@@ -1,0 +1,330 @@
+/* Paleta institucional Nothofagus para el panel admin.
+   Mantiene el layout tipo Teurgia, pero reemplaza azul/turquesa por verde bosque, verde hoja, beige y blanco cálido. */
+
+:root {
+  --teurgia-sidebar: #14281d;
+  --teurgia-sidebar-soft: #1f3d2b;
+  --teurgia-active: #2f6b3d;
+  --teurgia-main: #f5f1e8;
+  --teurgia-card: #fffdf7;
+  --teurgia-border: #dfe8dc;
+  --teurgia-muted: #5f6f63;
+  --teurgia-text: #1f2d24;
+  --teurgia-accent: #1f3d2b;
+  --teurgia-accent-2: #4f7d4a;
+  --teurgia-green: #1f3d2b;
+  --teurgia-shadow: 0 18px 45px rgba(31, 61, 43, 0.10);
+  --teurgia-cream-soft: #faf8f2;
+  --teurgia-cream-strong: #f5f1e8;
+}
+
+body {
+  background:
+    radial-gradient(circle at 88% 6%, rgba(79, 125, 74, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(245, 241, 232, 0.98), rgba(250, 248, 242, 0.98)),
+    url('../fondo.jpg') center/cover fixed !important;
+  color: var(--teurgia-text) !important;
+}
+
+.admin-sidebar {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(79, 125, 74, 0.22), transparent 38%),
+    linear-gradient(180deg, #14281d 0%, #0f2118 100%) !important;
+  color: #f6f4de !important;
+}
+
+.sidebar-logo {
+  background: #f6f4de !important;
+  border: 1px solid rgba(246, 244, 222, 0.35) !important;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14) !important;
+}
+
+.sidebar-brand h1 {
+  color: #f6f4de !important;
+}
+
+.sidebar-brand p,
+.sidebar-nav::before {
+  color: rgba(246, 244, 222, 0.68) !important;
+}
+
+.sidebar-link,
+.publicaciones-sidebar-toggle,
+.members-sidebar-toggle,
+.tesoreria-sidebar-toggle,
+.actas-sidebar-toggle {
+  color: rgba(246, 244, 222, 0.86) !important;
+}
+
+.sidebar-link:hover,
+.publicaciones-sidebar-toggle:hover,
+.members-sidebar-toggle:hover,
+.tesoreria-sidebar-toggle:hover,
+.actas-sidebar-toggle:hover {
+  background: rgba(246, 244, 222, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.sidebar-link.is-active,
+.publicaciones-sidebar-toggle.is-active,
+.members-sidebar-toggle.is-active,
+.tesoreria-sidebar-toggle.is-active,
+.actas-sidebar-toggle.is-active {
+  background: linear-gradient(135deg, #2f6b3d, #4f7d4a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14) !important;
+}
+
+.publicaciones-sidebar-menu,
+.sidebar-member-menu,
+.tesoreria-sidebar-menu,
+.actas-sidebar-menu {
+  border-left-color: rgba(246, 244, 222, 0.18) !important;
+}
+
+.publicaciones-sidebar-menu .sidebar-link,
+.sidebar-member-menu .sidebar-link,
+.tesoreria-sidebar-menu .sidebar-link,
+.actas-sidebar-menu .sidebar-link {
+  color: rgba(246, 244, 222, 0.76) !important;
+}
+
+.sidebar-site-link {
+  background: linear-gradient(135deg, #2f6b3d, #4f7d4a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 26px rgba(47, 107, 61, 0.25) !important;
+}
+
+.sidebar-logout {
+  border-color: rgba(246, 244, 222, 0.28) !important;
+  background: rgba(246, 244, 222, 0.08) !important;
+  color: #f6f4de !important;
+}
+
+.admin-content,
+.admin-dashboard {
+  background: var(--teurgia-main) !important;
+}
+
+.admin-header {
+  border-bottom-color: #dfe8dc !important;
+  background: #fffdf7 !important;
+}
+
+.admin-header h2,
+.dashboard-stat-card strong,
+.tesoreria-summary-card strong,
+.cuotas-summary-card strong,
+.formularios-summary-card strong,
+.dashboard-widget h4,
+.panel-heading h3,
+.list-card h3,
+.editor-card h3,
+.users-card h3,
+.tesoreria-panel h3,
+.members-card h3,
+.formularios-panel h3,
+.dashboard-quick-card > strong,
+.member-request-card h4,
+.formulario-card h4 {
+  color: #1f3d2b !important;
+}
+
+#admin-view-description,
+.admin-header p,
+.admin-session-card,
+.admin-session-card span,
+.admin-session-card strong,
+.dashboard-stat-card span,
+.tesoreria-summary-card span,
+.cuotas-summary-card span,
+.formularios-summary-card span,
+.dashboard-stat-card small,
+.tesoreria-summary-card small,
+.cuotas-summary-card small,
+.formularios-summary-card small {
+  color: #5f6f63 !important;
+}
+
+.section-tag,
+.admin-header .section-tag {
+  color: #4f7d4a !important;
+}
+
+#dashboard-view .dashboard-quick-card,
+.dashboard-quick-card {
+  background:
+    radial-gradient(circle at 92% 0%, rgba(246, 244, 222, 0.18), transparent 32%),
+    linear-gradient(135deg, #1f3d2b 0%, #4f7d4a 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 18px 36px rgba(31, 61, 43, 0.20) !important;
+}
+
+#dashboard-view .dashboard-quick-card > strong,
+.dashboard-quick-card > strong,
+.dashboard-quick-card p,
+.dashboard-quick-card small {
+  color: #ffffff !important;
+}
+
+.dashboard-action-button {
+  border-color: rgba(246, 244, 222, 0.58) !important;
+  color: #ffffff !important;
+}
+
+.dashboard-action-button:hover {
+  background: rgba(246, 244, 222, 0.16) !important;
+}
+
+.dashboard-stat-card,
+.tesoreria-summary-card,
+.cuotas-summary-card,
+.formularios-summary-card,
+.dashboard-widget,
+.member-request-card,
+.member-row-card,
+.formulario-card,
+.tesoreria-list-card,
+.cuotas-table-card,
+.actas-registro-card,
+.post-card,
+.user-row,
+.users-admin-list article,
+.admin-record-row,
+.member-filter-bar,
+.formularios-toolbar,
+.cuotas-toolbar,
+.tesoreria-toolbar,
+.actas-filter-bar,
+.posts-filter-bar {
+  border-color: #dfe8dc !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 18px 45px rgba(31, 61, 43, 0.10) !important;
+}
+
+.dashboard-list-item,
+.dashboard-member-summary article,
+.dashboard-treasury-grid article,
+.formulario-field,
+.member-summary-grid div,
+.tesoreria-row,
+.cuotas-table tr,
+.actas-record-row {
+  border-color: #dfe8dc !important;
+  background: #faf8f2 !important;
+}
+
+.secondary-admin-button,
+.admin-actions button,
+.tesoreria-form button[type='submit'],
+.cuotas-actions button,
+.payment-actions-toggle,
+.cuotas-header-actions button,
+.cuotas-filter-panel button,
+.cuotas-quick-buttons button,
+.cuotas-modal-actions button,
+.sidebar-site-link {
+  background: linear-gradient(135deg, #1f3d2b, #4f7d4a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(31, 61, 43, 0.18) !important;
+}
+
+.secondary-admin-button:hover,
+.admin-actions button:hover,
+.tesoreria-form button[type='submit']:hover,
+.cuotas-actions button:hover,
+.payment-actions-toggle:hover,
+.cuotas-header-actions button:hover,
+.cuotas-filter-panel button:hover,
+.cuotas-quick-buttons button:hover,
+.cuotas-modal-actions button:hover {
+  filter: brightness(0.97) !important;
+}
+
+button.secondary,
+.cuotas-header-actions .secondary,
+.cuotas-filter-panel .secondary,
+.cuotas-modal-actions .secondary {
+  background: #faf8f2 !important;
+  color: #1f3d2b !important;
+  border: 1px solid #dfe8dc !important;
+  box-shadow: none !important;
+}
+
+input,
+select,
+textarea,
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  border-color: #dfe8dc !important;
+  background: #ffffff !important;
+  color: #1f2d24 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.18) !important;
+  border-color: #4f7d4a !important;
+}
+
+.member-status-pill,
+.formulario-badge,
+.cuotas-badge,
+.status-badge,
+.post-status,
+.user-role-badge,
+.cuotas-member-state,
+.admin-record-badge {
+  background: rgba(79, 125, 74, 0.14) !important;
+  color: #1f3d2b !important;
+}
+
+.cuotas-badge.atrasado,
+.formulario-badge.archivado,
+.status-badge.rechazado,
+.member-status-pill.rechazado {
+  background: rgba(155, 44, 44, 0.10) !important;
+  color: #7f1d1d !important;
+}
+
+.admin-status,
+.admin-status.success,
+.member-quick-status.success,
+.form-status.success,
+.users-status.success {
+  color: #1f3d2b !important;
+}
+
+.admin-status.error,
+.member-quick-status.error,
+.form-status.error,
+.users-status.error {
+  color: #9b2c2c !important;
+}
+
+.cuotas-progress span,
+.dashboard-stat-card::before {
+  background: #4f7d4a !important;
+}
+
+.payment-status-dot.pagado,
+.status-dot.pagado {
+  background: #4f7d4a !important;
+}
+
+.payment-status-dot.pendiente,
+.status-dot.pendiente {
+  background: #c99637 !important;
+}
+
+.payment-status-dot.atrasado,
+.status-dot.atrasado {
+  background: #b84a3a !important;
+}
+
+.payment-status-dot.sin_registro,
+.status-dot.sin_registro {
+  background: #cfd8ce !important;
+}
