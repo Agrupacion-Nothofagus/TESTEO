@@ -1,0 +1,104 @@
+/* Ajustes finales para Nómina en Registro de pagos */
+
+#tesoreria-cuotas-view .cuotas-nomina-slot {
+  justify-items: center !important;
+  margin-top: -2px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button {
+  width: min(52%, 220px) !important;
+  min-height: 42px !important;
+  padding: 9px 18px !important;
+  border-radius: 999px !important;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+  box-shadow: 0 10px 20px rgba(31, 61, 43, 0.16) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-modal {
+  width: min(1240px, calc(100vw - 36px)) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table-wrap {
+  max-height: min(58vh, 560px) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table {
+  min-width: 1160px !important;
+  table-layout: fixed !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table th,
+#tesoreria-cuotas-view .cuotas-nomina-table td {
+  height: 58px !important;
+  padding: 10px 9px !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(1),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(1) { width: 210px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(2),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(2) { width: 126px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(3),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(3) { width: 118px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(4),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(4) { width: 108px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(5),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(5) { width: 88px !important; text-align: center !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(6),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(6) { width: 132px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(7),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(7) { width: 190px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(8),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(8) { width: 200px !important; }
+#tesoreria-cuotas-view .cuotas-nomina-table th:nth-child(9),
+#tesoreria-cuotas-view .cuotas-nomina-table td:nth-child(9) { width: 112px !important; text-align: center !important; }
+
+#tesoreria-cuotas-view .cuotas-nomina-persona strong,
+#tesoreria-cuotas-view .cuotas-nomina-persona small {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table input,
+#tesoreria-cuotas-view .cuotas-nomina-table select {
+  min-height: 34px !important;
+  padding: 7px 9px !important;
+  border-radius: 10px !important;
+  font-size: 0.78rem !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-table input[type='number'] {
+  min-width: 0 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-exento {
+  justify-content: center !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-delete {
+  width: 100% !important;
+  min-height: 34px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 7px 10px !important;
+  background: #9b2c2c !important;
+  color: #ffffff !important;
+  font: inherit !important;
+  font-size: 0.76rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 18px rgba(155, 44, 44, 0.18) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-delete:hover {
+  background: #7f1d1d !important;
+}
+
+@media (max-width: 960px) {
+  #tesoreria-cuotas-view .cuotas-nomina-button {
+    width: min(100%, 220px) !important;
+  }
+}
