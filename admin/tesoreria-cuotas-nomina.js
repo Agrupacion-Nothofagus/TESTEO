@@ -64,13 +64,24 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     }
 
     const monthSummary = view.querySelector('[data-cuotas-month-summary]');
-    if (monthSummary && !view.querySelector('[data-cuotas-nomina]')) {
-      const button = document.createElement('button');
+    if (monthSummary) {
+      const existingButtons = Array.from(view.querySelectorAll('[data-cuotas-nomina]'));
+      const button = existingButtons[0] || document.createElement('button');
+      existingButtons.slice(1).forEach((item) => item.remove());
+
       button.type = 'button';
       button.className = 'cuotas-nomina-button';
       button.dataset.cuotasNomina = 'true';
       button.textContent = 'Nómina';
-      monthSummary.after(button);
+
+      let slot = view.querySelector('[data-cuotas-nomina-slot]');
+      if (!slot) {
+        slot = document.createElement('div');
+        slot.className = 'cuotas-nomina-slot';
+        slot.dataset.cuotasNominaSlot = 'true';
+      }
+      if (slot.previousElementSibling !== monthSummary) monthSummary.after(slot);
+      if (button.parentElement !== slot) slot.replaceChildren(button);
     }
 
     view.querySelectorAll('button').forEach((button) => {
@@ -291,7 +302,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (document.querySelector('link[data-cuotas-nomina]')) return;
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = 'tesoreria-cuotas-nomina.css?v=20260707';
+    css.href = 'tesoreria-cuotas-nomina.css?v=20260707-nomina-slot';
     css.dataset.cuotasNomina = 'true';
     document.head.appendChild(css);
   }
