@@ -1,0 +1,252 @@
+/* Componentes administrativos Soft UI Light.
+   Normaliza cards, listas, filtros, tablas y modales sin tocar funcionalidad. */
+
+.dashboard-panel,
+.dashboard-quick-card,
+.dashboard-stat-card,
+.dashboard-widget,
+.member-request-card,
+.member-row-card,
+.formulario-card,
+.tesoreria-list-card,
+.cuotas-table-card,
+.actas-registro-card,
+.post-card,
+.user-row,
+.users-admin-list article {
+  border: 1px solid rgba(31, 61, 43, 0.12) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 14px 30px rgba(31, 61, 43, 0.075) !important;
+}
+
+.dashboard-panel {
+  display: grid !important;
+  gap: 20px !important;
+  padding: clamp(22px, 2.7vw, 36px) !important;
+}
+
+.dashboard-hero {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px) !important;
+  gap: 18px !important;
+}
+
+.dashboard-hero-card {
+  display: none !important;
+}
+
+.dashboard-quick-card {
+  grid-column: 1 / -1 !important;
+  padding: clamp(20px, 2.2vw, 28px) !important;
+}
+
+.dashboard-quick-card > strong,
+.dashboard-widget h4,
+.panel-heading h3,
+.admin-topbar h3,
+.users-card h3,
+.list-card h3,
+.editor-card h3 {
+  color: var(--verde-bosque) !important;
+  letter-spacing: -0.04em !important;
+}
+
+.dashboard-quick-actions {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 14px !important;
+}
+
+.dashboard-action-button,
+.secondary-admin-button,
+.admin-actions button,
+.formulario-actions button,
+.formulario-actions a,
+.member-quick-actions button,
+.member-request-actions button,
+.tesoreria-form button,
+.cuotas-actions button {
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+}
+
+.dashboard-action-button {
+  min-height: 56px !important;
+  border: 1px solid rgba(31, 61, 43, 0.1) !important;
+  background: rgba(250, 248, 242, 0.86) !important;
+  color: var(--verde-bosque) !important;
+  text-align: left !important;
+  padding-inline: 18px !important;
+}
+
+.dashboard-action-button:hover {
+  background: linear-gradient(135deg, var(--verde-bosque), var(--verde-hoja)) !important;
+  color: var(--blanco) !important;
+}
+
+.dashboard-stats-grid,
+.tesoreria-summary-grid,
+.cuotas-summary-grid,
+.formularios-summary-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important;
+  gap: 14px !important;
+}
+
+.dashboard-stat-card,
+.tesoreria-summary-card,
+.cuotas-summary-card,
+.formularios-summary-card {
+  min-height: 128px !important;
+  padding: 20px !important;
+  display: grid !important;
+  align-content: center !important;
+  gap: 8px !important;
+}
+
+.dashboard-stat-card span,
+.tesoreria-summary-card span,
+.cuotas-summary-card span,
+.formularios-summary-card span {
+  color: var(--texto-suave) !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+.dashboard-stat-card strong,
+.tesoreria-summary-card strong,
+.cuotas-summary-card strong,
+.formularios-summary-card strong {
+  color: var(--verde-bosque) !important;
+  font-size: clamp(1.9rem, 3vw, 3rem) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.06em !important;
+}
+
+.dashboard-content-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.dashboard-widget {
+  grid-column: span 4;
+  min-height: 220px !important;
+  padding: 22px !important;
+}
+
+.dashboard-widget:first-child,
+.dashboard-treasury-widget {
+  grid-column: span 6;
+}
+
+.dashboard-list-item,
+.dashboard-member-summary article,
+.dashboard-treasury-grid article,
+.formulario-field,
+.member-summary-grid div,
+.tesoreria-row,
+.cuotas-table tr,
+.actas-record-row {
+  border: 1px solid rgba(31, 61, 43, 0.1) !important;
+  border-radius: 18px !important;
+  background: rgba(250, 248, 242, 0.72) !important;
+}
+
+.member-filter-bar,
+.formularios-toolbar,
+.cuotas-toolbar,
+.tesoreria-toolbar,
+.actas-filter-bar,
+.posts-filter-bar {
+  display: grid !important;
+  gap: 12px !important;
+  border: 1px solid rgba(31, 61, 43, 0.12) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 12px 28px rgba(31, 61, 43, 0.065) !important;
+}
+
+.member-status-pill,
+.formulario-badge,
+.cuotas-badge,
+.status-badge,
+.post-status,
+.user-role-badge {
+  border-radius: 999px !important;
+  background: rgba(79, 125, 74, 0.13) !important;
+  color: var(--verde-bosque) !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.admin-status {
+  border-radius: 16px !important;
+  color: var(--verde-bosque) !important;
+  font-weight: 850 !important;
+}
+
+.admin-status.error,
+.member-quick-status.error,
+.form-status.error,
+.users-status.error {
+  color: #9b2c2c !important;
+}
+
+.cuotas-modal-backdrop,
+.modal-backdrop,
+.member-modal-backdrop {
+  backdrop-filter: blur(10px) !important;
+}
+
+.cuotas-modal,
+.member-modal,
+.admin-modal,
+.formulario-modal {
+  border: 1px solid rgba(31, 61, 43, 0.12) !important;
+  border-radius: 28px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 28px 70px rgba(31, 61, 43, 0.2) !important;
+}
+
+@media (max-width: 1180px) {
+  .dashboard-content-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-widget,
+  .dashboard-widget:first-child,
+  .dashboard-treasury-widget {
+    grid-column: span 3;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-hero,
+  .dashboard-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-widget,
+  .dashboard-widget:first-child,
+  .dashboard-treasury-widget {
+    grid-column: auto !important;
+  }
+
+  .dashboard-action-button,
+  .secondary-admin-button,
+  .admin-actions button,
+  .formulario-actions button,
+  .formulario-actions a,
+  .member-quick-actions button,
+  .member-request-actions button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
