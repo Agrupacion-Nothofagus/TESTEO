@@ -277,16 +277,17 @@ async function guardarMovimiento(event) {
 
 async function eliminarMovimiento(id) {
   const item = movimientos.find((mov) => mov.id === id);
-  if (!item) return;
-  if (!confirm(`¿Eliminar el movimiento "${item.descripcion}"?`)) return;
+  if (!item || item.eliminado) return;
+  if (!confirm(`¿Marcar como eliminado el movimiento "${item.descripcion}"? Se conservará la auditoría del usuario que lo eliminó.`)) return;
 
   try {
-    await apiTesoreria(`/api/tesoreria?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
-    movimientos = movimientos.filter((mov) => mov.id !== id);
+    const data = await apiTesoreria(`/api/tesoreria?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (data.movimiento) movimientos = movimientos.map((mov) => mov.id === id ? data.movimiento : mov);
     guardarMovimientosLocales(movimientos);
     renderTesoreria();
+    mostrarEstadoTesoreria(item.tipo, 'Movimiento marcado como eliminado con auditoría.', true);
   } catch (error) {
-    mostrarEstadoTesoreria(item.tipo, error.message || 'No fue posible eliminar el movimiento.', false);
+    mostrarEstadoTesoreria(item.tipo, error.message || 'No fue posible marcar el movimiento como eliminado.', false);
   }
 }
 
@@ -313,8 +314,9 @@ function activarVistaTesoreria(tipo) {
 }
 
 function renderTesoreria() {
-  const ingresos = movimientos.filter((item) => item.tipo === 'ingreso').reduce((sum, item) => sum + Number(item.monto || 0), 0);
-  const egresos = movimientos.filter((item) => item.tipo === 'egreso').reduce((sum, item) => sum + Number(item.monto || 0), 0);
+  const activos = movimientos.filter((item) => !item.eliminado);
+  const ingresos = activos.filter((item) => item.tipo === 'ingreso').reduce((sum, item) => sum + Number(item.monto || 0), 0);
+  const egresos = activos.filter((item) => item.tipo === 'egreso').reduce((sum, item) => sum + Number(item.monto || 0), 0);
   const saldo = ingresos - egresos;
 
   setText('[data-tesoreria-total="ingresos"]', formatCLP(ingresos));
@@ -336,14 +338,23 @@ function renderLista(tipo, items) {
     return;
   }
 
-  list.innerHTML = items.map((item) => `
-    <article class="tesoreria-row ${escapeAttr(item.tipo)}">
-      <small>${formatDate(item.fecha)}</small>
-      <strong>${escapeHTML(item.descripcion)}</strong>
-      <em>${item.tipo === 'egreso' ? '-' : '+'}${formatCLP(item.monto)}</em>
-      <button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>
-    </article>
-  `).join('');
+  list.innerHTML = items.map((item) => {
+    const deleted = Boolean(item.eliminado);
+    return `
+      <article class="tesoreria-row ${escapeAttr(item.tipo)} ${deleted ? 'is-deleted' : ''}">
+        <small>${formatDate(item.fecha)}</small>
+        <strong>${escapeHTML(item.descripcion)}</strong>
+        <em>${item.tipo === 'egreso' ? '-' : '+'}${formatCLP(item.monto)}</em>
+        ${deleted ? renderDeletedBadge(item) : `<button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>`}
+      </article>
+    `;
+  }).join('');
+}
+
+function renderDeletedBadge(item) {
+  const user = item.eliminadoPor || item.eliminadoEmail || 'Usuario interno';
+  const date = item.eliminadoEn ? formatDateTime(item.eliminadoEn) : 'fecha no registrada';
+  return `<span class="tesoreria-deleted-badge">Eliminado por ${escapeHTML(user)} · ${escapeHTML(date)}</span>`;
 }
 
 function alternarMenuTesoreria() {
@@ -425,7 +436,12 @@ function formatCLP(value) {
 
 function formatDate(value) {
   if (!value) return 'Sin fecha';
-  return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${value}T12:00:00`));
+  return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${String(value).slice(0, 10)}T12:00:00`));
+}
+
+function formatDateTime(value) {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
 function escapeHTML(value) {
