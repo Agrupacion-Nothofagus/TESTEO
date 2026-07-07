@@ -64,12 +64,13 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     const income = sum(movements, 'ingreso');
     const expenses = sum(movements, 'egreso');
     const q = cuotasData.resumen || {};
-    const cuotasPaid = Number(q.totalPagado || q.recaudado || 0);
+    const cuotasPaid = Number(q.totalRecaudado || q.totalPagado || q.recaudado || 0);
     const cuotasPending = Number(q.saldoPendiente || 0);
     const members = Number(q.totalMiembros || q.miembros || 0);
     const totalIncome = income + cuotasPaid;
     const balance = totalIncome - expenses;
-    const monthly = monthlySeries(movements, cuotasData.miembros || []);
+    const historicPayments = Array.isArray(cuotasData.pagosHistoricos) ? cuotasData.pagosHistoricos : [];
+    const monthly = monthlySeries(movements, cuotasData.miembros || [], historicPayments);
     const currentIndex = new Date().getMonth();
     const avgExpense = expenses / Math.max(currentIndex + 1, 1);
     const coverage = avgExpense > 0 ? Math.floor(Math.max(balance, 0) / avgExpense) : 0;
@@ -78,7 +79,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     return { movements, recent: movements.slice().sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || ''))).slice(0, 6), income, expenses, cuotasPaid, cuotasPending, members, totalIncome, balance, monthly, currentIncome: monthly[currentIndex].income, currentExpense: monthly[currentIndex].expense, avgExpense, coverage, recovery };
   }
 
-  function monthlySeries(movements, members) {
+  function monthlySeries(movements, members, historicPayments) {
     const series = Array.from({ length: 12 }, (_, index) => ({ label: months[index], income: 0, expense: 0 }));
     movements.forEach((item) => {
       const idx = getMonth(item.fecha);
@@ -86,20 +87,25 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       if (String(item.tipo || '').toLowerCase() === 'egreso') series[idx].expense += Number(item.monto || 0);
       else series[idx].income += Number(item.monto || 0);
     });
-    if (Array.isArray(members)) {
-      members.forEach((member) => (member.pagos || []).forEach((payment) => {
-        if (Number(payment.anio || year) !== year || payment.tipoPago === 'anual') return;
-        const idx = Number(payment.mes || 0) - 1;
-        if (idx >= 0 && idx < 12) series[idx].income += Number(payment.monto || 0);
-      }));
-    }
+
+    const payments = Array.isArray(historicPayments) && historicPayments.length
+      ? historicPayments
+      : Array.isArray(members)
+        ? members.flatMap((member) => member.pagos || [])
+        : [];
+
+    payments.forEach((payment) => {
+      if (Number(payment.anio || year) !== year || payment.tipoPago === 'anual') return;
+      const idx = Number(payment.mes || 0) - 1;
+      if (idx >= 0 && idx < 12) series[idx].income += Number(payment.monto || 0);
+    });
     return series;
   }
 
   function template(data) {
     return '<section class="treasury-saas-dashboard">' +
       '<header class="treasury-saas-hero"><div><p class="treasury-saas-kicker">Administración financiera</p><h3>Tesorería general</h3><p>Dashboard administrativo tipo SaaS para visualizar ingresos, egresos, cuotas, flujo mensual, saldo disponible y focos de gestión.</p><div class="treasury-saas-hero-actions"><button type="button" data-saas-treasury-go="ingresos">Registrar ingreso</button><button type="button" class="secondary" data-saas-treasury-go="egresos">Registrar egreso</button><button type="button" class="secondary" data-saas-treasury-go="cuotas">Registro de pagos</button></div></div><aside class="treasury-saas-balance"><span>Saldo disponible</span><strong>' + money(data.balance) + '</strong><small>' + (data.balance >= 0 ? 'Balance positivo según movimientos y cuotas registradas.' : 'Revisar egresos y recaudación pendiente.') + '</small></aside></header>' +
-      '<div class="treasury-saas-kpi-grid">' + card('Ingresos totales', money(data.totalIncome), 'General ' + money(data.income) + ' · cuotas ' + money(data.cuotasPaid)) + card('Egresos totales', money(data.expenses), 'Promedio mensual ' + money(data.avgExpense)) + card('Cuotas pendientes', money(data.cuotasPending), data.recovery + '% de recuperación estimada') + card('Integrantes en cuotas', String(data.members), 'Nómina sincronizada') + '</div>' +
+      '<div class="treasury-saas-kpi-grid">' + card('Ingresos totales', money(data.totalIncome), 'General ' + money(data.income) + ' · cuotas ' + money(data.cuotasPaid)) + card('Egresos totales', money(data.expenses), 'Promedio mensual ' + money(data.avgExpense)) + card('Cuotas pendientes', money(data.cuotasPending), data.recovery + '% de recuperación estimada') + card('Integrantes en cuotas', String(data.members), 'Nómina activa visible en matriz') + '</div>' +
       '<div class="treasury-saas-grid"><section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Flujo mensual</h4><span>' + year + '</span></div><div class="treasury-saas-chart">' + bars(data.monthly) + '</div></section><aside class="treasury-saas-side"><section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Salud financiera</h4><span>SaaS</span></div><div class="treasury-saas-health">' + health('Ingreso del mes', money(data.currentIncome), 'Entradas registradas') + health('Egreso del mes', money(data.currentExpense), 'Salidas registradas') + health('Cobertura estimada', data.coverage > 0 ? data.coverage + ' meses' : 'Sin egreso promedio', 'Saldo / egreso promedio') + health('Recuperación cuotas', data.recovery + '%', 'Recaudación anual') + '</div></section><section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Acciones rápidas</h4><span>Operación</span></div><div class="treasury-saas-quick"><button type="button" data-saas-treasury-go="ingresos">Ingreso</button><button type="button" class="secondary" data-saas-treasury-go="egresos">Egreso</button><button type="button" class="secondary" data-saas-treasury-go="cuotas">Cuotas</button></div></section></aside></div>' +
       '<section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Últimos movimientos</h4><span>' + data.recent.length + ' registros</span></div><div class="treasury-saas-recent">' + recent(data.recent) + '</div></section>' +
       '</section>';
@@ -131,7 +137,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (document.querySelector('link[data-treasury-saas-general]')) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'tesoreria-general-saas.css?v=20260709';
+    link.href = 'tesoreria-general-saas.css?v=20260710';
     link.dataset.treasurySaasGeneral = 'true';
     document.head.appendChild(link);
   }
