@@ -1,6 +1,7 @@
 /* Simplificación visual de Tesorería > Registro de pagos.
    Oculta los bloques señalados por el usuario sin eliminar datos ni lógica. */
 
+#tesoreria-cuotas-view .cuotas-kpi-grid .cuotas-kpi-card:nth-child(4),
 #tesoreria-cuotas-view .cuotas-kpi-grid .cuotas-kpi-card:nth-child(5),
 #tesoreria-cuotas-view .cuotas-kpi-grid .cuotas-kpi-card:nth-child(6),
 #tesoreria-cuotas-view .cuotas-filter-panel,
