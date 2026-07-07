@@ -11,6 +11,7 @@ import './users-role-fix.js?v=20260703-clean';
 import './users-actions-actas-style.js?v=20260703-clean';
 import './dashboard-admin-access.js?v=20260703-clean';
 import './tesoreria-admin.js?v=20260703-clean';
+import './tesoreria-general-saas.js?v=20260709';
 import './tesoreria-comprobantes.js?v=20260703-clean';
 import './tesoreria-cuotas-submit-guard.js?v=20260707';
 import './tesoreria-cuotas.js?v=20260704-cuotas';
