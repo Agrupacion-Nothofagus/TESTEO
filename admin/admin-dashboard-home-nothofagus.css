@@ -1,0 +1,364 @@
+/* Ajuste específico del Panel de control para la nueva página admin Nothofagus.
+   Solo afecta #dashboard-view. Mantiene datos, secciones, rutas y funcionalidad. */
+
+#dashboard-view {
+  background: transparent !important;
+}
+
+#dashboard-view.admin-view.is-active {
+  padding-top: 28px !important;
+}
+
+#dashboard-view .dashboard-panel {
+  display: grid !important;
+  gap: 22px !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#dashboard-view .dashboard-hero {
+  display: block !important;
+  margin: 0 !important;
+}
+
+#dashboard-view .dashboard-hero-card {
+  display: none !important;
+}
+
+#dashboard-view .dashboard-quick-card {
+  position: relative !important;
+  min-height: 104px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 24px 28px !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(246, 244, 222, 0.18), transparent 34%),
+    linear-gradient(135deg, #1f3d2b 0%, #4f7d4a 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 18px 38px rgba(31, 61, 43, 0.18) !important;
+  overflow: hidden !important;
+}
+
+#dashboard-view .dashboard-quick-card::before {
+  content: '';
+  position: absolute;
+  inset: auto 28px 0 28px;
+  height: 1px;
+  background: rgba(246, 244, 222, 0.32);
+  opacity: 0.55;
+}
+
+#dashboard-view .dashboard-quick-card > strong {
+  margin: 0 0 6px !important;
+  color: #ffffff !important;
+  font-size: clamp(1.45rem, 2.2vw, 2rem) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.05em !important;
+}
+
+#dashboard-view .dashboard-quick-card > strong::before {
+  display: none !important;
+}
+
+#dashboard-view .dashboard-quick-card p,
+#dashboard-view .dashboard-quick-card small {
+  margin: 0 !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-size: 0.92rem !important;
+  font-weight: 800 !important;
+}
+
+#dashboard-view .dashboard-quick-actions {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  min-width: min(100%, 420px) !important;
+  margin: 0 !important;
+}
+
+#dashboard-view .dashboard-action-button {
+  width: auto !important;
+  min-height: 42px !important;
+  border: 1px solid rgba(246, 244, 222, 0.52) !important;
+  border-radius: 14px !important;
+  padding: 9px 16px !important;
+  background: rgba(246, 244, 222, 0.06) !important;
+  color: #ffffff !important;
+  font-size: 0.86rem !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
+
+#dashboard-view .dashboard-action-button:hover {
+  background: rgba(246, 244, 222, 0.16) !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+#dashboard-view .dashboard-action-button::after {
+  display: none !important;
+}
+
+#dashboard-view .dashboard-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  margin: 0 !important;
+}
+
+#dashboard-view .dashboard-stat-card {
+  position: relative !important;
+  min-height: 142px !important;
+  display: grid !important;
+  align-content: start !important;
+  gap: 12px !important;
+  padding: 22px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 16px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 16px 34px rgba(31, 61, 43, 0.09) !important;
+  overflow: hidden !important;
+}
+
+#dashboard-view .dashboard-stat-card::before {
+  content: '•••' !important;
+  position: absolute !important;
+  top: 18px !important;
+  right: 18px !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  color: #5f6f63 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.08em !important;
+  opacity: 0.8 !important;
+}
+
+#dashboard-view .dashboard-stat-card span {
+  color: #5f6f63 !important;
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+#dashboard-view .dashboard-stat-card strong {
+  color: #1f2d24 !important;
+  font-size: clamp(1.75rem, 2.5vw, 2.35rem) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.06em !important;
+}
+
+#dashboard-view .dashboard-stat-card small {
+  color: #5f6f63 !important;
+  font-size: 0.82rem !important;
+  font-weight: 760 !important;
+  line-height: 1.4 !important;
+}
+
+#dashboard-view .dashboard-content-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  margin: 0 !important;
+}
+
+#dashboard-view .dashboard-widget {
+  grid-column: span 4 !important;
+  min-height: 212px !important;
+  padding: 22px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 16px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 16px 34px rgba(31, 61, 43, 0.09) !important;
+}
+
+#dashboard-view .dashboard-widget:first-child,
+#dashboard-view .dashboard-treasury-widget {
+  grid-column: span 6 !important;
+}
+
+#dashboard-view .dashboard-widget h4,
+#dashboard-view .dashboard-widget-heading h4 {
+  margin: 0 !important;
+  color: #1f2d24 !important;
+  font-size: clamp(1rem, 1.35vw, 1.22rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.03em !important;
+}
+
+#dashboard-view .dashboard-widget-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-bottom: 14px !important;
+}
+
+#dashboard-view .dashboard-widget-heading span {
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(79, 125, 74, 0.12) !important;
+  color: #1f3d2b !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+}
+
+#dashboard-view .dashboard-list,
+#dashboard-view .dashboard-member-summary,
+#dashboard-view .dashboard-treasury-grid {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+#dashboard-view .dashboard-list-item {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding: 13px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 12px !important;
+  background: #faf8f2 !important;
+  box-shadow: none !important;
+}
+
+#dashboard-view .dashboard-list-item strong {
+  color: #1f2d24 !important;
+  font-size: 0.9rem !important;
+  line-height: 1.25 !important;
+}
+
+#dashboard-view .dashboard-list-item span {
+  color: #5f6f63 !important;
+  font-size: 0.76rem !important;
+  font-weight: 760 !important;
+}
+
+#dashboard-view .dashboard-list-item em {
+  justify-self: end !important;
+  padding: 5px 9px !important;
+  border-radius: 999px !important;
+  background: rgba(79, 125, 74, 0.12) !important;
+  color: #1f3d2b !important;
+  font-size: 0.68rem !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+#dashboard-view .dashboard-member-summary,
+#dashboard-view .dashboard-treasury-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+#dashboard-view .dashboard-member-summary article,
+#dashboard-view .dashboard-treasury-grid article {
+  padding: 15px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 12px !important;
+  background: #faf8f2 !important;
+  text-align: left !important;
+}
+
+#dashboard-view .dashboard-member-summary span,
+#dashboard-view .dashboard-treasury-grid span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #5f6f63 !important;
+  font-size: 0.7rem !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+#dashboard-view .dashboard-member-summary strong,
+#dashboard-view .dashboard-treasury-grid strong {
+  display: block !important;
+  color: #1f3d2b !important;
+  font-size: clamp(1.25rem, 2vw, 1.8rem) !important;
+  line-height: 1 !important;
+}
+
+#dashboard-view .dashboard-visits-note,
+#dashboard-view .dashboard-empty,
+#dashboard-view .dashboard-treasury-note {
+  color: #5f6f63 !important;
+  font-size: 0.86rem !important;
+  font-weight: 760 !important;
+  line-height: 1.45 !important;
+}
+
+#dashboard-view .dashboard-status {
+  margin-top: 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 12px !important;
+  background: #fffdf7 !important;
+  color: #1f3d2b !important;
+  font-weight: 850 !important;
+}
+
+@media (max-width: 1320px) {
+  #dashboard-view .dashboard-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #dashboard-view .dashboard-widget,
+  #dashboard-view .dashboard-widget:first-child,
+  #dashboard-view .dashboard-treasury-widget {
+    grid-column: span 6 !important;
+  }
+}
+
+@media (max-width: 920px) {
+  #dashboard-view.admin-view.is-active {
+    padding-top: 22px !important;
+  }
+
+  #dashboard-view .dashboard-quick-card {
+    display: grid !important;
+    align-items: start !important;
+  }
+
+  #dashboard-view .dashboard-quick-actions {
+    justify-content: start !important;
+    min-width: 0 !important;
+  }
+
+  #dashboard-view .dashboard-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #dashboard-view .dashboard-widget,
+  #dashboard-view .dashboard-widget:first-child,
+  #dashboard-view .dashboard-treasury-widget {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 620px) {
+  #dashboard-view .dashboard-stats-grid,
+  #dashboard-view .dashboard-member-summary,
+  #dashboard-view .dashboard-treasury-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #dashboard-view .dashboard-quick-actions,
+  #dashboard-view .dashboard-action-button {
+    width: 100% !important;
+  }
+}
