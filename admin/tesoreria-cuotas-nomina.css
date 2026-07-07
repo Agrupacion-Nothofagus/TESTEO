@@ -32,6 +32,7 @@
 #tesoreria-cuotas-view .cuotas-overview-side {
   min-width: 0 !important;
   display: grid !important;
+  grid-template-columns: 1fr !important;
   gap: 16px !important;
   align-content: start !important;
 }
@@ -41,6 +42,13 @@
   display: grid !important;
   align-content: center !important;
   border-radius: 22px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-slot {
+  width: 100% !important;
+  display: grid !important;
+  justify-items: center !important;
+  margin-top: 0 !important;
 }
 
 #tesoreria-cuotas-view .cuotas-nomina-button {
