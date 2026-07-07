@@ -98,6 +98,14 @@
     document.head.appendChild(dashboardHome);
   }
 
+  if (!document.querySelector('link[data-cuotas-payment-panel]')) {
+    const paymentPanel = document.createElement('link');
+    paymentPanel.rel = 'stylesheet';
+    paymentPanel.href = 'tesoreria-cuotas-payment-panel.css?v=20260706';
+    paymentPanel.dataset.cuotasPaymentPanel = 'true';
+    document.head.appendChild(paymentPanel);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
