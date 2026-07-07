@@ -17,7 +17,7 @@ export async function onRequest({ request, env }) {
 
     if (request.method === 'GET') return listMovimientos(cfg);
     if (request.method === 'POST') return saveMovimiento(request, cfg, user);
-    if (request.method === 'DELETE') return deleteMovimiento(request, cfg);
+    if (request.method === 'DELETE') return deleteMovimiento(request, cfg, user);
 
     return reply({ error: 'Método no permitido.' }, 405);
   } catch (error) {
@@ -70,21 +70,29 @@ async function saveMovimiento(request, cfg, user) {
   return reply({ movimiento: await fromDb(Array.isArray(data) ? data[0] : data, cfg) });
 }
 
-async function deleteMovimiento(request, cfg) {
+async function deleteMovimiento(request, cfg, user) {
   const id = new URL(request.url).searchParams.get('id');
   if (!id) throw fail('Falta el ID del movimiento.', 400);
 
+  const auditoria = {
+    eliminado: true,
+    eliminado_por: getNombreUsuario(user),
+    eliminado_email: limpiar(user?.email).toLowerCase(),
+    eliminado_en: new Date().toISOString(),
+    actualizado_por: getNombreUsuario(user),
+    updated_at: new Date().toISOString()
+  };
+
   const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-    headers: { Prefer: 'return=representation' }
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(auditoria)
   });
 
   const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible eliminar el movimiento.', res.status);
+  if (!res.ok) throw fail(data.message || 'No fue posible marcar el movimiento como eliminado.', res.status);
 
   const row = Array.isArray(data) ? data[0] : data;
-  if (row?.archivo_path) await deleteStorageObject(cfg, row.archivo_path).catch(() => null);
-
   return reply({ ok: true, movimiento: await fromDb(row, cfg) });
 }
 
@@ -223,6 +231,10 @@ function toDb(item, user, archivo = null) {
     archivo_nombre: archivo?.archivo_nombre || null,
     archivo_tipo: archivo?.archivo_tipo || null,
     archivo_tamano: archivo?.archivo_tamano || null,
+    eliminado: false,
+    eliminado_por: null,
+    eliminado_email: null,
+    eliminado_en: null,
     creado_por: limpiar(item.creadoPor || item.creado_por) || nombre,
     actualizado_por: nombre,
     updated_at: new Date().toISOString()
@@ -246,6 +258,10 @@ async function fromDb(row = {}, cfg) {
     archivoTipo: row.archivo_tipo || '',
     archivoTamano: Number(row.archivo_tamano || 0),
     archivoUrl: archivoPath ? await createSignedUrl(cfg, archivoPath) : '',
+    eliminado: Boolean(row.eliminado),
+    eliminadoPor: row.eliminado_por || '',
+    eliminadoEmail: row.eliminado_email || '',
+    eliminadoEn: row.eliminado_en || '',
     creadoPor: row.creado_por || '',
     actualizadoPor: row.actualizado_por || '',
     creadoEn: row.created_at || '',
