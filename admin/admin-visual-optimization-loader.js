@@ -90,6 +90,14 @@
     document.head.appendChild(institutional);
   }
 
+  if (!document.querySelector('link[data-admin-dashboard-home-nothofagus]')) {
+    const dashboardHome = document.createElement('link');
+    dashboardHome.rel = 'stylesheet';
+    dashboardHome.href = 'admin-dashboard-home-nothofagus.css?v=20260706';
+    dashboardHome.dataset.adminDashboardHomeNothofagus = 'true';
+    document.head.appendChild(dashboardHome);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
