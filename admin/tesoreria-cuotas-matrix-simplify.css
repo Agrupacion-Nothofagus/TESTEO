@@ -1,0 +1,51 @@
+/* Simplificación de la matriz mensual:
+   - Integrante muestra solo el nombre.
+   - Se oculta la columna Saldo pendiente solo en la matriz. */
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name {
+  display: block !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name .avatar-mini,
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name small {
+  display: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name strong {
+  display: block !important;
+  color: #1f2d24 !important;
+  font-size: 0.88rem !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  white-space: normal !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table th:nth-child(17),
+#tesoreria-cuotas-view .cuotas-monthly-table td:nth-child(17) {
+  display: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table th:nth-child(1),
+#tesoreria-cuotas-view .cuotas-monthly-table td:nth-child(1) {
+  width: 190px !important;
+  min-width: 190px !important;
+  max-width: 190px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table {
+  min-width: 920px !important;
+}
+
+@media (max-width: 900px) {
+  #tesoreria-cuotas-view .cuotas-monthly-table td:nth-child(17) {
+    display: none !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-monthly-table td[data-label="Integrante"] {
+    grid-column: 1 / -1 !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name strong {
+    font-size: 1rem !important;
+  }
+}
