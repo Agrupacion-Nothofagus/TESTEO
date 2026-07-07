@@ -114,6 +114,14 @@
     document.head.appendChild(cuotasFix);
   }
 
+  if (!document.querySelector('link[data-cuotas-hide-simplify]')) {
+    const cuotasSimplify = document.createElement('link');
+    cuotasSimplify.rel = 'stylesheet';
+    cuotasSimplify.href = 'tesoreria-cuotas-hide-simplify.css?v=20260707';
+    cuotasSimplify.dataset.cuotasHideSimplify = 'true';
+    document.head.appendChild(cuotasSimplify);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
