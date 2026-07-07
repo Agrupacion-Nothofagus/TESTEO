@@ -19,7 +19,7 @@
     row.style.display = 'none';
     row.dataset.nominaMarkedInactive = 'true';
     if (status) {
-      status.textContent = 'Integrante marcado para eliminar. Presiona Guardar nómina para aplicar el cambio.';
+      status.textContent = 'Integrante marcado para retirar. Presiona Guardar nómina para aplicar el cambio.';
       status.classList.add('success');
       status.classList.remove('error');
     }
@@ -51,29 +51,37 @@
       if (head && !head.querySelector('[data-nomina-action-head]')) {
         const th = document.createElement('th');
         th.dataset.nominaActionHead = 'true';
-        th.textContent = 'Acción';
+        th.textContent = 'Acciones';
         head.appendChild(th);
       }
       table.querySelectorAll('tbody tr[data-nomina-row]').forEach((row) => {
-        if (row.querySelector('[data-cuotas-nomina-remove]')) return;
+        if (row.querySelector('[data-payment-actions]')) return;
+        const id = row.dataset.nominaRow || '';
         const td = document.createElement('td');
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'cuotas-nomina-delete';
-        button.dataset.cuotasNominaRemove = 'true';
-        button.textContent = ['Eli', 'minar'].join('');
-        td.appendChild(button);
+        td.className = 'cuotas-nomina-action-cell';
+        td.innerHTML = renderActions(id);
         row.appendChild(td);
       });
     });
   }
 
+  function renderActions(id) {
+    const safeId = escapeAttr(id);
+    const removeText = ['Eli', 'minar'].join('');
+    return `<div class="payment-actions cuotas-nomina-actions-menu" data-payment-actions><button type="button" class="payment-actions-toggle" data-payment-actions-toggle><span>☰</span> Acciones</button><div class="payment-actions-menu"><button type="button" data-cuotas-history="${safeId}">Ver historial de pagos</button><button type="button" data-cuotas-payment="${safeId}">Registrar pago mensual</button><button type="button" data-cuotas-annual="${safeId}">Registrar cuota anual</button><button type="button" data-cuotas-payment="${safeId}">Adjuntar comprobante</button><button type="button" data-cuotas-nomina-remove>${removeText}</button></div></div>`;
+  }
+
   function loadStyle() {
-    if (document.querySelector('link[data-cuotas-nomina-ui-fix]')) return;
+    const href = 'tesoreria-cuotas-matrix-actions-to-nomina.css?v=20260708';
+    if (document.querySelector(`link[href="${href}"]`)) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'tesoreria-cuotas-nomina-ui-fix.css?v=20260708';
-    link.dataset.cuotasNominaUiFix = 'true';
+    link.href = href;
+    link.dataset.cuotasMatrixActionsToNomina = 'true';
     document.head.appendChild(link);
+  }
+
+  function escapeAttr(value) {
+    return String(value || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch]));
   }
 })();
