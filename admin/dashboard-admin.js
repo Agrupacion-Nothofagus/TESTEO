@@ -174,11 +174,11 @@ async function loadTreasury(token) {
   const cuotasData = cuotasResponse?.ok ? await cuotasResponse.json().catch(() => ({})) : {};
 
   const movimientos = Array.isArray(movimientosData.movimientos) ? movimientosData.movimientos : [];
-  const movimientosAnio = movimientos.filter((item) => getYearFromDate(item.fecha) === CURRENT_YEAR);
+  const movimientosAnio = movimientos.filter((item) => getYearFromDate(item.fecha) === CURRENT_YEAR && !item.eliminado);
   const ingresosGenerales = sumByType(movimientosAnio, 'ingreso');
   const egresos = sumByType(movimientosAnio, 'egreso');
   const resumenCuotas = cuotasData.resumen || {};
-  const cuotasRecaudadas = Number(resumenCuotas.totalPagado || resumenCuotas.recaudado || 0);
+  const cuotasRecaudadas = Number(resumenCuotas.totalRecaudado || resumenCuotas.totalPagado || resumenCuotas.recaudado || 0);
   const cuotasPendientes = Number(resumenCuotas.saldoPendiente || 0);
   const miembrosCuotas = Number(resumenCuotas.totalMiembros || resumenCuotas.miembros || 0);
   const ingresosTotales = ingresosGenerales + cuotasRecaudadas;
