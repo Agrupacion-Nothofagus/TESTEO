@@ -1,0 +1,266 @@
+/* Ajuste visual del panel/modal Registrar pago en Tesorería > Cuotas.
+   No modifica lógica, rutas, eventos ni datos. */
+
+.cuotas-modal-backdrop.is-open {
+  align-items: center !important;
+  justify-items: center !important;
+  padding: clamp(14px, 2.5vw, 30px) !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) {
+  width: min(920px, calc(100vw - 36px)) !important;
+  max-height: min(88vh, 820px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  padding: 0 !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 22px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 28px 80px rgba(31, 61, 43, 0.24) !important;
+  overflow: hidden !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header {
+  position: relative !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  margin: 0 !important;
+  padding: 24px 26px !important;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(246, 244, 222, 0.2), transparent 34%),
+    linear-gradient(135deg, #1f3d2b, #4f7d4a) !important;
+  color: #ffffff !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header .section-tag,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header h3,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header p {
+  color: #ffffff !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header .section-tag {
+  margin: 0 0 8px !important;
+  opacity: 0.78 !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header h3 {
+  margin: 0 !important;
+  font-size: clamp(1.45rem, 2.5vw, 2rem) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.05em !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header p {
+  max-width: 620px !important;
+  margin: 8px 0 0 !important;
+  font-size: 0.92rem !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+  opacity: 0.9 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-close {
+  flex: 0 0 auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  border: 1px solid rgba(246, 244, 222, 0.38) !important;
+  border-radius: 999px !important;
+  background: rgba(246, 244, 222, 0.12) !important;
+  color: #ffffff !important;
+  font-size: 1.35rem !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  padding: 24px 26px 20px !important;
+  overflow: auto !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form-grid::before {
+  content: 'Datos del pago';
+  grid-column: 1 / -1 !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+  color: #1f3d2b !important;
+  font-size: 0.78rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.09em !important;
+  text-transform: uppercase !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label {
+  grid-column: span 4 !important;
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 8px !important;
+  color: #1f2d24 !important;
+  font-size: 0.84rem !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:first-of-type {
+  grid-column: span 8 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(2),
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(3),
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(4),
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(5),
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(6),
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(7) {
+  grid-column: span 4 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label.full {
+  grid-column: 1 / -1 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form input,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form select,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form textarea {
+  width: 100% !important;
+  min-height: 46px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 13px !important;
+  padding: 11px 13px !important;
+  background: #ffffff !important;
+  color: #1f2d24 !important;
+  font: inherit !important;
+  font-size: 0.9rem !important;
+  font-weight: 800 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form input:focus,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form select:focus,
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form textarea:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.16) !important;
+  border-color: #4f7d4a !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form textarea {
+  min-height: 98px !important;
+  resize: vertical !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) input[type='file'] {
+  min-height: 54px !important;
+  padding: 12px !important;
+  border-style: dashed !important;
+  background: #faf8f2 !important;
+  cursor: pointer !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions {
+  position: sticky !important;
+  bottom: 0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 16px 26px !important;
+  border-top: 1px solid #dfe8dc !important;
+  background: rgba(255, 253, 247, 0.96) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions button {
+  min-width: 150px !important;
+  min-height: 44px !important;
+  border-radius: 13px !important;
+  padding: 10px 16px !important;
+  font-size: 0.88rem !important;
+  font-weight: 950 !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions button[type='submit'] {
+  background: linear-gradient(135deg, #1f3d2b, #4f7d4a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(31, 61, 43, 0.18) !important;
+}
+
+.cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions .secondary {
+  border: 1px solid #dfe8dc !important;
+  background: #faf8f2 !important;
+  color: #1f3d2b !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 860px) {
+  .cuotas-modal:has([data-cuotas-payment-form]) {
+    width: min(720px, calc(100vw - 24px)) !important;
+    max-height: 92vh !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label,
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:first-of-type,
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(2),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(3),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(4),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(5),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(6),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(7) {
+    grid-column: span 6 !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .cuotas-modal-backdrop.is-open {
+    align-items: stretch !important;
+    padding: 8px !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) {
+    width: 100% !important;
+    max-height: calc(100vh - 16px) !important;
+    border-radius: 18px !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-header {
+    padding: 20px !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form-grid {
+    grid-template-columns: 1fr !important;
+    padding: 20px !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label,
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:first-of-type,
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(2),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(3),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(4),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(5),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(6),
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-form label:nth-of-type(7) {
+    grid-column: 1 / -1 !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    padding: 14px 20px !important;
+  }
+
+  .cuotas-modal:has([data-cuotas-payment-form]) .cuotas-modal-actions button {
+    width: 100% !important;
+  }
+}
