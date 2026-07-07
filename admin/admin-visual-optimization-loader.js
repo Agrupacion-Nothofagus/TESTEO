@@ -34,6 +34,14 @@
     document.head.appendChild(records);
   }
 
+  if (!document.querySelector('link[data-admin-record-tesoreria]')) {
+    const treasury = document.createElement('link');
+    treasury.rel = 'stylesheet';
+    treasury.href = 'admin-record-tesoreria.css?v=20260706-fase2';
+    treasury.dataset.adminRecordTesoreria = 'true';
+    document.head.appendChild(treasury);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
