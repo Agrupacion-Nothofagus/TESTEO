@@ -2,6 +2,7 @@ import './admin-visual-optimization-loader.js?v=20260704-visual';
 import './admin-fixed-sidebar-loader.js?v=20260707';
 import './admin-compact-header-loader.js?v=20260707';
 import './admin-no-header-cuotas-layout-loader.js?v=20260707';
+import './tesoreria-cuotas-matrix-simplify-loader.js?v=20260707';
 import './publicaciones-sidebar-dropdown.js?v=20260703-clean';
 import './roles-miembros.js?v=20260703-clean';
 import './users-role-fix.js?v=20260703-clean';
