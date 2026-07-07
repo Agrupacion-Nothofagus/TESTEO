@@ -1,0 +1,113 @@
+.member-heading-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.member-quick-create-panel {
+  display: none;
+  margin-top: 14px;
+  padding: clamp(16px, 2vw, 22px);
+  border: 1px solid rgba(31, 61, 43, 0.14);
+  border-radius: 24px;
+  background: rgba(250, 248, 242, 0.82);
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.08);
+}
+
+.member-quick-create-panel.is-open {
+  display: grid;
+  gap: 16px;
+}
+
+.member-quick-create-panel h4 {
+  margin: 0 0 6px;
+  color: var(--verde-bosque);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.member-quick-create-panel p {
+  margin: 0;
+  color: var(--texto-suave);
+  line-height: 1.55;
+}
+
+.member-quick-create-form {
+  display: grid;
+  gap: 14px;
+}
+
+.member-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+
+.member-quick-create-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--texto);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.member-quick-create-form input,
+.member-quick-create-form select,
+.member-quick-create-form textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 11px 13px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  font-weight: 700;
+}
+
+.member-quick-create-form textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.member-quick-create-form input:focus,
+.member-quick-create-form select:focus,
+.member-quick-create-form textarea:focus {
+  outline: 3px solid rgba(79, 125, 74, 0.18);
+  border-color: var(--verde-hoja);
+}
+
+.member-quick-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.member-quick-status {
+  min-height: 22px;
+  margin: 0;
+  font-weight: 900;
+}
+
+.member-quick-status.success {
+  color: var(--verde-bosque);
+}
+
+.member-quick-status.error {
+  color: #9b2c2c;
+}
+
+@media (max-width: 640px) {
+  .member-heading-actions,
+  .member-quick-actions-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .member-heading-actions button,
+  .member-quick-actions-row button {
+    width: 100%;
+  }
+}
