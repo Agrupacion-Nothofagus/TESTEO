@@ -26,6 +26,14 @@
     document.head.appendChild(colors);
   }
 
+  if (!document.querySelector('link[data-admin-record-list]')) {
+    const records = document.createElement('link');
+    records.rel = 'stylesheet';
+    records.href = 'admin-record-list.css?v=20260706-fase1';
+    records.dataset.adminRecordList = 'true';
+    document.head.appendChild(records);
+  }
+
   if (!window.__nothofagusFormulariosAdminModule) {
     window.__nothofagusFormulariosAdminModule = true;
     import('./formularios-admin.js?v=20260706-roles').catch((error) => {
