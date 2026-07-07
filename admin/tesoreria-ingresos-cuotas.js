@@ -98,11 +98,12 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function renderCuotasAsIncome() {
     if (!document.querySelector('#tesoreria-ingresos-view, #tesoreria-general-view')) return;
-    const baseIncome = cache.general.filter((item) => item.tipo === 'ingreso');
-    const baseExpense = cache.general.filter((item) => item.tipo === 'egreso');
-    const mergedIncome = sortRows([...baseIncome, ...cache.cuotas]);
+    const activeManual = cache.general.filter((item) => !item.eliminado);
+    const baseIncome = activeManual.filter((item) => item.tipo === 'ingreso');
+    const baseExpense = activeManual.filter((item) => item.tipo === 'egreso');
+    const mergedIncome = sortRows([...cache.general.filter((item) => item.tipo === 'ingreso'), ...cache.cuotas]);
     const mergedGeneral = sortRows([...cache.general, ...cache.cuotas]).slice(0, 8);
-    const totalIncome = mergedIncome.reduce((sum, item) => sum + Number(item.monto || 0), 0);
+    const totalIncome = [...baseIncome, ...cache.cuotas].reduce((sum, item) => sum + Number(item.monto || 0), 0);
     const totalExpense = baseExpense.reduce((sum, item) => sum + Number(item.monto || 0), 0);
 
     setText('[data-tesoreria-total="ingresos"]', money(totalIncome));
@@ -128,16 +129,27 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function rowTemplate(item) {
     const isQuota = item.origen === 'cuota';
+    const deleted = Boolean(item.eliminado);
     const comprobante = isQuota && item.comprobanteUrl ? `<a class="tesoreria-cuota-receipt" href="${escapeAttr(item.comprobanteUrl)}" target="_blank" rel="noopener">Comprobante</a>` : '';
-    const action = isQuota ? '<span class="tesoreria-cuota-badge">Cuota pagada</span>' : `<button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>`;
+    const action = isQuota
+      ? '<span class="tesoreria-cuota-badge">Cuota pagada</span>'
+      : deleted
+        ? deletedBadge(item)
+        : `<button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>`;
     return `
-      <article class="tesoreria-row ${escapeAttr(item.tipo)} ${isQuota ? 'is-cuota-income' : ''}">
+      <article class="tesoreria-row ${escapeAttr(item.tipo)} ${isQuota ? 'is-cuota-income' : ''} ${deleted ? 'is-deleted' : ''}">
         <small>${formatDate(item.fecha)}</small>
         <strong>${escapeHTML(item.descripcion)}</strong>
         <em>${item.tipo === 'egreso' ? '-' : '+'}${money(item.monto)}</em>
         <div class="tesoreria-cuota-actions">${comprobante}${action}</div>
       </article>
     `;
+  }
+
+  function deletedBadge(item) {
+    const user = item.eliminadoPor || item.eliminadoEmail || 'Usuario interno';
+    const date = item.eliminadoEn ? formatDateTime(item.eliminadoEn) : 'fecha no registrada';
+    return `<span class="tesoreria-deleted-badge">Eliminado por ${escapeHTML(user)} · ${escapeHTML(date)}</span>`;
   }
 
   function annotateIncomePanel(totalRows, cuotaRows) {
@@ -171,6 +183,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   function formatDate(value) {
     if (!value) return 'Sin fecha';
     return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(String(value).slice(0, 10) + 'T12:00:00'));
+  }
+
+  function formatDateTime(value) {
+    if (!value) return '';
+    return new Intl.DateTimeFormat('es-CL', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
   }
 
   function loadStyle() {
