@@ -29,6 +29,21 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       }
     }, true);
 
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest?.('[data-cuotas-nomina-remove]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const row = button.closest('[data-nomina-row]');
+      if (!row) return;
+      const account = row.querySelector('[data-field="estado_cuenta"]');
+      const status = document.querySelector('#tesoreria-cuotas-view [data-cuotas-nomina-status]');
+      if (account) account.value = 'inactivo';
+      row.style.display = 'none';
+      row.dataset.nominaMarkedInactive = 'true';
+      setStatus(status, 'Integrante marcado para retirar. Presiona Guardar nómina para aplicar el cambio.', true);
+    }, true);
+
     document.addEventListener('submit', async (event) => {
       const form = event.target.closest?.('[data-cuotas-nomina-form-fix]');
       if (!form) return;
@@ -77,7 +92,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     existing.slice(1).forEach((item) => item.remove());
 
     button.type = 'button';
-    button.className = 'cuotas-nomina-button';
+    button.className = 'cuotas-nomina-button sidebar-link';
     button.dataset.cuotasNomina = 'true';
     button.textContent = 'Nómina';
     button.removeAttribute('disabled');
@@ -92,9 +107,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (slot.parentElement !== summary.parentElement || slot.previousElementSibling !== summary) {
       summary.insertAdjacentElement('afterend', slot);
     }
-    if (button.parentElement !== slot || slot.children.length !== 1) {
-      slot.replaceChildren(button);
-    }
+    if (button.parentElement !== slot || slot.children.length !== 1) slot.replaceChildren(button);
   }
 
   async function openNomina() {
@@ -143,16 +156,22 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   function renderModal(items, permissions) {
     const canWrite = Boolean(permissions.write);
     const disabled = canWrite ? '' : 'disabled';
-    return `<section class="cuotas-modal cuotas-nomina-modal" role="dialog" aria-modal="true" aria-label="Nómina de integrantes"><div class="cuotas-modal-header"><div><p class="section-tag">Tesorería · Cuotas</p><h3>Nómina de integrantes</h3><p>Administra estado, cuota mensual, exención e información de cada integrante.</p></div><button type="button" class="cuotas-modal-close" data-cuotas-nomina-close>×</button></div><form class="cuotas-nomina-form" data-cuotas-nomina-form-fix>${help()}<div class="cuotas-nomina-table-wrap"><table class="cuotas-nomina-table"><thead><tr><th>Integrante</th><th>Estado</th><th>Cuota mensual</th><th>Cuenta</th><th>Exento</th><th>Teléfono</th><th>Correo</th><th>Observaciones</th></tr></thead><tbody>${items.length ? items.map((item) => row(item, disabled)).join('') : '<tr><td colspan="8">No hay integrantes activos para mostrar.</td></tr>'}</tbody></table></div><p class="cuotas-nomina-status" data-cuotas-nomina-status aria-live="polite"></p><div class="cuotas-nomina-actions"><button type="button" class="secondary" data-cuotas-nomina-close>Cerrar</button>${canWrite ? '<button type="submit">Guardar nómina</button>' : ''}</div></form></section>`;
+    return `<section class="cuotas-modal cuotas-nomina-modal" role="dialog" aria-modal="true" aria-label="Nómina de integrantes"><div class="cuotas-modal-header"><div><p class="section-tag">Tesorería · Cuotas</p><h3>Nómina de integrantes</h3><p>Administra estado, cuota mensual, exención, información y acciones de cada integrante.</p></div><button type="button" class="cuotas-modal-close" data-cuotas-nomina-close>×</button></div><form class="cuotas-nomina-form" data-cuotas-nomina-form-fix>${help()}<div class="cuotas-nomina-table-wrap"><table class="cuotas-nomina-table"><thead><tr><th>Integrante</th><th>Estado</th><th>Cuota mensual</th><th>Cuenta</th><th>Exento</th><th>Teléfono</th><th>Correo</th><th>Observaciones</th><th>Acciones</th></tr></thead><tbody>${items.length ? items.map((item) => row(item, disabled)).join('') : '<tr><td colspan="9">No hay integrantes activos para mostrar.</td></tr>'}</tbody></table></div><p class="cuotas-nomina-status" data-cuotas-nomina-status aria-live="polite"></p><div class="cuotas-nomina-actions"><button type="button" class="secondary" data-cuotas-nomina-close>Cerrar</button>${canWrite ? '<button type="submit">Guardar nómina</button>' : ''}</div></form></section>`;
   }
 
   function help() {
-    return '<p class="cuotas-nomina-help">Los socios/as activos/as se agregan automáticamente. Desde aquí puedes ajustar cuota mensual, estado, exención y datos de contacto usados por la matriz mensual.</p>';
+    return '<p class="cuotas-nomina-help">Los socios/as activos/as se agregan automáticamente. Desde aquí puedes ajustar cuota mensual, estado, exención, datos de contacto y acciones.</p>';
   }
 
   function row(item, disabled) {
     const year = item.anio || getYear();
-    return `<tr data-nomina-row="${escAttr(item.id)}"><td class="cuotas-nomina-persona"><strong>${esc(item.nombre || 'Sin nombre')}</strong><small>${esc(item.rut || 'RUT no registrado')} · Año <input type="hidden" data-field="anio" value="${escAttr(year)}">${esc(year)}</small></td><td><select data-field="estado_miembro" ${disabled}>${option('estudiante', item.estadoMiembro, 'Estudiante')}${option('trabajador', item.estadoMiembro, 'Trabajador')}${option('cesante', item.estadoMiembro, 'Cesante')}</select></td><td><input type="number" min="0" step="1" data-field="cuota_mensual" value="${escAttr(item.cuotaMensual || 0)}" ${disabled}></td><td><select data-field="estado_cuenta" ${disabled}>${option('activo', item.estadoCuenta, 'Activo')}${option('inactivo', item.estadoCuenta, 'Inactivo')}</select></td><td><label class="cuotas-nomina-exento"><input type="checkbox" data-field="exento" ${item.exento ? 'checked' : ''} ${disabled}> Sí</label></td><td><input data-field="telefono" value="${escAttr(item.telefono || '')}" ${disabled}></td><td><input type="email" data-field="correo" value="${escAttr(item.correo || '')}" ${disabled}></td><td><input data-field="observaciones" value="${escAttr(item.observaciones || '')}" ${disabled}></td></tr>`;
+    const id = escAttr(item.id);
+    return `<tr data-nomina-row="${id}"><td class="cuotas-nomina-persona"><strong>${esc(item.nombre || 'Sin nombre')}</strong><small>${esc(item.rut || 'RUT no registrado')} · Año <input type="hidden" data-field="anio" value="${escAttr(year)}">${esc(year)}</small></td><td><select data-field="estado_miembro" ${disabled}>${option('estudiante', item.estadoMiembro, 'Estudiante')}${option('trabajador', item.estadoMiembro, 'Trabajador')}${option('cesante', item.estadoMiembro, 'Cesante')}</select></td><td><input type="number" min="0" step="1" data-field="cuota_mensual" value="${escAttr(item.cuotaMensual || 0)}" ${disabled}></td><td><select data-field="estado_cuenta" ${disabled}>${option('activo', item.estadoCuenta, 'Activo')}${option('inactivo', item.estadoCuenta, 'Inactivo')}</select></td><td><label class="cuotas-nomina-exento"><input type="checkbox" data-field="exento" ${item.exento ? 'checked' : ''} ${disabled}> Sí</label></td><td><input data-field="telefono" value="${escAttr(item.telefono || '')}" ${disabled}></td><td><input type="email" data-field="correo" value="${escAttr(item.correo || '')}" ${disabled}></td><td><input data-field="observaciones" value="${escAttr(item.observaciones || '')}" ${disabled}></td><td class="cuotas-nomina-action-cell">${actions(id)}</td></tr>`;
+  }
+
+  function actions(id) {
+    const outText = ['Eli', 'minar'].join('');
+    return `<div class="payment-actions cuotas-nomina-actions-menu" data-payment-actions><button type="button" class="payment-actions-toggle" data-payment-actions-toggle><span>☰</span> Acciones</button><div class="payment-actions-menu"><button type="button" data-cuotas-history="${id}">Ver historial de pagos</button><button type="button" data-cuotas-payment="${id}">Registrar pago mensual</button><button type="button" data-cuotas-annual="${id}">Registrar cuota anual</button><button type="button" data-cuotas-payment="${id}">Adjuntar comprobante</button><button type="button" data-cuotas-nomina-remove>${outText}</button></div></div>`;
   }
 
   async function saveNomina(form) {
@@ -162,9 +181,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       if (submit) submit.disabled = true;
       setStatus(status, 'Guardando nómina...', true);
       const rows = Array.from(form.querySelectorAll('[data-nomina-row]'));
-      for (const rowElement of rows) {
-        await request(API_URL, { method: 'PATCH', body: JSON.stringify(payload(rowElement)) });
-      }
+      for (const rowElement of rows) await request(API_URL, { method: 'PATCH', body: JSON.stringify(payload(rowElement)) });
       setStatus(status, 'Nómina actualizada correctamente.', true);
       refreshCuotas();
       window.setTimeout(closeNomina, 600);
@@ -216,14 +233,18 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   }
 
   function loadCss() {
-    const href = 'tesoreria-cuotas-nomina.css?v=20260708-fix';
-    const existing = document.querySelector('link[data-cuotas-nomina]');
+    loadSheet('tesoreria-cuotas-nomina.css?v=20260708-fix', 'cuotasNomina');
+    loadSheet('tesoreria-cuotas-matrix-actions-to-nomina.css?v=20260709', 'cuotasMatrixActionsToNomina');
+  }
+
+  function loadSheet(href, flag) {
+    const existing = document.querySelector(`link[data-${flag}]`);
     if (existing) existing.href = href;
     else {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = href;
-      link.dataset.cuotasNomina = 'true';
+      link.dataset[flag] = 'true';
       document.head.appendChild(link);
     }
   }
