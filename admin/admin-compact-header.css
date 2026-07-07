@@ -1,0 +1,115 @@
+/* Header admin compacto: mismo criterio de alejamiento visual tipo 80%.
+   Mantiene sidebar fijo, datos, sesión activa y títulos dinámicos. */
+
+@media (min-width: 921px) {
+  .admin-header {
+    min-height: 70px !important;
+    height: auto !important;
+    padding: 12px clamp(28px, 3vw, 42px) 10px !important;
+    gap: 14px !important;
+    align-items: center !important;
+    border-bottom: 1px solid #dfe8dc !important;
+    background: rgba(255, 253, 247, 0.96) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .admin-header > div:first-child {
+    min-width: 0 !important;
+  }
+
+  .admin-header .section-tag {
+    margin: 0 0 3px !important;
+    font-size: 0.66rem !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .admin-header h2,
+  #admin-view-title {
+    margin: 0 0 3px !important;
+    font-size: clamp(1.35rem, 2vw, 1.85rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.055em !important;
+    white-space: normal !important;
+  }
+
+  .admin-header p,
+  #admin-view-description {
+    max-width: 760px !important;
+    margin: 0 !important;
+    font-size: 0.78rem !important;
+    line-height: 1.32 !important;
+  }
+
+  .admin-session-card {
+    flex: 0 0 auto !important;
+    min-width: 150px !important;
+    max-width: 220px !important;
+    padding: 0 !important;
+    font-size: 0.76rem !important;
+    line-height: 1.15 !important;
+    text-align: right !important;
+  }
+
+  .admin-session-card span {
+    display: block !important;
+    margin-bottom: 2px !important;
+    font-size: 0.62rem !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.09em !important;
+    text-transform: uppercase !important;
+  }
+
+  .admin-session-card strong {
+    display: block !important;
+    font-size: 0.78rem !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+  }
+
+  .admin-view.is-active {
+    padding-top: 24px !important;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1240px) {
+  .admin-header {
+    min-height: 66px !important;
+    padding: 10px 26px 9px !important;
+  }
+
+  .admin-header h2,
+  #admin-view-title {
+    font-size: clamp(1.22rem, 2vw, 1.6rem) !important;
+  }
+
+  .admin-header p,
+  #admin-view-description {
+    font-size: 0.74rem !important;
+  }
+}
+
+@media (max-width: 920px) {
+  .admin-header {
+    min-height: auto !important;
+    padding: 16px 20px !important;
+    gap: 12px !important;
+    border-bottom: 1px solid #dfe8dc !important;
+  }
+
+  .admin-header h2,
+  #admin-view-title {
+    font-size: clamp(1.45rem, 7vw, 2rem) !important;
+    margin-bottom: 5px !important;
+  }
+
+  .admin-header p,
+  #admin-view-description {
+    font-size: 0.84rem !important;
+  }
+
+  .admin-session-card {
+    text-align: left !important;
+    font-size: 0.78rem !important;
+  }
+}
