@@ -10,12 +10,36 @@
   min-width: 820px !important;
 }
 
-#tesoreria-cuotas-view .cuotas-nomina-button {
-  width: min(52%, 220px) !important;
-  min-height: 42px !important;
-  padding: 9px 18px !important;
-  font-size: 0.88rem !important;
-  box-shadow: 0 10px 20px rgba(31, 61, 43, 0.16) !important;
+#tesoreria-cuotas-view .cuotas-nomina-slot {
+  width: 100% !important;
+  display: grid !important;
+  margin-top: 0 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button,
+#tesoreria-cuotas-view .cuotas-nomina-button.sidebar-link {
+  width: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  padding: 14px 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 11px !important;
+  background: #1f3d2b !important;
+  color: #ffffff !important;
+  font: inherit !important;
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  text-align: left !important;
+  box-shadow: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-nomina-button:hover,
+#tesoreria-cuotas-view .cuotas-nomina-button.sidebar-link:hover {
+  background: #163020 !important;
+  transform: translateY(-1px) !important;
 }
 
 #tesoreria-cuotas-view .cuotas-nomina-table {
