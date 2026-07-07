@@ -1,0 +1,37 @@
+/* Simplificación visual de Tesorería > Registro de pagos.
+   Oculta los bloques señalados por el usuario sin eliminar datos ni lógica. */
+
+#tesoreria-cuotas-view .cuotas-kpi-grid .cuotas-kpi-card:nth-child(5),
+#tesoreria-cuotas-view .cuotas-kpi-grid .cuotas-kpi-card:nth-child(6),
+#tesoreria-cuotas-view .cuotas-filter-panel,
+#tesoreria-cuotas-view [data-cuotas-annual-status],
+#tesoreria-cuotas-view [data-cuotas-quick-actions] {
+  display: none !important;
+}
+
+#tesoreria-cuotas-view .cuotas-kpi-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important;
+  max-width: 100% !important;
+}
+
+#tesoreria-cuotas-view .cuotas-dashboard-layout {
+  align-items: start !important;
+}
+
+#tesoreria-cuotas-view .cuotas-side-panel {
+  align-self: start !important;
+}
+
+#tesoreria-cuotas-view .cuotas-side-panel:has([data-cuotas-month-summary]) {
+  grid-template-columns: 1fr !important;
+}
+
+#tesoreria-cuotas-view [data-cuotas-month-summary] {
+  display: block !important;
+}
+
+@media (max-width: 1580px) {
+  #tesoreria-cuotas-view .cuotas-side-panel {
+    grid-template-columns: 1fr !important;
+  }
+}
