@@ -64,10 +64,10 @@
     });
   }
 
-  if (!window.__nothofagusCuotasActionsDropdownModule) {
-    window.__nothofagusCuotasActionsDropdownModule = true;
-    import('./tesoreria-cuotas-actions-dropdown.js?v=20260706b').catch((error) => {
-      console.error('No fue posible cargar acciones de cuotas:', error);
+  if (!window.__nothofagusCuotasMonthlyHelpers) {
+    window.__nothofagusCuotasMonthlyHelpers = true;
+    import('./tesoreria-cuotas-monthly-helpers.js?v=20260706').catch((error) => {
+      console.error('No fue posible cargar ayudas de cuotas mensuales:', error);
     });
   }
 })();
