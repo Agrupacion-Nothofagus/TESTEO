@@ -96,7 +96,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function renderEditForm(item) {
     return `
-      <details class="member-edit-details" open>
+      <details class="member-edit-details">
         <summary>Editar datos del miembro</summary>
         <form class="member-edit-form" data-member-edit-form data-member-id="${escapeAttr(item.id)}">
           <div class="member-edit-grid">
