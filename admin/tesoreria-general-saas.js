@@ -60,7 +60,8 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (!generalResponse?.ok && !cuotasResponse?.ok) throw new Error('Tesorería no disponible para este usuario o sesión.');
 
     const allMovements = Array.isArray(generalData.movimientos) ? generalData.movimientos.filter(Boolean) : [];
-    const movements = allMovements.filter((item) => getYear(item.fecha) === year);
+    const movements = allMovements.filter((item) => getYear(item.fecha) === year && !item.eliminado);
+    const deletedMovements = allMovements.filter((item) => getYear(item.fecha) === year && item.eliminado);
     const income = sum(movements, 'ingreso');
     const expenses = sum(movements, 'egreso');
     const q = cuotasData.resumen || {};
@@ -76,7 +77,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     const coverage = avgExpense > 0 ? Math.floor(Math.max(balance, 0) / avgExpense) : 0;
     const recovery = cuotasPaid + cuotasPending > 0 ? Math.round((cuotasPaid / (cuotasPaid + cuotasPending)) * 100) : 0;
 
-    return { movements, recent: movements.slice().sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || ''))).slice(0, 6), income, expenses, cuotasPaid, cuotasPending, members, totalIncome, balance, monthly, currentIncome: monthly[currentIndex].income, currentExpense: monthly[currentIndex].expense, avgExpense, coverage, recovery };
+    return { movements, deletedMovements, recent: [...movements, ...deletedMovements].slice().sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || ''))).slice(0, 6), income, expenses, cuotasPaid, cuotasPending, members, totalIncome, balance, monthly, currentIncome: monthly[currentIndex].income, currentExpense: monthly[currentIndex].expense, avgExpense, coverage, recovery };
   }
 
   function monthlySeries(movements, members, historicPayments) {
@@ -121,7 +122,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function recent(items) {
     if (!items.length) return '<p class="treasury-saas-empty">No hay movimientos registrados.</p>';
-    return items.map((item) => '<article class="' + attr(item.tipo || '') + '"><div><strong>' + esc(item.descripcion || 'Movimiento') + '</strong><span>' + date(item.fecha) + ' · ' + esc(item.tipo || '') + '</span></div><em>' + (item.tipo === 'egreso' ? '-' : '+') + money(item.monto) + '</em></article>').join('');
+    return items.map((item) => '<article class="' + attr(item.tipo || '') + (item.eliminado ? ' is-deleted' : '') + '"><div><strong>' + esc(item.descripcion || 'Movimiento') + '</strong><span>' + date(item.fecha) + ' · ' + esc(item.tipo || '') + (item.eliminado ? ' · eliminado por ' + esc(item.eliminadoPor || item.eliminadoEmail || 'Usuario interno') : '') + '</span></div><em>' + (item.tipo === 'egreso' ? '-' : '+') + money(item.monto) + '</em></article>').join('');
   }
 
   function bindActions() {
