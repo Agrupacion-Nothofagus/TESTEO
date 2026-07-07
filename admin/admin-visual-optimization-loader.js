@@ -32,4 +32,11 @@
       console.error('No fue posible cargar Formularios:', error);
     });
   }
+
+  if (!window.__nothofagusMiembrosQuickCreateModule) {
+    window.__nothofagusMiembrosQuickCreateModule = true;
+    import('./miembros-quick-create.js?v=20260706').catch((error) => {
+      console.error('No fue posible cargar registro rápido de miembros:', error);
+    });
+  }
 })();
