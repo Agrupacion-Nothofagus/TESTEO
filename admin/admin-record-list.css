@@ -1,0 +1,209 @@
+:root {
+  --admin-record-border: rgba(31, 61, 43, 0.12);
+  --admin-record-bg: rgba(255, 255, 255, 0.82);
+  --admin-record-muted-bg: rgba(250, 248, 242, 0.76);
+}
+
+.admin-list-pattern {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-list-toolbar-pattern,
+.member-filter-bar,
+.formularios-toolbar,
+.cuotas-toolbar {
+  border: 1px solid var(--admin-record-border) !important;
+  border-radius: 24px !important;
+  background: var(--admin-record-bg) !important;
+  box-shadow: 0 14px 28px rgba(31, 61, 43, 0.07) !important;
+}
+
+.admin-record-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-record-row {
+  display: grid;
+  grid-template-columns: repeat(var(--record-cols, 4), minmax(0, 1fr)) auto;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  padding: 18px 16px;
+  border: 1px solid var(--admin-record-border);
+  border-radius: 22px;
+  background: var(--admin-record-bg);
+  color: var(--texto);
+  box-shadow: 0 10px 24px rgba(31, 61, 43, 0.06);
+}
+
+.admin-record-col {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  text-align: left;
+}
+
+.admin-record-label {
+  color: var(--texto-suave);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-record-value {
+  color: var(--texto);
+  font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+  font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.admin-record-subvalue {
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.admin-record-badge {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.13);
+  color: var(--verde-bosque);
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-record-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-record-actions button,
+.admin-record-actions a,
+.admin-record-action-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 15px;
+  background: var(--verde-bosque);
+  color: var(--blanco);
+  font: inherit;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(31, 61, 43, 0.12);
+}
+
+.admin-record-actions button.secondary,
+.admin-record-actions a.secondary,
+.admin-record-actions .secondary-admin-button {
+  background: rgba(31, 61, 43, 0.08);
+  color: var(--verde-bosque);
+  box-shadow: none;
+}
+
+.admin-record-actions button:hover,
+.admin-record-actions a:hover,
+.admin-record-action-button:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.admin-record-detail {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 14px;
+  margin-top: 4px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--admin-record-muted-bg);
+  border: 1px solid rgba(31, 61, 43, 0.08);
+}
+
+.admin-record-note-box {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  border-left: 6px solid var(--verde-hoja);
+  border-radius: 16px;
+  background: var(--admin-record-muted-bg);
+}
+
+.admin-record-note-box strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--verde-bosque);
+}
+
+.admin-record-note-box p {
+  margin: 0;
+  color: var(--texto);
+  line-height: 1.55;
+}
+
+.member-row-card,
+.member-request-card,
+.formulario-card,
+.tesoreria-row,
+.cuotas-record-row {
+  animation: adminRecordFade 0.22s ease both;
+}
+
+@keyframes adminRecordFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 980px) {
+  .admin-record-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-record-actions {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
+  .admin-record-actions button,
+  .admin-record-actions a,
+  .admin-record-action-button {
+    flex: 1 1 180px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-record-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .admin-record-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-record-actions button,
+  .admin-record-actions a,
+  .admin-record-action-button {
+    width: 100%;
+  }
+}
