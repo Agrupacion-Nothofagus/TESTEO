@@ -16,4 +16,11 @@
       console.error('No fue posible reordenar Registro de pagos:', error);
     });
   }
+
+  if (!window.__nothofagusCuotasNominaFixModule) {
+    window.__nothofagusCuotasNominaFixModule = true;
+    import('./tesoreria-cuotas-nomina-fix.js?v=20260709').catch((error) => {
+      console.error('No fue posible cargar Nómina de cuotas:', error);
+    });
+  }
 })();
