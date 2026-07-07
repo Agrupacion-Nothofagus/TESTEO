@@ -1,0 +1,181 @@
+/* Modal de comprobante desde Detalles de la matriz mensual */
+
+#tesoreria-cuotas-view .cuotas-comprobante-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 980 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 18px !important;
+  background: rgba(15, 33, 24, 0.42) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-panel {
+  width: min(560px, calc(100vw - 30px)) !important;
+  max-height: calc(100vh - 36px) !important;
+  overflow: auto !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 24px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 28px 70px rgba(31, 61, 43, 0.28) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  align-items: flex-start !important;
+  padding: 20px 22px !important;
+  background: linear-gradient(135deg, #1f3d2b, #4f7d4a) !important;
+  color: #ffffff !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-head h4 {
+  margin: 0 !important;
+  color: #ffffff !important;
+  font-size: 1.22rem !important;
+  line-height: 1.12 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-head p {
+  margin: 6px 0 0 !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  font-weight: 800 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-head button {
+  width: 36px !important;
+  height: 36px !important;
+  border: 1px solid rgba(246, 244, 222, 0.38) !important;
+  border-radius: 999px !important;
+  background: rgba(246, 244, 222, 0.12) !important;
+  color: #ffffff !important;
+  font: inherit !important;
+  font-size: 1.2rem !important;
+  cursor: pointer !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-form {
+  display: grid !important;
+  gap: 14px !important;
+  padding: 20px 22px 22px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-summary,
+#tesoreria-cuotas-view .cuotas-comprobante-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-summary article {
+  padding: 12px !important;
+  border-radius: 16px !important;
+  background: rgba(79, 125, 74, 0.09) !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-summary span {
+  display: block !important;
+  color: #5f6f63 !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-summary strong {
+  display: block !important;
+  margin-top: 4px !important;
+  color: #1f3d2b !important;
+  font-size: 1rem !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-form label {
+  display: grid !important;
+  gap: 7px !important;
+  color: #1f3d2b !important;
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-form input,
+#tesoreria-cuotas-view .cuotas-comprobante-form select,
+#tesoreria-cuotas-view .cuotas-comprobante-form textarea {
+  width: 100% !important;
+  min-height: 42px !important;
+  border: 1px solid #dfe8dc !important;
+  border-radius: 14px !important;
+  padding: 10px 12px !important;
+  background: #faf8f2 !important;
+  color: #1f2d24 !important;
+  font: inherit !important;
+  font-size: 0.9rem !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-form input[type='file'] {
+  padding: 9px !important;
+  cursor: pointer !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-form textarea {
+  resize: vertical !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-note,
+#tesoreria-cuotas-view .cuotas-comprobante-status {
+  margin: 0 !important;
+  color: #5f6f63 !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  line-height: 1.4 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-status.success {
+  color: #1f3d2b !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-status.error {
+  color: #9b2c2c !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  margin-top: 2px !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-actions button {
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 10px 15px !important;
+  background: #1f3d2b !important;
+  color: #ffffff !important;
+  font: inherit !important;
+  font-size: 0.84rem !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-actions button.secondary {
+  background: rgba(31, 61, 43, 0.1) !important;
+  color: #1f3d2b !important;
+}
+
+#tesoreria-cuotas-view .cuotas-comprobante-actions button:disabled {
+  cursor: wait !important;
+  opacity: 0.68 !important;
+}
+
+@media (max-width: 640px) {
+  #tesoreria-cuotas-view .cuotas-comprobante-summary,
+  #tesoreria-cuotas-view .cuotas-comprobante-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-comprobante-actions button {
+    width: 100% !important;
+  }
+}
