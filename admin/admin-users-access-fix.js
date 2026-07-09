@@ -1,7 +1,7 @@
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
 import './tesoreria-cuotas-comprobante-detalles.js?v=20260710';
 import './tesoreria-ingresos-cuotas.js?v=20260710-delete-buttons';
-import './tesoreria-cuotas-manual-status-calculator.js?v=20260710';
+import './tesoreria-cuotas-manual-status-calculator.js?v=20260710-fluido';
 import './dashboard-admin-panel-update.js?v=20260709';
 import './tesoreria-general-saas.js?v=20260710-delete-audit';
 import './tesoreria-cuotas-nomina-fix.js?v=20260709';
