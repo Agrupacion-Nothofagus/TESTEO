@@ -5,7 +5,8 @@
   const STORAGE_KEY = 'nothofagus_cuotas_month_status_overrides_v1';
   const MONEY = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
   const monthNames = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  const monthShort = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct', 'Nov', 'Dic'];
+
+  window.__nothofagusCuotasManualStatusRecalculate = recalculateNow;
 
   observeCuotas();
   bindEvents();
@@ -29,20 +30,28 @@
 
   function bindEvents() {
     document.addEventListener('click', (event) => {
-      if (event.target.closest?.('[data-status-choice]')) window.setTimeout(queueRecalculate, 80);
-      if (event.target.closest?.('[data-cuotas-payment-month]')) window.setTimeout(queueRecalculate, 160);
+      if (event.target.closest?.('[data-status-choice]')) window.setTimeout(recalculateNow, 0);
+      if (event.target.closest?.('[data-cuotas-payment-month]')) window.setTimeout(recalculateNow, 50);
     }, true);
     document.addEventListener('change', (event) => {
-      if (event.target.matches?.('[data-cuotas-month], [data-cuotas-year], [data-cuotas-filter-year]')) window.setTimeout(queueRecalculate, 180);
+      if (event.target.matches?.('[data-cuotas-month], [data-cuotas-year], [data-cuotas-filter-year]')) window.setTimeout(recalculateNow, 80);
     }, true);
     window.addEventListener('storage', (event) => {
-      if (event.key === STORAGE_KEY) queueRecalculate();
+      if (event.key === STORAGE_KEY) recalculateNow();
     });
+    window.addEventListener('nothofagus:cuotas-status-changed', recalculateNow);
+    document.addEventListener('nothofagus:cuotas-status-changed', recalculateNow);
   }
 
   function queueRecalculate() {
     window.clearTimeout(queueRecalculate.timer);
-    queueRecalculate.timer = window.setTimeout(recalculate, 110);
+    queueRecalculate.timer = window.setTimeout(recalculate, 70);
+  }
+
+  function recalculateNow() {
+    window.clearTimeout(queueRecalculate.timer);
+    recalculate();
+    window.requestAnimationFrame(() => recalculate());
   }
 
   function recalculate() {
@@ -98,9 +107,9 @@
     });
 
     const pendingAnnual = Math.max(expectedAnnual - totalPaid, 0);
-    if (totalCell) totalCell.textContent = money(totalPaid);
+    if (totalCell) flashText(totalCell, money(totalPaid));
     if (saldoCell) {
-      saldoCell.textContent = money(pendingAnnual);
+      flashText(saldoCell, money(pendingAnnual));
       saldoCell.classList.toggle('positive', pendingAnnual <= 0);
       saldoCell.classList.toggle('warning', pendingAnnual > 0);
     }
@@ -144,14 +153,16 @@
     if (!card) return;
     const strong = card.querySelector('strong');
     const small = card.querySelector('small');
-    if (strong) strong.textContent = String(value);
+    if (strong) flashText(strong, String(value));
     if (small) small.textContent = String(note || '');
+    flash(card);
   }
 
   function updateMonthSummary(view, summary, selectedMonth, year) {
     const box = view.querySelector('[data-cuotas-month-summary]');
     if (!box) return;
-    box.innerHTML = `<h4>Resumen del mes</h4><p class="cuotas-side-date">📅 ${escapeHTML(monthNames[selectedMonth] || 'Mes')} ${escapeHTML(year)}</p><dl class="cuotas-side-list"><div><dt>Esperado</dt><dd>${money(summary.esperadoMes)}</dd></div><div><dt>Recibido</dt><dd class="positive">${money(summary.recibidoMes)}</dd></div><div><dt>Pendiente</dt><dd class="warning">${money(summary.pendienteMes)}</dd></div><div><dt>% Cumplimiento</dt><dd>${summary.porcentajeMes}%</dd></div></dl><div class="cuotas-progress"><span style="width:${Math.min(summary.porcentajeMes, 100)}%"></span></div><p class="cuotas-empty compact">Cálculo ajustado por estados manuales de la matriz.</p>`;
+    box.innerHTML = `<h4>Resumen del mes</h4><p class="cuotas-side-date">📅 ${escapeHTML(monthNames[selectedMonth] || 'Mes')} ${escapeHTML(year)}</p><dl class="cuotas-side-list"><div><dt>Esperado</dt><dd>${money(summary.esperadoMes)}</dd></div><div><dt>Recibido</dt><dd class="positive">${money(summary.recibidoMes)}</dd></div><div><dt>Pendiente</dt><dd class="warning">${money(summary.pendienteMes)}</dd></div><div><dt>% Cumplimiento</dt><dd>${summary.porcentajeMes}%</dd></div></dl><div class="cuotas-progress"><span style="width:${Math.min(summary.porcentajeMes, 100)}%"></span></div><p class="cuotas-empty compact">Cálculo actualizado automáticamente por estado de color.</p>`;
+    flash(box);
   }
 
   function updateAnnualSummary(view, summary) {
@@ -173,6 +184,20 @@
     if (dot.classList.contains('pendiente')) return 'pendiente';
     if (dot.classList.contains('atrasado')) return 'atrasado';
     return 'sin_registro';
+  }
+
+  function flashText(element, value) {
+    if (!element) return;
+    if (element.textContent !== String(value)) flash(element);
+    element.textContent = String(value);
+  }
+
+  function flash(element) {
+    if (!element) return;
+    element.classList.remove('cuotas-live-updated');
+    void element.offsetWidth;
+    element.classList.add('cuotas-live-updated');
+    window.setTimeout(() => element.classList.remove('cuotas-live-updated'), 520);
   }
 
   function getSelectedMonth(view) {
