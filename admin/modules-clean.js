@@ -4,6 +4,7 @@ import './admin-compact-header-loader.js?v=20260707';
 import './admin-no-header-cuotas-layout-loader.js?v=20260708';
 import './tesoreria-cuotas-matrix-simplify-loader.js?v=20260707';
 import './tesoreria-cuotas-cell-status-menu.js?v=20260707';
+import './tesoreria-cuotas-manual-status-calculator.js?v=20260710';
 import './admin-members-actas-row-loader.js?v=20260707';
 import './publicaciones-sidebar-dropdown.js?v=20260703-clean';
 import './roles-miembros.js?v=20260703-clean';
