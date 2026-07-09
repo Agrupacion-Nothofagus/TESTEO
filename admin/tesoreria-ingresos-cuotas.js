@@ -7,11 +7,13 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   const year = new Date().getFullYear();
-  let cache = { general: [], cuotas: [] };
+  const DELETED_QUOTAS_KEY = 'nothofagus_cuotas_ingresos_eliminados_v1';
+  let cache = { general: [], cuotas: [], cuotasEliminadas: [] };
   let loading = false;
 
   loadStyle();
   observeTreasury();
+  bindDeleteActions();
   queueRefresh();
   document.addEventListener('DOMContentLoaded', queueRefresh);
   window.addEventListener('hashchange', queueRefresh);
@@ -25,6 +27,17 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (!document.body || document.body.dataset.ingresosCuotasObserved) return;
     document.body.dataset.ingresosCuotasObserved = 'true';
     new MutationObserver(() => queueRender()).observe(document.body, { childList: true, subtree: true });
+  }
+
+  function bindDeleteActions() {
+    document.addEventListener('click', async (event) => {
+      const button = event.target.closest?.('[data-tesoreria-cuota-delete]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const sourceId = button.dataset.tesoreriaCuotaDelete;
+      await deleteQuotaIncome(sourceId, button);
+    }, true);
   }
 
   function queueRefresh() {
@@ -52,8 +65,10 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const cuotasResponse = cuotasResult.status === 'fulfilled' ? cuotasResult.value : null;
       const generalData = generalResponse?.ok ? await generalResponse.json().catch(() => ({})) : {};
       const cuotasData = cuotasResponse?.ok ? await cuotasResponse.json().catch(() => ({})) : {};
+      const deleted = readDeletedQuotaRows();
       cache.general = Array.isArray(generalData.movimientos) ? generalData.movimientos.filter(Boolean) : [];
-      cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData);
+      cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData).filter((item) => !deleted[item.sourceId]);
+      cache.cuotasEliminadas = Object.values(deleted).filter((item) => item && Number(item.anio || year) === year);
       renderCuotasAsIncome();
     } finally {
       loading = false;
@@ -85,6 +100,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
         tipo: 'ingreso',
         origen: 'cuota',
         fecha: pago.fechaPago || pago.fecha_pago || `${paymentYear}-01-01`,
+        anio: paymentYear,
         descripcion: type === 'anual' || month === 0 ? `Cuota anual · ${name}` : `Cuota mensual ${monthName(month)} · ${name}`,
         monto: amount,
         observaciones: pago.observacion || '',
@@ -101,8 +117,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     const activeManual = cache.general.filter((item) => !item.eliminado);
     const baseIncome = activeManual.filter((item) => item.tipo === 'ingreso');
     const baseExpense = activeManual.filter((item) => item.tipo === 'egreso');
-    const mergedIncome = sortRows([...cache.general.filter((item) => item.tipo === 'ingreso'), ...cache.cuotas]);
-    const mergedGeneral = sortRows([...cache.general, ...cache.cuotas]).slice(0, 8);
+    const ingresoManualRows = cache.general.filter((item) => item.tipo === 'ingreso');
+    const mergedIncome = sortRows([...ingresoManualRows, ...cache.cuotas, ...cache.cuotasEliminadas]);
+    const mergedGeneral = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas]).slice(0, 8);
     const totalIncome = [...baseIncome, ...cache.cuotas].reduce((sum, item) => sum + Number(item.monto || 0), 0);
     const totalExpense = baseExpense.reduce((sum, item) => sum + Number(item.monto || 0), 0);
 
@@ -132,7 +149,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     const deleted = Boolean(item.eliminado);
     const comprobante = isQuota && item.comprobanteUrl ? `<a class="tesoreria-cuota-receipt" href="${escapeAttr(item.comprobanteUrl)}" target="_blank" rel="noopener">Comprobante</a>` : '';
     const action = isQuota
-      ? '<span class="tesoreria-cuota-badge">Cuota pagada</span>'
+      ? deleted
+        ? deletedBadge(item)
+        : `<span class="tesoreria-cuota-badge">Cuota pagada</span><button type="button" class="tesoreria-delete-button" data-tesoreria-cuota-delete="${escapeAttr(item.sourceId)}">Eliminar</button>`
       : deleted
         ? deletedBadge(item)
         : `<button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>`;
@@ -144,6 +163,37 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
         <div class="tesoreria-cuota-actions">${comprobante}${action}</div>
       </article>
     `;
+  }
+
+  async function deleteQuotaIncome(sourceId, button) {
+    const item = cache.cuotas.find((row) => String(row.sourceId) === String(sourceId));
+    if (!item) return;
+    if (!confirm(`¿Eliminar la cuota pagada "${item.descripcion}"? Quedará una marca local con el usuario que la eliminó.`)) return;
+
+    try {
+      button.disabled = true;
+      const token = await getToken();
+      if (!token) throw new Error('Sesión no disponible.');
+      await fetch('/api/cuotas-miembros?payment_id=' + encodeURIComponent(sourceId), { method: 'DELETE', headers: { authorization: 'Bearer ' + token } }).catch(() => null);
+      const audit = await getAuditUser();
+      const deleted = readDeletedQuotaRows();
+      deleted[sourceId] = { ...item, eliminado: true, eliminadoPor: audit.name, eliminadoEmail: audit.email, eliminadoEn: new Date().toISOString() };
+      writeDeletedQuotaRows(deleted);
+      cache.cuotas = cache.cuotas.filter((row) => String(row.sourceId) !== String(sourceId));
+      cache.cuotasEliminadas = Object.values(deleted).filter((row) => Number(row.anio || year) === year);
+      renderCuotasAsIncome();
+    } catch (error) {
+      alert(error.message || 'No fue posible eliminar la cuota pagada.');
+      button.disabled = false;
+    }
+  }
+
+  async function getAuditUser() {
+    if (!client) return { name: 'Usuario interno', email: '' };
+    const session = await client.auth.getSession();
+    const user = session.data?.session?.user;
+    const name = user?.user_metadata?.nombre || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || 'Usuario interno';
+    return { name, email: user?.email || '' };
   }
 
   function deletedBadge(item) {
@@ -166,6 +216,14 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function sortRows(items) {
     return items.slice().sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')));
+  }
+
+  function readDeletedQuotaRows() {
+    try { return JSON.parse(localStorage.getItem(DELETED_QUOTAS_KEY) || '{}') || {}; } catch { return {}; }
+  }
+
+  function writeDeletedQuotaRows(value) {
+    localStorage.setItem(DELETED_QUOTAS_KEY, JSON.stringify(value || {}));
   }
 
   function monthName(month) {
@@ -191,10 +249,15 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   }
 
   function loadStyle() {
-    if (document.querySelector('link[data-tesoreria-ingresos-cuotas]')) return;
+    const href = 'tesoreria-ingresos-cuotas.css?v=20260710-delete-buttons';
+    const existing = document.querySelector('link[data-tesoreria-ingresos-cuotas]');
+    if (existing) {
+      existing.href = href;
+      return;
+    }
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'tesoreria-ingresos-cuotas.css?v=20260710';
+    link.href = href;
     link.dataset.tesoreriaIngresosCuotas = 'true';
     document.head.appendChild(link);
   }
