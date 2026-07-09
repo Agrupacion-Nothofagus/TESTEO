@@ -19,7 +19,6 @@ import './tesoreria-comprobantes.js?v=20260703-clean';
 import './tesoreria-cuotas-submit-guard.js?v=20260707';
 import './tesoreria-cuotas.js?v=20260704-cuotas';
 import './tesoreria-cuotas-nomina.js?v=20260708';
-import './tesoreria-general-integrado-v2.js?v=20260704-finanzas-v2';
 import './tesoreria-alignment-loader.js?v=20260703-clean';
 import './actas-supabase-sync.js?v=20260703-clean';
 import './actas-admin.js?v=20260703-clean';
