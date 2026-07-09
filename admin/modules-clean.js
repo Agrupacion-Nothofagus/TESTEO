@@ -12,6 +12,7 @@ import './users-role-fix.js?v=20260703-clean';
 import './users-actions-actas-style.js?v=20260703-clean';
 import './dashboard-admin-access.js?v=20260703-clean';
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
+import './tesoreria-cuotas-socios-filter.js?v=20260710-socios';
 import './tesoreria-ingresos-cuotas.js?v=20260710-delete-buttons';
 import './tesoreria-admin.js?v=20260710-delete-audit';
 import './tesoreria-general-saas.js?v=20260710-central';
