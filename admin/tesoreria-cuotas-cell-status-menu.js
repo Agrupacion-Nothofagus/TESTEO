@@ -121,7 +121,17 @@
       const overrides = readOverrides();
       overrides[makeKey(info.memberId, info.anio, info.month)] = status;
       writeOverrides(overrides);
-      showStatus(`Estado actualizado visualmente a ${label}.`, true);
+      showStatus(`Estado actualizado a ${label}. Los montos se recalcularon automáticamente.`, true);
+      notifyStatusChanged(info, status);
+    }
+  }
+
+  function notifyStatusChanged(info, status) {
+    const detail = { ...info, status };
+    document.querySelector('#tesoreria-cuotas-view')?.dispatchEvent(new CustomEvent('nothofagus:cuotas-status-changed', { bubbles: true, detail }));
+    window.dispatchEvent(new CustomEvent('nothofagus:cuotas-status-changed', { detail }));
+    if (typeof window.__nothofagusCuotasManualStatusRecalculate === 'function') {
+      window.__nothofagusCuotasManualStatusRecalculate();
     }
   }
 
@@ -179,7 +189,7 @@
             <div><dt>Estado actual</dt><dd>${escapeHTML(STATUS_LABELS[info.currentStatus] || info.currentStatus)}</dd></div>
             <div><dt>Cuota mensual</dt><dd>${escapeHTML(info.cuota)}</dd></div>
           </dl>
-          <p class="cuotas-empty compact">Los cambios hechos desde este menú actualizan la matriz visual. Para registrar monto, fecha, método o comprobante, usa el botón “Registrar pago”.</p>
+          <p class="cuotas-empty compact">Los cambios hechos desde este menú actualizan la matriz visual y sus cálculos de inmediato. Para registrar monto, fecha, método o comprobante, usa Detalles con comprobante o Registrar pago.</p>
         </div>
       </section>
     `;
@@ -216,14 +226,20 @@
     const status = document.querySelector('#tesoreria-cuotas-view [data-cuotas-status]');
     if (!status) return;
     status.textContent = message;
+    status.classList.toggle('success', Boolean(ok));
     status.classList.toggle('error', !ok);
   }
 
   function loadStyles() {
-    if (document.querySelector('link[data-cuotas-cell-status-menu]')) return;
+    const href = 'tesoreria-cuotas-cell-status-menu.css?v=20260710-dynamic';
+    const existing = document.querySelector('link[data-cuotas-cell-status-menu]');
+    if (existing) {
+      existing.href = href;
+      return;
+    }
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = 'tesoreria-cuotas-cell-status-menu.css?v=20260707';
+    css.href = href;
     css.dataset.cuotasCellStatusMenu = 'true';
     document.head.appendChild(css);
   }
