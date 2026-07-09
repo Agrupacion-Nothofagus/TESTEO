@@ -273,6 +273,46 @@
   color: #8f3a20;
 }
 
+#tesoreria-general-view .treasury-saas-recent article.source-matriz {
+  background: rgba(79, 125, 74, 0.13);
+  border: 1px solid rgba(79, 125, 74, 0.18);
+}
+
+#tesoreria-general-view .treasury-saas-recent article.source-cuota {
+  background: rgba(31, 61, 43, 0.08);
+  border: 1px solid rgba(31, 61, 43, 0.13);
+}
+
+#tesoreria-general-view .treasury-saas-recent article.is-deleted {
+  opacity: 0.72;
+  background: rgba(155, 44, 44, 0.08);
+  border: 1px solid rgba(155, 44, 44, 0.18);
+}
+
+#tesoreria-general-view .treasury-saas-recent article.is-deleted strong,
+#tesoreria-general-view .treasury-saas-recent article.is-deleted em {
+  color: #6b6258;
+  text-decoration: line-through;
+}
+
+#tesoreria-general-view .treasury-source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(31, 61, 43, 0.1);
+  color: #1f3d2b;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+#tesoreria-general-view .treasury-saas-ledger-panel {
+  grid-column: 1 / -1;
+}
+
 #tesoreria-general-view .treasury-saas-empty {
   margin: 0;
   color: #5f6f63;
