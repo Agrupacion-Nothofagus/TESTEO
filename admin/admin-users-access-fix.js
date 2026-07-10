@@ -1,3 +1,4 @@
+import './dashboard-control-reference-layout.js?v=20260710-panel-ref';
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
 import './tesoreria-cuotas-socios-filter.js?v=20260710-socios';
 import './tesoreria-cuotas-comprobante-detalles.js?v=20260710';
