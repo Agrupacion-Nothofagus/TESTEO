@@ -1,0 +1,572 @@
+/* Panel de control reorganizado según referencia visual, sin alterar módulos funcionales */
+
+#dashboard-view .dashboard-panel {
+  padding: clamp(18px, 2vw, 28px) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+#dashboard-view .dashboard-reference {
+  display: grid;
+  gap: 18px;
+  font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+  color: #10251a;
+}
+
+#dashboard-view .dashboard-reference-welcome {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+#dashboard-view .dashboard-reference-welcome h3 {
+  margin: 0;
+  color: #10251a;
+  font-size: clamp(1.45rem, 2.1vw, 2.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+#dashboard-view .dashboard-reference-welcome p {
+  margin: 6px 0 0;
+  color: #66756d;
+  font-weight: 700;
+}
+
+#dashboard-view .dashboard-reference-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid rgba(16, 37, 26, 0.1);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #10251a;
+  box-shadow: 0 8px 22px rgba(16, 37, 26, 0.06);
+  font: inherit;
+  font-weight: 850;
+}
+
+#dashboard-view .dashboard-reference-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#dashboard-view .dashboard-reference-kpi,
+#dashboard-view .dashboard-reference-card {
+  border: 1px solid rgba(16, 37, 26, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 26px rgba(16, 37, 26, 0.07);
+}
+
+#dashboard-view .dashboard-reference-kpi {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 92px;
+  padding: 16px 18px;
+}
+
+#dashboard-view .dashboard-reference-kpi > span {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.11);
+  font-size: 1.55rem;
+}
+
+#dashboard-view .dashboard-reference-kpi p {
+  margin: 0 0 5px;
+  color: #23362b;
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+#dashboard-view .dashboard-reference-kpi strong {
+  display: block;
+  color: #10251a;
+  font-size: clamp(1.35rem, 2.3vw, 2rem);
+  line-height: 1;
+}
+
+#dashboard-view .dashboard-reference-kpi small {
+  display: block;
+  margin-top: 5px;
+  color: #66756d;
+  font-size: 0.76rem;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+#dashboard-view .dashboard-reference-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.96fr);
+  gap: 16px;
+  align-items: start;
+}
+
+#dashboard-view .dashboard-reference-card {
+  min-width: 0;
+  padding: 18px;
+}
+
+#dashboard-view .dashboard-reference-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+#dashboard-view .dashboard-reference-card-head h4 {
+  margin: 0;
+  margin-right: auto;
+  color: #10251a;
+  font-size: 1.05rem;
+  letter-spacing: -0.018em;
+}
+
+#dashboard-view .dashboard-reference-card-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #66756d;
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+#dashboard-view .dashboard-reference-card-head i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2f9b4e;
+}
+
+#dashboard-view .dashboard-reference-card-head .expense i {
+  background: #e34838;
+}
+
+#dashboard-view .dashboard-reference-finance {
+  min-height: 258px;
+}
+
+#dashboard-view [data-dashboard-finance-chart] {
+  position: relative;
+  min-height: 208px;
+  padding-right: 142px;
+}
+
+#dashboard-view [data-dashboard-finance-chart] svg {
+  display: block;
+  width: 100%;
+  height: 178px;
+  overflow: visible;
+}
+
+#dashboard-view [data-dashboard-finance-chart] svg line {
+  stroke: rgba(16, 37, 26, 0.1);
+  stroke-width: 1;
+}
+
+#dashboard-view [data-dashboard-finance-chart] svg polyline {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#dashboard-view [data-dashboard-finance-chart] svg .income {
+  stroke: #2f9b4e;
+  fill: #2f9b4e;
+}
+
+#dashboard-view [data-dashboard-finance-chart] svg .expense {
+  stroke: #e34838;
+  fill: #e34838;
+}
+
+#dashboard-view .dashboard-reference-chart-months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  color: #66756d;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+#dashboard-view .dashboard-reference-finance-totals {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  display: grid;
+  gap: 6px;
+  width: 124px;
+}
+
+#dashboard-view .dashboard-reference-finance-totals span {
+  color: #66756d;
+  font-size: 0.72rem;
+  font-weight: 780;
+}
+
+#dashboard-view .dashboard-reference-finance-totals strong {
+  color: #10251a;
+  font-size: 0.95rem;
+}
+
+#dashboard-view .dashboard-reference-finance-totals .positive,
+#dashboard-view .dashboard-reference-row em.positive {
+  color: #238b45;
+}
+
+#dashboard-view .dashboard-reference-finance-totals .negative,
+#dashboard-view .dashboard-reference-row em.negative {
+  color: #d7332a;
+}
+
+#dashboard-view .dashboard-reference-statusbar {
+  position: relative;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f0f2ef;
+}
+
+#dashboard-view .dashboard-reference-statusbar::before,
+#dashboard-view .dashboard-reference-statusbar::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+#dashboard-view .dashboard-reference-statusbar::before {
+  width: var(--active);
+  background: #2f9b4e;
+}
+
+#dashboard-view .dashboard-reference-statusbar::after {
+  left: var(--active);
+  width: var(--pending);
+  background: #f5c642;
+}
+
+#dashboard-view .dashboard-reference-statusbar {
+  box-shadow: inset calc(var(--active) + var(--pending)) 0 0 #ef3f35;
+}
+
+#dashboard-view .dashboard-reference-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+  border-bottom: 1px solid rgba(16, 37, 26, 0.09);
+  padding-bottom: 16px;
+}
+
+#dashboard-view .dashboard-reference-status-grid article {
+  display: grid;
+  gap: 3px;
+  padding: 0 14px;
+  border-right: 1px solid rgba(16, 37, 26, 0.08);
+}
+
+#dashboard-view .dashboard-reference-status-grid article:last-child {
+  border-right: 0;
+}
+
+#dashboard-view .dashboard-reference-status-grid .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2f9b4e;
+}
+
+#dashboard-view .dashboard-reference-status-grid .dot.pending { background: #f5c642; }
+#dashboard-view .dashboard-reference-status-grid .dot.inactive { background: #ef7b24; }
+
+#dashboard-view .dashboard-reference-status-grid strong {
+  color: #10251a;
+  font-size: 1.25rem;
+}
+
+#dashboard-view .dashboard-reference-status-grid small,
+#dashboard-view .dashboard-reference-status-grid p {
+  margin: 0;
+  color: #66756d;
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+#dashboard-view [data-dashboard-membership-status] footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: #66756d;
+  font-weight: 780;
+}
+
+#dashboard-view [data-dashboard-membership-status] footer strong {
+  color: #10251a;
+}
+
+#dashboard-view .dashboard-reference-list {
+  display: grid;
+}
+
+#dashboard-view .dashboard-reference-row,
+#dashboard-view .dashboard-reference-approval-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(16, 37, 26, 0.08);
+}
+
+#dashboard-view .dashboard-reference-approval-row {
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+}
+
+#dashboard-view .dashboard-reference-icon,
+#dashboard-view .dashboard-reference-approval-row > span {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.11);
+  color: #1f3d2b;
+  font-weight: 900;
+}
+
+#dashboard-view .dashboard-reference-row strong,
+#dashboard-view .dashboard-reference-approval-row strong {
+  display: block;
+  color: #10251a;
+  font-size: 0.85rem;
+}
+
+#dashboard-view .dashboard-reference-row small,
+#dashboard-view .dashboard-reference-approval-row small,
+#dashboard-view .dashboard-reference-row time,
+#dashboard-view .dashboard-reference-approval-row time {
+  color: #66756d;
+  font-size: 0.75rem;
+  font-weight: 740;
+}
+
+#dashboard-view .dashboard-reference-row em {
+  font-style: normal;
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+
+#dashboard-view .dashboard-reference-approval-row button,
+#dashboard-view .dashboard-reference-more,
+#dashboard-view .dashboard-reference-actions button,
+#dashboard-view .dashboard-reference-status-card button {
+  border: 1px solid rgba(16, 37, 26, 0.11);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #238b45;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#dashboard-view .dashboard-reference-approval-row button {
+  padding: 8px 13px;
+}
+
+#dashboard-view .dashboard-reference-more {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 4px;
+  color: #10251a;
+}
+
+#dashboard-view .dashboard-reference-milestones-card,
+#dashboard-view .dashboard-reference-actions-card {
+  min-height: 124px;
+}
+
+#dashboard-view .dashboard-reference-milestones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#dashboard-view .dashboard-reference-milestone {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding-right: 12px;
+  border-right: 1px solid rgba(16, 37, 26, 0.08);
+}
+
+#dashboard-view .dashboard-reference-milestone:last-child {
+  border-right: 0;
+}
+
+#dashboard-view .dashboard-reference-milestone time {
+  display: grid;
+  place-items: center;
+  min-height: 54px;
+  border: 1px solid rgba(16, 37, 26, 0.1);
+  border-radius: 12px;
+}
+
+#dashboard-view .dashboard-reference-milestone time strong {
+  color: #10251a;
+  line-height: 1;
+}
+
+#dashboard-view .dashboard-reference-milestone time span,
+#dashboard-view .dashboard-reference-milestone small {
+  color: #66756d;
+  font-size: 0.7rem;
+  font-weight: 770;
+}
+
+#dashboard-view .dashboard-reference-milestone div strong {
+  display: block;
+  color: #10251a;
+  font-size: 0.82rem;
+}
+
+#dashboard-view .dashboard-reference-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#dashboard-view .dashboard-reference-actions button {
+  display: grid;
+  place-items: center;
+  gap: 7px;
+  min-height: 84px;
+  padding: 12px;
+  color: #10251a;
+  text-align: center;
+}
+
+#dashboard-view .dashboard-reference-actions button span {
+  font-size: 1.6rem;
+}
+
+#dashboard-view .dashboard-reference-status-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 66px;
+  padding: 14px 18px;
+}
+
+#dashboard-view .dashboard-reference-status-card > span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(79, 125, 74, 0.12);
+}
+
+#dashboard-view .dashboard-reference-status-card strong {
+  display: block;
+  color: #10251a;
+}
+
+#dashboard-view .dashboard-reference-status-card small {
+  color: #66756d;
+  font-weight: 740;
+}
+
+#dashboard-view .dashboard-reference-status-card i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2f9b4e;
+}
+
+#dashboard-view .dashboard-reference-status-card button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #66756d;
+}
+
+#dashboard-view .dashboard-status {
+  margin-top: 0 !important;
+}
+
+#dashboard-view .is-hidden {
+  display: none !important;
+}
+
+@media (min-width: 1181px) {
+  #dashboard-view .dashboard-reference-finance,
+  #dashboard-view .dashboard-reference-milestones-card,
+  #dashboard-view .dashboard-reference-status-card:first-of-type {
+    grid-column: 1 / 2;
+  }
+
+  #dashboard-view .dashboard-reference-grid > .dashboard-reference-card:nth-child(2),
+  #dashboard-view .dashboard-reference-grid > .dashboard-reference-card:nth-child(4),
+  #dashboard-view .dashboard-reference-actions-card,
+  #dashboard-view .dashboard-reference-status-card:last-of-type {
+    grid-column: 2 / 3;
+  }
+}
+
+@media (max-width: 1180px) {
+  #dashboard-view .dashboard-reference-kpis,
+  #dashboard-view .dashboard-reference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #dashboard-view .dashboard-reference-finance,
+  #dashboard-view .dashboard-reference-milestones-card,
+  #dashboard-view .dashboard-reference-actions-card,
+  #dashboard-view .dashboard-reference-status-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  #dashboard-view .dashboard-reference-kpis,
+  #dashboard-view .dashboard-reference-grid,
+  #dashboard-view .dashboard-reference-status-grid,
+  #dashboard-view .dashboard-reference-milestones,
+  #dashboard-view .dashboard-reference-actions {
+    grid-template-columns: 1fr;
+  }
+
+  #dashboard-view [data-dashboard-finance-chart] {
+    padding-right: 0;
+  }
+
+  #dashboard-view .dashboard-reference-finance-totals {
+    position: static;
+    width: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  #dashboard-view .dashboard-reference-row,
+  #dashboard-view .dashboard-reference-approval-row,
+  #dashboard-view .dashboard-reference-status-card {
+    grid-template-columns: 1fr;
+  }
+}
