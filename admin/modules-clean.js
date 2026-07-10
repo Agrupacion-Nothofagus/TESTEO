@@ -2,6 +2,7 @@ import './admin-visual-optimization-loader.js?v=20260704-visual';
 import './admin-fixed-sidebar-loader.js?v=20260707';
 import './admin-compact-header-loader.js?v=20260707';
 import './admin-no-header-cuotas-layout-loader.js?v=20260708';
+import './dashboard-control-reference-layout.js?v=20260710-panel-ref';
 import './tesoreria-cuotas-matrix-simplify-loader.js?v=20260707';
 import './tesoreria-cuotas-cell-status-menu.js?v=20260710-fluido';
 import './tesoreria-cuotas-manual-status-calculator.js?v=20260710-fluido';
