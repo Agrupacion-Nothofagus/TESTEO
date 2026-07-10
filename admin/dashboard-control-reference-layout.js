@@ -78,7 +78,6 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const activeMembers = members.filter((item) => item.estado === 'miembro' && normalizeText(item.estado_socio || 'activo') === 'activo');
     const inactiveMembers = members.filter((item) => item.estado === 'miembro' && ['inactivo', 'suspendido'].includes(normalizeText(item.estado_socio)));
     const pendingMembers = members.filter((item) => item.estado === 'pendiente' || item.estado === 'contactado');
-    const rejectedMembers = members.filter((item) => item.estado === 'rechazado');
     const activePosts = posts.filter((item) => item.estado === 'publicado');
     const draftPosts = posts.filter((item) => item.estado !== 'publicado');
 
@@ -99,7 +98,6 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       activeMembers,
       inactiveMembers,
       pendingMembers,
-      rejectedMembers,
       activePosts,
       draftPosts,
       activeMovements,
@@ -149,9 +147,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const payments = Array.isArray(cuotas.pagosHistoricos) ? cuotas.pagosHistoricos : [];
     payments.slice(0, 3).forEach((payment) => activities.push({ icon: '✅', title: payment.tipoPago === 'anual' ? 'Cuota anual registrada' : 'Cuota mensual registrada', text: payment.miembroNombre || payment.nombre || 'Integrante', amount: Number(payment.monto || 0), date: payment.fechaPago || '' }));
 
-    return activities
-      .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
-      .slice(0, 5);
+    return activities.sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 5);
   }
 
   function renderModel(model) {
@@ -171,7 +167,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     renderMembershipStatus(model);
     renderRecentActivity(model.activity);
     renderPendingApprovals(model.pendingApprovals);
-    renderMilestones(model);
+    renderMilestones();
     renderTreasurySummary(model);
     setText('[data-dashboard-last-update]', formatDateTime(model.updatedAt));
   }
@@ -288,6 +284,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
 
   function bindDashboardActions(scope) {
     scope.addEventListener('click', (event) => {
+      if (event.target.closest?.('[data-dashboard-refresh]')) return refreshDashboard();
       const target = event.target.closest?.('[data-dashboard-open-view]');
       if (!target) return;
       const view = target.dataset.dashboardOpenView;
@@ -303,69 +300,19 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
   function templateShell() {
     return `
       <section class="dashboard-reference" aria-label="Panel de control">
-        <header class="dashboard-reference-welcome">
-          <div>
-            <h3>¡Bienvenido de vuelta, Admin! 👋</h3>
-            <p>Aquí tienes lo más importante de Nothofagus hoy.</p>
-          </div>
-          <button type="button" class="dashboard-reference-date"><span>📅</span><strong data-dashboard-current-date>—</strong></button>
-        </header>
-
-        <div class="dashboard-reference-kpis" aria-label="Indicadores principales">
-          ${kpiCard('👥', 'Miembros activos', 'miembros', 'Socios/as activos registrados')}
-          ${kpiCard('🧡', 'Solicitudes pendientes', 'pendientes', '', 'data-dashboard-pending-note')}
-          ${kpiCard('💳', 'Balance disponible', 'tesoreria-saldo', '', 'data-dashboard-balance-note')}
-          ${kpiCard('📄', 'Publicaciones activas', 'publicaciones', '', 'data-dashboard-post-note')}
-        </div>
-
+        <header class="dashboard-reference-welcome"><div><h3>¡Bienvenido de vuelta, Admin! 👋</h3><p>Aquí tienes lo más importante de Nothofagus hoy.</p></div><button type="button" class="dashboard-reference-date"><span>📅</span><strong data-dashboard-current-date>—</strong></button></header>
+        <div class="dashboard-reference-kpis" aria-label="Indicadores principales">${kpiCard('👥', 'Miembros activos', 'miembros', 'Socios/as activos registrados')}${kpiCard('🧡', 'Solicitudes pendientes', 'pendientes', '', 'data-dashboard-pending-note')}${kpiCard('💳', 'Balance disponible', 'tesoreria-saldo', '', 'data-dashboard-balance-note')}${kpiCard('📄', 'Publicaciones activas', 'publicaciones', '', 'data-dashboard-post-note')}</div>
         <section class="dashboard-reference-grid">
-          <article class="dashboard-reference-card dashboard-reference-finance">
-            <div class="dashboard-reference-card-head"><h4>Resumen financiero ${currentYear}</h4><span><i></i>Ingresos</span><span class="expense"><i></i>Egresos</span></div>
-            <div data-dashboard-finance-chart></div>
-          </article>
-
-          <article class="dashboard-reference-card">
-            <div class="dashboard-reference-card-head"><h4>Estado de membresías</h4></div>
-            <div data-dashboard-membership-status></div>
-          </article>
-
-          <article class="dashboard-reference-card">
-            <div class="dashboard-reference-card-head"><h4>Actividad reciente</h4></div>
-            <div class="dashboard-reference-list" data-dashboard-recent-activity></div>
-            <button type="button" class="dashboard-reference-more" data-dashboard-open-view="tesoreria-general-view">Ver toda la actividad →</button>
-          </article>
-
-          <article class="dashboard-reference-card">
-            <div class="dashboard-reference-card-head"><h4>Aprobaciones pendientes</h4></div>
-            <div class="dashboard-reference-list" data-dashboard-pending-approvals></div>
-            <button type="button" class="dashboard-reference-more" data-dashboard-open-view="members-pending-view">Ver todas las pendientes →</button>
-          </article>
-
-          <article class="dashboard-reference-card dashboard-reference-milestones-card">
-            <div class="dashboard-reference-card-head"><h4>Próximos hitos</h4></div>
-            <div class="dashboard-reference-milestones" data-dashboard-milestones></div>
-          </article>
-
-          <article class="dashboard-reference-card dashboard-reference-actions-card">
-            <div class="dashboard-reference-card-head"><h4>Acciones rápidas</h4></div>
-            <div class="dashboard-reference-actions">
-              <button type="button" data-dashboard-open-view="nueva-view"><span>📝</span><strong>Nueva publicación</strong></button>
-              <button type="button" data-dashboard-open-view="tesoreria-general-view"><span>💳</span><strong>Registrar pago</strong></button>
-              <button type="button" data-dashboard-open-view="members-pending-view"><span>👥</span><strong>Nuevo miembro</strong></button>
-              <button type="button" data-dashboard-open-view="registro-actas-view"><span>📋</span><strong>Crear acta</strong></button>
-            </div>
-          </article>
-
-          <article class="dashboard-reference-card dashboard-reference-status-card"><span>🛡️</span><div><strong>Estado del sistema</strong><small>Todos los módulos administrativos cargados correctamente.</small></div><i></i></article>
-          <article class="dashboard-reference-card dashboard-reference-status-card"><span>🕒</span><div><strong>Última actualización</strong><small data-dashboard-last-update>—</small></div><button type="button" data-dashboard-refresh>↻</button></article>
+          <article class="dashboard-reference-card dashboard-reference-finance"><div class="dashboard-reference-card-head"><h4>Resumen financiero ${currentYear}</h4><span><i></i>Ingresos</span><span class="expense"><i></i>Egresos</span></div><div data-dashboard-finance-chart></div></article>
+          <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Estado de membresías</h4></div><div data-dashboard-membership-status></div></article>
+          <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Actividad reciente</h4></div><div class="dashboard-reference-list" data-dashboard-recent-activity></div><button type="button" class="dashboard-reference-more" data-dashboard-open-view="tesoreria-general-view">Ver toda la actividad →</button></article>
+          <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Aprobaciones pendientes</h4></div><div class="dashboard-reference-list" data-dashboard-pending-approvals></div><button type="button" class="dashboard-reference-more" data-dashboard-open-view="members-pending-view">Ver todas las pendientes →</button></article>
+          <article class="dashboard-reference-card dashboard-reference-milestones-card"><div class="dashboard-reference-card-head"><h4>Próximos hitos</h4></div><div class="dashboard-reference-milestones" data-dashboard-milestones></div></article>
+          <article class="dashboard-reference-card dashboard-reference-actions-card"><div class="dashboard-reference-card-head"><h4>Acciones rápidas</h4></div><div class="dashboard-reference-actions"><button type="button" data-dashboard-open-view="nueva-view"><span>📝</span><strong>Nueva publicación</strong></button><button type="button" data-dashboard-open-view="tesoreria-general-view"><span>💳</span><strong>Registrar pago</strong></button><button type="button" data-dashboard-open-view="members-pending-view"><span>👥</span><strong>Nuevo miembro</strong></button><button type="button" data-dashboard-open-view="registro-actas-view"><span>📋</span><strong>Crear acta</strong></button></div></article>
+          <article class="dashboard-reference-card dashboard-reference-status-card"><span>🛡️</span><div><strong>Estado del sistema</strong><small>Todos los módulos administrativos cargados correctamente.</small></div><i></i></article><article class="dashboard-reference-card dashboard-reference-status-card"><span>🕒</span><div><strong>Última actualización</strong><small data-dashboard-last-update>—</small></div><button type="button" data-dashboard-refresh>↻</button></article>
         </section>
-
-        <article class="dashboard-widget dashboard-treasury-widget is-hidden" aria-hidden="true"><div data-dashboard-treasury-summary></div></article>
-        <div class="dashboard-list is-hidden" data-dashboard-latest-posts></div>
-        <div class="dashboard-member-summary is-hidden" data-dashboard-member-summary></div>
-        <p class="admin-status dashboard-status" data-dashboard-status>Preparando panel de control...</p>
-      </section>
-    `;
+        <article class="dashboard-widget dashboard-treasury-widget is-hidden" aria-hidden="true"><div data-dashboard-treasury-summary></div></article><div class="dashboard-list is-hidden" data-dashboard-latest-posts></div><div class="dashboard-member-summary is-hidden" data-dashboard-member-summary></div><p class="admin-status dashboard-status" data-dashboard-status>Preparando panel de control...</p>
+      </section>`;
   }
 
   function kpiCard(icon, label, metric, note = '', noteAttr = '') {
@@ -373,17 +320,19 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     return `<article class="dashboard-reference-kpi"><span>${icon}</span><div><p>${esc(label)}</p><strong data-dashboard-total="${esc(metric)}">—</strong>${noteMarkup}</div></article>`;
   }
 
-  function setText(selector, value) {
-    document.querySelectorAll(selector).forEach((element) => { element.textContent = String(value ?? '—'); });
+  function loadStyles() {
+    const href = 'dashboard-control-reference-layout.css?v=20260710-panel-ref';
+    const existing = document.querySelector('link[data-dashboard-reference-layout]');
+    if (existing) { existing.href = href; return; }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.dataset.dashboardReferenceLayout = 'true';
+    document.head.appendChild(link);
   }
 
-  function setStatus(element, message, ok) {
-    if (!element) return;
-    element.textContent = message;
-    element.classList.toggle('success', Boolean(ok));
-    element.classList.toggle('error', !ok);
-  }
-
+  function setText(selector, value) { document.querySelectorAll(selector).forEach((element) => { element.textContent = String(value ?? '—'); }); }
+  function setStatus(element, message, ok) { if (!element) return; element.textContent = message; element.classList.toggle('success', Boolean(ok)); element.classList.toggle('error', !ok); }
   function sumByType(items, type) { return items.filter((item) => String(item.tipo || '').toLowerCase() === type).reduce((sum, item) => sum + Number(item.monto || 0), 0); }
   function getYear(value) { return Number(String(value || '').slice(0, 4)) || 0; }
   function getMonth(value) { return Number(String(value || '').slice(5, 7)) - 1; }
