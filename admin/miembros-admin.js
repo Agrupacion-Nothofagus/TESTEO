@@ -14,10 +14,18 @@ const SOCIO_STATUS_LABELS = {
   inactivo: 'Inactivo/a',
   suspendido: 'Suspendido/a'
 };
+const CACHE_KEY = 'nothofagus_members_admin_cache_v2';
+const CACHE_TTL = 90 * 1000;
+const PAGE_SIZE = 45;
+const RENDER_IDLE_DELAY = 24;
 
 let solicitudes = [];
 let loaded = false;
 let ready = false;
+let loading = false;
+let loadPromise = null;
+let renderLimits = { pendiente: PAGE_SIZE, contactado: PAGE_SIZE, rechazado: PAGE_SIZE, miembro: PAGE_SIZE };
+let filterTimer = null;
 
 const timer = setInterval(() => {
   const firstView = document.querySelector('[data-member-status-view]');
@@ -26,28 +34,38 @@ const timer = setInterval(() => {
   clearInterval(timer);
   ready = true;
   installMemberAdmin();
-}, 250);
+}, 120);
 
 window.addEventListener('nothofagus:members-view', async () => {
   if (!ready) return;
-  if (!loaded) await loadRequests();
+  if (!loaded) await loadRequests({ useCache: true });
   renderActiveView();
 });
 
 function installMemberAdmin() {
+  installPerformanceStyle();
+
   document.querySelectorAll('[data-reload-members]').forEach((button) => {
-    button.addEventListener('click', loadRequests);
+    button.addEventListener('click', () => loadRequests({ force: true }));
   });
 
   document.querySelectorAll('[data-member-filter-bar]').forEach((bar) => {
-    bar.addEventListener('input', renderActiveView);
-    bar.addEventListener('change', renderActiveView);
+    const handler = () => {
+      window.clearTimeout(filterTimer);
+      filterTimer = window.setTimeout(() => {
+        resetActiveLimit();
+        renderActiveView();
+      }, 90);
+    };
+    bar.addEventListener('input', handler);
+    bar.addEventListener('change', handler);
   });
 
   document.addEventListener('click', async (event) => {
     const actionButton = event.target.closest('[data-member-action]');
     const toggleButton = event.target.closest('[data-toggle-member-detail]');
     const saveMemberButton = event.target.closest('[data-save-member-record]');
+    const moreButton = event.target.closest('[data-members-load-more]');
 
     if (actionButton) {
       await handleMemberAction(actionButton);
@@ -60,27 +78,77 @@ function installMemberAdmin() {
     if (saveMemberButton) {
       await saveMemberRecord(saveMemberButton.dataset.saveMemberRecord);
     }
+
+    if (moreButton) {
+      const status = moreButton.dataset.membersLoadMore;
+      renderLimits[status] = Number(renderLimits[status] || PAGE_SIZE) + PAGE_SIZE;
+      renderActiveView();
+    }
   });
 
   document.querySelectorAll('[data-member-status-view]').forEach((view) => {
     if (view.classList.contains('is-active')) {
-      loadRequests();
+      loadRequests({ useCache: true });
     }
   });
 }
 
-async function loadRequests() {
+async function loadRequests({ force = false, useCache = false } = {}) {
+  if (loading && loadPromise) return loadPromise;
   loaded = true;
-  setLoadingState('Cargando registros...');
 
-  try {
-    const data = await api('/api/miembros');
-    solicitudes = (data.solicitudes || []).map(normalizeSolicitud);
+  const cached = !force && useCache ? readCache() : null;
+  if (cached?.length) {
+    solicitudes = cached.map(normalizeSolicitud);
     updateCounters();
     renderActiveView();
-  } catch (error) {
-    renderAllLists(`<p class="admin-status error">${escapeHTML(error.message || 'No fue posible cargar registros.')}</p>`);
+    showActiveStatus('Listado cargado desde caché. Actualizando en segundo plano...', true);
+    refreshRequestsInBackground();
+    return;
   }
+
+  loading = true;
+  setLoadingState('Cargando registros...');
+  loadPromise = fetchRequests()
+    .then((items) => {
+      solicitudes = items;
+      loaded = true;
+      writeCache(items);
+      updateCounters();
+      renderActiveView();
+      showActiveStatus('Listado de miembros actualizado.', true);
+    })
+    .catch((error) => {
+      renderAllLists(`<p class="admin-status error">${escapeHTML(error.message || 'No fue posible cargar registros.')}</p>`);
+    })
+    .finally(() => {
+      loading = false;
+      loadPromise = null;
+    });
+
+  return loadPromise;
+}
+
+async function refreshRequestsInBackground() {
+  if (loading) return;
+  loading = true;
+  try {
+    const items = await fetchRequests();
+    solicitudes = items;
+    writeCache(items);
+    updateCounters();
+    renderActiveView();
+    showActiveStatus('Listado actualizado.', true);
+  } catch {
+    // Se mantiene la versión en caché para no bloquear la sección.
+  } finally {
+    loading = false;
+  }
+}
+
+async function fetchRequests() {
+  const data = await api('/api/miembros');
+  return (data.solicitudes || []).map(normalizeSolicitud);
 }
 
 function renderActiveView() {
@@ -93,18 +161,31 @@ function renderActiveView() {
   const filtered = getFilteredItems(view, statusView);
 
   if (statusBox) statusBox.textContent = '';
+  if (!list) return;
 
   if (!filtered.length) {
     list.innerHTML = emptyState(statusView);
     return;
   }
 
-  if (statusView === 'miembro') {
-    list.innerHTML = filtered.map(renderMember).join('');
-    return;
-  }
+  const limit = Number(renderLimits[statusView] || PAGE_SIZE);
+  const visible = filtered.slice(0, limit);
+  const remaining = Math.max(filtered.length - visible.length, 0);
+  const body = statusView === 'miembro'
+    ? visible.map(renderMember).join('')
+    : visible.map((item) => renderSolicitud(item, statusView)).join('');
 
-  list.innerHTML = filtered.map((item) => renderSolicitud(item, statusView)).join('');
+  list.innerHTML = body + renderLoadMore(statusView, remaining, filtered.length);
+}
+
+function renderLoadMore(statusView, remaining, total) {
+  if (remaining <= 0) return '';
+  return `
+    <div class="members-load-more">
+      <p>Mostrando ${Math.max(total - remaining, 0)} de ${total} registros.</p>
+      <button type="button" class="secondary-admin-button" data-members-load-more="${escapeAttr(statusView)}">Cargar ${Math.min(PAGE_SIZE, remaining)} más</button>
+    </div>
+  `;
 }
 
 function getFilteredItems(view, statusView) {
@@ -179,8 +260,8 @@ function renderMember(item) {
       </button>
 
       <div class="member-extra" data-member-extra="${escapeAttr(item.id)}">
-        <div class="member-extra-grid">
-          ${renderFullInfo(item)}
+        <div class="member-extra-grid" data-member-extra-grid="${escapeAttr(item.id)}" data-detail-loaded="false">
+          <p class="admin-status compact">Detalle preparado para cargar al desplegar.</p>
         </div>
         <div class="member-record-actions">
           <label>Estado del socio/a
@@ -198,6 +279,17 @@ function renderMember(item) {
       </div>
     </article>
   `;
+}
+
+function hydrateMemberDetail(id) {
+  const grid = document.querySelector(`[data-member-extra-grid="${cssEscape(id)}"]`);
+  if (!grid || grid.dataset.detailLoaded === 'true') return;
+  const item = solicitudes.find((solicitud) => String(solicitud.id) === String(id));
+  if (!item) return;
+  window.setTimeout(() => {
+    grid.innerHTML = renderFullInfo(item);
+    grid.dataset.detailLoaded = 'true';
+  }, RENDER_IDLE_DELAY);
 }
 
 function renderFullInfo(item) {
@@ -314,8 +406,9 @@ async function patchMember(payload, successMessage) {
       method: 'PATCH',
       body: JSON.stringify(payload)
     });
+    clearCache();
     showActiveStatus(successMessage, true);
-    await loadRequests();
+    await loadRequests({ force: true });
   } catch (error) {
     showActiveStatus(error.message || 'No fue posible guardar los cambios.', false);
   }
@@ -328,6 +421,7 @@ function toggleMemberDetail(id) {
 
   const expanded = detail.classList.toggle('is-open');
   button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  if (expanded) hydrateMemberDetail(id);
 }
 
 async function api(url, options = {}) {
@@ -377,9 +471,9 @@ function updateCounters() {
 }
 
 function setLoadingState(message) {
-  document.querySelectorAll('[data-members-list]').forEach((list) => {
-    list.innerHTML = `<p class="admin-status">${escapeHTML(message)}</p>`;
-  });
+  const view = document.querySelector('[data-member-status-view].is-active');
+  const list = view?.querySelector('[data-members-list]');
+  if (list) list.innerHTML = `<p class="admin-status">${escapeHTML(message)}</p>`;
 }
 
 function renderAllLists(html) {
@@ -408,6 +502,46 @@ function emptyState(status) {
   return `<div class="members-empty-state"><strong>${text}</strong><p>Usa los filtros o actualiza el listado para revisar nuevos registros.</p></div>`;
 }
 
+function resetActiveLimit() {
+  const view = document.querySelector('[data-member-status-view].is-active');
+  if (view?.dataset.memberStatusView) renderLimits[view.dataset.memberStatusView] = PAGE_SIZE;
+}
+
+function readCache() {
+  try {
+    const parsed = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+    if (!parsed || !Array.isArray(parsed.items)) return null;
+    if (Date.now() - Number(parsed.updatedAt || 0) > CACHE_TTL) return null;
+    return parsed.items;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(items) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ updatedAt: Date.now(), items }));
+  } catch {
+    // La caché es opcional.
+  }
+}
+
+function clearCache() {
+  try { sessionStorage.removeItem(CACHE_KEY); } catch {}
+}
+
+function installPerformanceStyle() {
+  if (document.querySelector('style[data-members-performance-style]')) return;
+  const style = document.createElement('style');
+  style.dataset.membersPerformanceStyle = 'true';
+  style.textContent = `
+    .members-load-more { display:grid; gap:10px; place-items:center; padding:14px; border-radius:18px; background:rgba(79,125,74,.08); }
+    .members-load-more p { margin:0; color:var(--texto-suave); font-weight:850; }
+    .admin-status.compact { margin:0; padding:12px; font-size:.82rem; }
+  `;
+  document.head.appendChild(style);
+}
+
 function normalizeStatus(status) {
   const value = String(status || '').trim().toLowerCase();
   if (value === 'aceptado') return 'miembro';
@@ -428,10 +562,6 @@ function normalizeSocioStatus(status) {
 function normalizeAreas(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
   return String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
-}
-
-function statusOption(value, current, label) {
-  return `<option value="${value}" ${value === current ? 'selected' : ''}>${label}</option>`;
 }
 
 function socioStatusOption(value, current) {
