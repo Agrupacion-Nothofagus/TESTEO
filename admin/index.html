@@ -10,14 +10,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="../site-interactions.css">
-  <link rel="stylesheet" href="admin.css">
-  <link rel="stylesheet" href="dashboard-admin.css">
-  <link rel="stylesheet" href="users-admin.css">
-  <link rel="stylesheet" href="sidebar-overrides.css">
-  <link rel="stylesheet" href="publications-compact.css">
-  <link rel="stylesheet" href="quill-editor.css">
+  <style id="dashboard-critical-no-flash">
+    #dashboard-view .dashboard-panel:not([data-reference-dashboard="true"]) {
+      position: relative;
+      min-height: 62vh;
+      overflow: hidden;
+    }
+
+    #dashboard-view .dashboard-panel:not([data-reference-dashboard="true"]) > :not(.dashboard-loading-placeholder) {
+      display: none !important;
+    }
+
+    #dashboard-view .dashboard-loading-placeholder {
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+      border: 1px solid rgba(31, 61, 43, 0.1);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #66756d;
+      font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(31, 61, 43, 0.08);
+    }
+  </style>
+  <link rel="stylesheet" href="../styles.css?v=20260710">
+  <link rel="stylesheet" href="../site-interactions.css?v=20260710">
+  <link rel="stylesheet" href="admin.css?v=20260710">
+  <link rel="stylesheet" href="dashboard-admin.css?v=20260710-no-old-dashboard">
+  <link rel="stylesheet" href="users-admin.css?v=20260710">
+  <link rel="stylesheet" href="sidebar-overrides.css?v=20260710">
+  <link rel="stylesheet" href="publications-compact.css?v=20260710">
+  <link rel="stylesheet" href="quill-editor.css?v=20260710">
 </head>
 <body>
   <main class="admin-dashboard">
@@ -72,78 +96,7 @@
 
       <section class="admin-view is-active" id="dashboard-view" data-view-title="Panel de control" data-view-description="Resumen general de publicaciones, solicitudes, miembros, usuarios y estado de visitas.">
         <div class="admin-panel dashboard-panel">
-          <div class="dashboard-hero">
-            <article class="dashboard-hero-card">
-              <p class="section-tag">Vista general</p>
-              <h3>Panel de control</h3>
-              <p>Accede rápidamente a las áreas principales del sitio y revisa el estado general de publicaciones, miembros, solicitudes y administración interna.</p>
-            </article>
-
-            <article class="dashboard-quick-card">
-              <strong>Accesos rápidos</strong>
-              <div class="dashboard-quick-actions">
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="gestion-view">Ver publicaciones</button>
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="nueva-view">Crear publicación</button>
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="usuarios-view">Administrar usuarios</button>
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="members-pending-view">Revisar solicitudes</button>
-                <button type="button" class="dashboard-action-button" data-dashboard-open-view="registro-actas-view">Registro de Actas</button>
-              </div>
-            </article>
-          </div>
-
-          <div class="dashboard-stats-grid" aria-label="Indicadores principales">
-            <article class="dashboard-stat-card">
-              <span>Publicaciones</span>
-              <strong data-dashboard-total="publicaciones">—</strong>
-              <small><b data-dashboard-total="publicadas">—</b> publicadas · <b data-dashboard-total="borradores">—</b> borradores/archivo</small>
-            </article>
-            <article class="dashboard-stat-card">
-              <span>Miembros</span>
-              <strong data-dashboard-total="miembros">—</strong>
-              <small>Personas aceptadas como socios/as.</small>
-            </article>
-            <article class="dashboard-stat-card">
-              <span>Solicitudes</span>
-              <strong data-dashboard-total="pendientes">—</strong>
-              <small><b data-dashboard-total="contactados">—</b> contactadas · <b data-dashboard-total="rechazados">—</b> rechazadas</small>
-            </article>
-            <article class="dashboard-stat-card">
-              <span>Visitas</span>
-              <strong data-dashboard-total="visitas">—</strong>
-              <small>Espacio preparado para analítica web.</small>
-            </article>
-          </div>
-
-          <div class="dashboard-content-grid">
-            <article class="dashboard-widget">
-              <h4>Últimas publicaciones</h4>
-              <div class="dashboard-list" data-dashboard-latest-posts>
-                <p class="dashboard-empty">Cargando publicaciones...</p>
-              </div>
-            </article>
-
-            <article class="dashboard-widget">
-              <h4>Resumen de miembros</h4>
-              <div class="dashboard-member-summary" data-dashboard-member-summary>
-                <p class="dashboard-empty">Cargando resumen de miembros...</p>
-              </div>
-            </article>
-
-            <article class="dashboard-widget">
-              <h4>Usuarios internos</h4>
-              <div class="dashboard-member-summary">
-                <article><strong data-dashboard-total="usuarios">—</strong><span>Usuarios</span></article>
-                <article><strong>4</strong><span>Roles activos</span></article>
-              </div>
-            </article>
-
-            <article class="dashboard-widget">
-              <h4>Visitas y analítica</h4>
-              <p class="dashboard-visits-note">El módulo visual está preparado. Para registrar visitas reales se debe conectar Cloudflare Web Analytics, Plausible, Google Analytics u otra fuente de métricas.</p>
-            </article>
-          </div>
-
-          <p class="admin-status dashboard-status" data-dashboard-status>Preparando panel de control...</p>
+          <div class="dashboard-loading-placeholder" role="status" aria-live="polite">Cargando panel de control...</div>
         </div>
       </section>
 
@@ -319,12 +272,12 @@
   </main>
 
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-  <script src="sidebar-safe-clicks.js?v=20260709" defer></script>
-  <script type="module" src="admin.js?v=20260709"></script>
-  <script type="module" src="dashboard-admin.js?v=20260709"></script>
-  <script type="module" src="users-table-ui.js?v=20260709"></script>
-  <script type="module" src="users-admin.js?v=20260709"></script>
-  <script type="module" src="admin-users-access-fix.js?v=20260709"></script>
-  <script type="module" src="modules-clean.js?v=20260709"></script>
+  <script src="sidebar-safe-clicks.js?v=20260710-no-old-dashboard" defer></script>
+  <script type="module" src="admin.js?v=20260710-no-old-dashboard"></script>
+  <script type="module" src="dashboard-admin.js?v=20260710-no-old-dashboard"></script>
+  <script type="module" src="users-table-ui.js?v=20260710-no-old-dashboard"></script>
+  <script type="module" src="users-admin.js?v=20260710-no-old-dashboard"></script>
+  <script type="module" src="admin-users-access-fix.js?v=20260710-no-old-dashboard"></script>
+  <script type="module" src="modules-clean.js?v=20260710-no-old-dashboard"></script>
 </body>
 </html>
