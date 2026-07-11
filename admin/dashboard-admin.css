@@ -1,3 +1,29 @@
+/* Evita el parpadeo del panel antiguo mientras carga el dashboard reorganizado. */
+#dashboard-view .dashboard-panel:not([data-reference-dashboard="true"]) {
+  position: relative;
+  min-height: 62vh;
+  overflow: hidden;
+}
+
+#dashboard-view .dashboard-panel:not([data-reference-dashboard="true"]) > * {
+  visibility: hidden;
+}
+
+#dashboard-view .dashboard-panel:not([data-reference-dashboard="true"])::before {
+  content: 'Cargando panel de control...';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  border: 1px solid rgba(31, 61, 43, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--texto-suave);
+  font-weight: 900;
+  box-shadow: 0 14px 30px rgba(31, 61, 43, 0.08);
+}
+
 .dashboard-panel {
   padding: clamp(20px, 3vw, 34px);
   overflow: hidden;
