@@ -15,14 +15,12 @@
 
       const authorization = getAuthorization(input, init);
       const eligibleEmails = await getEligibleMemberEmails(authorization);
-      if (!eligibleEmails) return response;
+      if (!eligibleEmails || !eligibleEmails.size) {
+        return jsonResponse(addFilterNotice(data, 'Filtro de categoría omitido: no se encontraron socios/as activos/as o benefactores/as en Miembros.'), response);
+      }
 
       const filtered = normalizeCuotasBySocioCategory(data, eligibleEmails);
-      return new Response(JSON.stringify(filtered), {
-        status: response.status,
-        statusText: response.statusText,
-        headers: responseHeaders(response)
-      });
+      return jsonResponse(filtered, response);
     } catch {
       return response;
     }
@@ -31,12 +29,18 @@
   function shouldFilterCuotas(input, init, response) {
     const method = String(init?.method || input?.method || 'GET').toUpperCase();
     if (method !== 'GET' || !response?.ok) return false;
-    return isCuotasUrl(typeof input === 'string' ? input : input?.url || '');
+    const url = typeof input === 'string' ? input : input?.url || '';
+    return isCuotasUrl(url);
   }
 
   function normalizeCuotasBySocioCategory(data, eligibleEmails) {
     const allMembers = Array.isArray(data.miembros) ? data.miembros : [];
     const visibleMembers = allMembers.filter((member) => eligibleEmails.has(normalizeEmail(member.correo)));
+
+    if (!visibleMembers.length && allMembers.length) {
+      return addFilterNotice(data, 'Filtro de categoría omitido: los integrantes de cuotas no coinciden por correo con Miembros. Se mantiene la nómina editable para evitar bloqueo.');
+    }
+
     const summary = buildSummary(visibleMembers);
 
     return {
@@ -48,8 +52,23 @@
       },
       filtroSociosCuotas: {
         criterio: 'Solo socios/as activos/as y socios/as benefactores/as con estado socio activo.',
+        estado: 'aplicado',
         integrantesElegibles: visibleMembers.length,
         integrantesExcluidos: Math.max(allMembers.length - visibleMembers.length, 0)
+      }
+    };
+  }
+
+  function addFilterNotice(data, message) {
+    const allMembers = Array.isArray(data.miembros) ? data.miembros : [];
+    return {
+      ...data,
+      filtroSociosCuotas: {
+        criterio: 'Solo socios/as activos/as y socios/as benefactores/as con estado socio activo.',
+        estado: 'omitido_para_no_bloquear_nomina',
+        advertencia: message,
+        integrantesElegibles: allMembers.length,
+        integrantesExcluidos: 0
       }
     };
   }
@@ -122,6 +141,14 @@
     } catch {
       return String(url || '').includes('/api/cuotas-miembros');
     }
+  }
+
+  function jsonResponse(data, response) {
+    return new Response(JSON.stringify(data), {
+      status: response.status,
+      statusText: response.statusText,
+      headers: responseHeaders(response)
+    });
   }
 
   function responseHeaders(response) {
