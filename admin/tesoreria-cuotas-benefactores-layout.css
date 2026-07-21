@@ -4,6 +4,7 @@
   display: grid;
   gap: 22px;
   padding: 0;
+  overflow: visible;
 }
 
 #tesoreria-benefactores-view .cuotas-dashboard-header {
@@ -130,24 +131,118 @@
 }
 
 #tesoreria-benefactores-view .tesoreria-status {
-  margin: 30px 0 0;
+  margin: 24px 0 0;
   padding-left: 32px;
 }
 
 #tesoreria-benefactores-view .cuotas-monthly-matrix-card {
-  max-width: min(1180px, 100%);
-  margin-left: 32px;
+  width: calc(100% - 64px);
+  max-width: 1180px;
+  margin: 0 32px;
   border-radius: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 #tesoreria-benefactores-view .cuotas-table-wrap {
+  width: 100%;
+  max-width: 100%;
   max-height: none;
+  overflow-x: auto !important;
+  overflow-y: visible;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 61, 43, 0.34) rgba(31, 61, 43, 0.08);
+}
+
+#tesoreria-benefactores-view .cuotas-table-wrap::-webkit-scrollbar {
+  height: 8px;
+}
+
+#tesoreria-benefactores-view .cuotas-table-wrap::-webkit-scrollbar-track {
+  background: rgba(31, 61, 43, 0.08);
+  border-radius: 999px;
+}
+
+#tesoreria-benefactores-view .cuotas-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(31, 61, 43, 0.34);
+  border-radius: 999px;
+}
+
+#tesoreria-benefactores-view .cuotas-monthly-table {
+  width: 100%;
+  min-width: 1080px;
+  table-layout: fixed;
 }
 
 #tesoreria-benefactores-view .cuotas-monthly-table th,
 #tesoreria-benefactores-view .cuotas-monthly-table td {
-  padding-top: 11px;
-  padding-bottom: 11px;
+  padding: 10px 8px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+#tesoreria-benefactores-view .cuotas-monthly-table th:first-child,
+#tesoreria-benefactores-view .cuotas-monthly-table td:first-child {
+  width: 255px;
+}
+
+#tesoreria-benefactores-view .cuotas-monthly-table th:nth-child(2),
+#tesoreria-benefactores-view .cuotas-monthly-table td:nth-child(2) {
+  width: 110px;
+}
+
+#tesoreria-benefactores-view .cuotas-monthly-table th:nth-child(3),
+#tesoreria-benefactores-view .cuotas-monthly-table td:nth-child(3) {
+  width: 105px;
+}
+
+#tesoreria-benefactores-view .cuotas-monthly-table th:nth-last-child(2),
+#tesoreria-benefactores-view .cuotas-monthly-table td:nth-last-child(2),
+#tesoreria-benefactores-view .cuotas-monthly-table th:last-child,
+#tesoreria-benefactores-view .cuotas-monthly-table td:last-child {
+  width: 112px;
+}
+
+#tesoreria-benefactores-view .cuotas-member-name {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-width: 0;
+}
+
+#tesoreria-benefactores-view .avatar-mini {
+  flex: 0 0 36px;
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.72rem !important;
+}
+
+#tesoreria-benefactores-view .cuotas-member-name strong {
+  display: block;
+  max-width: 185px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#tesoreria-benefactores-view .cuotas-member-name small {
+  display: block;
+  max-width: 185px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#tesoreria-benefactores-view .payment-status-dot {
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+}
+
+#tesoreria-benefactores-view .saldo-value {
+  white-space: nowrap;
 }
 
 #tesoreria-benefactores-view .cuotas-annual-summary-card .cuotas-chart-fake {
@@ -171,7 +266,9 @@
 
   #tesoreria-benefactores-view .cuotas-monthly-matrix-card,
   #tesoreria-benefactores-view .tesoreria-status {
+    width: 100%;
     margin-left: 0;
+    margin-right: 0;
     padding-left: 0;
   }
 }
