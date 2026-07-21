@@ -4,13 +4,22 @@
 
   loadStyle();
   observe();
-  normalize();
-  document.addEventListener('DOMContentLoaded', normalize);
-  window.addEventListener('hashchange', () => window.setTimeout(normalize, 120));
+  queue();
+  document.addEventListener('DOMContentLoaded', queue);
+  window.addEventListener('hashchange', () => window.setTimeout(queue, 120));
   document.addEventListener('click', (event) => {
-    if (event.target.closest?.('[data-tesoreria-open="cuotas"], [data-cuotas-apply-filter], [data-cuotas-clear-filter], [data-cuotas-nomina]')) {
-      window.setTimeout(normalize, 180);
-      window.setTimeout(normalize, 600);
+    if (event.target.closest?.('[data-tesoreria-open="cuotas"], [data-cuotas-apply-filter], [data-cuotas-clear-filter], [data-cuotas-nomina], [data-cuotas-register-payment]')) {
+      window.setTimeout(queue, 180);
+      window.setTimeout(queue, 650);
+    }
+  }, true);
+  document.addEventListener('input', (event) => {
+    if (event.target.matches?.('[data-cuotas-filter="search"]')) window.setTimeout(queue, 140);
+  }, true);
+  document.addEventListener('change', (event) => {
+    if (event.target.matches?.('[data-cuotas-filter="estado"], [data-cuotas-filter="pago"], [data-cuotas-month], [data-cuotas-year], [data-cuotas-filter-year]')) {
+      window.setTimeout(queue, 220);
+      window.setTimeout(queue, 750);
     }
   }, true);
 
@@ -45,26 +54,25 @@
     const status = root.querySelector('[data-cuotas-status]');
     const matrix = root.querySelector('.cuotas-monthly-matrix-card');
 
-    if (!summary || !monthSummary || !annualSummary || !recent || !filters || !status || !matrix) return;
+    if (!summary || !monthSummary || !annualSummary || !recent || !filters || !matrix) return;
 
     root.classList.add('activos-reference-layout');
 
     const topGrid = ensureSection(root, 'activos-top-grid');
     const middleGrid = ensureSection(root, 'activos-middle-grid');
+    const matrixSection = ensureSection(root, 'activos-matrix-section');
 
-    moveAfter(header, ownNote || topGrid);
-    moveAfter(ownNote || header, topGrid);
     appendIfNeeded(topGrid, summary);
     appendIfNeeded(topGrid, monthSummary);
 
     appendIfNeeded(middleGrid, annualSummary);
     appendIfNeeded(middleGrid, recent);
     if (nominaSlot) appendIfNeeded(middleGrid, nominaSlot);
-    moveAfter(topGrid, middleGrid);
 
-    moveAfter(middleGrid, filters);
-    moveAfter(filters, status);
-    moveAfter(status, matrix);
+    if (status) appendIfNeeded(matrixSection, status);
+    appendIfNeeded(matrixSection, matrix);
+
+    orderRoot(root, [header, ownNote, topGrid, middleGrid, filters, matrixSection]);
 
     root.querySelectorAll('[data-cuotas-annual-status], [data-cuotas-quick-actions]').forEach((item) => {
       item.classList.add('activos-layout-hidden');
@@ -85,13 +93,14 @@
     if (child && child.parentElement !== parent) parent.appendChild(child);
   }
 
-  function moveAfter(anchor, node) {
-    if (!anchor || !node || anchor.nextElementSibling === node) return;
-    anchor.insertAdjacentElement('afterend', node);
+  function orderRoot(root, nodes) {
+    nodes.filter(Boolean).forEach((node) => {
+      if (node.parentElement !== root || root.lastElementChild !== node) root.appendChild(node);
+    });
   }
 
   function loadStyle() {
-    const href = 'tesoreria-cuotas-activos-layout-safe.css?v=20260710-activos-safe';
+    const href = 'tesoreria-cuotas-activos-layout-safe.css?v=20260710-activos-matrix-visible';
     const existing = document.querySelector('link[data-cuotas-activos-layout-safe]');
     if (existing) {
       existing.href = href;
