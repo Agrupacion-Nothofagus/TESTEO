@@ -16,7 +16,6 @@
   justify-content: space-between !important;
   align-items: flex-start !important;
   gap: 18px !important;
-  grid-column: auto !important;
   width: 100% !important;
   margin: 0 !important;
 }
@@ -32,11 +31,15 @@
   display: none !important;
 }
 
+#tesoreria-cuotas-view .activos-reference-layout .cuotas-own-note {
+  width: 100% !important;
+}
+
 #tesoreria-cuotas-view .activos-top-grid {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 320px) !important;
   gap: 22px !important;
-  align-items: stretch !important;
+  align-items: start !important;
   width: 100% !important;
   min-width: 0 !important;
 }
@@ -45,7 +48,6 @@
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 14px !important;
-  grid-column: auto !important;
   width: 100% !important;
   min-width: 0 !important;
 }
@@ -72,7 +74,6 @@
   align-content: start !important;
   padding: 26px 22px !important;
   border-radius: 18px !important;
-  grid-column: auto !important;
   margin: 0 !important;
 }
 
@@ -80,7 +81,7 @@
   display: grid !important;
   grid-template-columns: minmax(250px, 0.86fr) minmax(300px, 1fr) minmax(280px, 320px) !important;
   gap: 22px !important;
-  align-items: stretch !important;
+  align-items: start !important;
   width: 100% !important;
   min-width: 0 !important;
 }
@@ -98,7 +99,6 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  grid-column: auto !important;
 }
 
 #tesoreria-cuotas-view .activos-middle-grid .cuotas-nomina-button {
@@ -119,15 +119,15 @@
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-filter-panel {
   display: flex !important;
   justify-content: flex-end !important;
+  align-items: end !important;
   gap: 10px !important;
   flex-wrap: wrap !important;
   width: 100% !important;
-  margin: -6px 0 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  grid-column: auto !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-filter-panel label {
@@ -159,21 +159,28 @@
   padding: 8px 12px !important;
 }
 
-#tesoreria-cuotas-view .activos-reference-layout .tesoreria-status {
+#tesoreria-cuotas-view .activos-matrix-section {
+  display: grid !important;
+  gap: 14px !important;
   width: 100% !important;
-  margin: 24px 0 0 !important;
-  padding-left: 32px !important;
-  grid-column: auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+#tesoreria-cuotas-view .activos-matrix-section .tesoreria-status {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-matrix-card {
-  width: calc(100% - 64px) !important;
-  max-width: 1180px !important;
-  margin: 0 32px !important;
-  border-radius: 16px !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 18px !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-  grid-column: auto !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-table-wrap {
@@ -215,18 +222,23 @@
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table th:nth-child(3),
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table td:nth-child(3) {
-  width: 105px !important;
+  width: 110px !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table th:nth-child(17),
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table td:nth-child(17) {
   display: table-cell !important;
-  width: 112px !important;
+  width: 110px !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table th:nth-child(18),
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table td:nth-child(18) {
-  width: 118px !important;
+  width: 120px !important;
+}
+
+#tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table th:nth-child(19),
+#tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-table td:nth-child(19) {
+  width: 122px !important;
 }
 
 #tesoreria-cuotas-view .activos-reference-layout .cuotas-member-name {
@@ -271,14 +283,6 @@
 
   #tesoreria-cuotas-view .activos-top-grid [data-cuotas-summary] {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  #tesoreria-cuotas-view .activos-reference-layout .cuotas-monthly-matrix-card,
-  #tesoreria-cuotas-view .activos-reference-layout .tesoreria-status {
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
   }
 }
 
