@@ -23,6 +23,7 @@ import './tesoreria-cuotas.js?v=20260704-cuotas';
 import './tesoreria-cuotas-nomina.js?v=20260708';
 import './tesoreria-cuotas-benefactores.js?v=20260710-table-fit';
 import './tesoreria-cuotas-benefactores-layout-refresh.js?v=20260710-table-fit';
+import './tesoreria-cuotas-benefactores-modal-fix-loader.js?v=20260710-modal-fit';
 import './tesoreria-alignment-loader.js?v=20260703-clean';
 import './actas-supabase-sync.js?v=20260703-clean';
 import './actas-admin.js?v=20260703-clean';
