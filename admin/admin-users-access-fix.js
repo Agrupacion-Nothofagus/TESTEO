@@ -9,6 +9,7 @@ import './tesoreria-general-saas.js?v=20260710-central';
 import './tesoreria-cuotas-nomina-fix.js?v=20260709';
 import './tesoreria-cuotas-benefactores.js?v=20260710-table-fit';
 import './tesoreria-cuotas-benefactores-layout-refresh.js?v=20260710-table-fit';
+import './tesoreria-cuotas-benefactores-modal-fix-loader.js?v=20260710-modal-fit';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
 
