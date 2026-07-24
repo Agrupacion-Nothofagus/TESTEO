@@ -14,6 +14,7 @@ import './users-actions-actas-style.js?v=20260703-clean';
 import './dashboard-admin-access.js?v=20260703-clean';
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
 import './tesoreria-cuotas-socios-filter.js?v=20260710-nomina-stable';
+import './tesoreria-cuotas-payment-distributor.js?v=20260710-no-duplicate';
 import './tesoreria-ingresos-cuotas.js?v=20260710-delete-buttons';
 import './tesoreria-admin.js?v=20260710-delete-audit';
 import './tesoreria-general-saas.js?v=20260710-central';
