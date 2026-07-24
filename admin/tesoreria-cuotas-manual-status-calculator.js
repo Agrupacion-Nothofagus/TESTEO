@@ -89,9 +89,11 @@
     const dots = Array.from(row.querySelectorAll('[data-cuotas-payment-month]'));
     const totalCell = row.querySelector('[data-label="Total pagado"] strong') || row.querySelector('[data-label="Total pagado"]');
     const saldoCell = row.querySelector('[data-label="Saldo pendiente"] strong') || row.querySelector('[data-label="Saldo pendiente"]');
+    const officialTotalPaid = getOriginalAmount(row, 'originalTotalPagado', totalCell);
+    const officialPending = getOriginalAmount(row, 'originalSaldoPendiente', saldoCell);
     const paidByMonth = {};
     const expectedByMonth = {};
-    let totalPaid = 0;
+    let visualTotalPaid = 0;
     let expectedAnnual = 0;
 
     dots.forEach((dot) => {
@@ -102,11 +104,12 @@
       expectedByMonth[month] = expected;
       paidByMonth[month] = paid;
       expectedAnnual += expected;
-      totalPaid += paid;
+      visualTotalPaid += paid;
       enrichDotTitle(dot, month, status, paid, expected);
     });
 
-    const pendingAnnual = Math.max(expectedAnnual - totalPaid, 0);
+    const totalPaid = officialTotalPaid > 0 ? Math.max(officialTotalPaid, Math.min(visualTotalPaid, officialTotalPaid)) : visualTotalPaid;
+    const pendingAnnual = officialTotalPaid > 0 && officialPending >= 0 ? Math.max(expectedAnnual - totalPaid, 0) : Math.max(expectedAnnual - totalPaid, 0);
     if (totalCell) flashText(totalCell, money(totalPaid));
     if (saldoCell) {
       flashText(saldoCell, money(pendingAnnual));
@@ -116,6 +119,7 @@
     row.dataset.manualExpectedMonth = String(expectedByMonth[selectedMonth] || 0);
     row.dataset.manualPaidMonth = String(paidByMonth[selectedMonth] || 0);
     row.dataset.manualTotalPaid = String(totalPaid);
+    row.dataset.manualVisualTotalPaid = String(visualTotalPaid);
     row.dataset.manualPendingAnnual = String(pendingAnnual);
     return { cuota, paidByMonth, expectedByMonth, totalPaid, expectedAnnual, pendingAnnual };
   }
@@ -145,7 +149,7 @@
     setCard(cards[1], money(summary.esperadoMes), 'Según estados del mes');
     setCard(cards[2], money(summary.recibidoMes), `${summary.porcentajeMes}% del esperado`);
     setCard(cards[3], money(summary.pendienteMes), 'Del mes seleccionado');
-    setCard(cards[4], money(summary.totalRecaudado), 'Según colores de la matriz');
+    setCard(cards[4], money(summary.totalRecaudado), 'Según pagos registrados y estados visibles');
     setCard(cards[5], money(summary.saldoPendiente), 'Pendiente por cobrar');
   }
 
@@ -198,6 +202,13 @@
     void element.offsetWidth;
     element.classList.add('cuotas-live-updated');
     window.setTimeout(() => element.classList.remove('cuotas-live-updated'), 520);
+  }
+
+  function getOriginalAmount(row, key, cell) {
+    if (!row) return 0;
+    const dataKey = `cuotas${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+    if (row.dataset[dataKey] === undefined && cell) row.dataset[dataKey] = String(parseMoney(cell.textContent || '0'));
+    return Number(row.dataset[dataKey] || 0) || 0;
   }
 
   function getSelectedMonth(view) {
