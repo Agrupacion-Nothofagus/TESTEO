@@ -1,6 +1,7 @@
 import './dashboard-control-reference-layout.js?v=20260710-panel-ref';
 import './tesoreria-cuotas-retired-flow.js?v=20260710';
 import './tesoreria-cuotas-socios-filter.js?v=20260710-nomina-stable';
+import './tesoreria-cuotas-payment-distributor.js?v=20260710-no-duplicate';
 import './tesoreria-cuotas-comprobante-detalles.js?v=20260710';
 import './tesoreria-ingresos-cuotas.js?v=20260710-delete-buttons';
 import './tesoreria-cuotas-manual-status-calculator.js?v=20260710-no-overcount';
