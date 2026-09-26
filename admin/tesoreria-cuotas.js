@@ -459,9 +459,14 @@ async function saveMemberForm(event) {
 
 async function savePaymentForm(event) {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
+  const form = event.currentTarget;
+  if (form.dataset.submitting === 'true') return;
+  form.dataset.submitting = 'true';
+  const submit = form.querySelector('button[type="submit"]');
+  if (submit) submit.disabled = true;
+  const formData = new FormData(form);
   const detail = { memberId: String(formData.get('member_id') || ''), month: Number(formData.get('mes') || 0), anio: Number(formData.get('anio') || state.anio), tipoPago: String(formData.get('tipo_pago') || 'mensual') };
-  try { setStatus('Registrando pago...', true); await api(API_URL, { method: 'POST', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); notifyPaymentChange('saved', detail); setStatus('Pago registrado correctamente y actualizado en Tesorería General.', true); } catch (error) { setStatus(error.message || 'No fue posible registrar el pago.', false); }
+  try { setStatus('Registrando pago...', true); await api(API_URL, { method: 'POST', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); notifyPaymentChange('saved', detail); setStatus('Pago registrado correctamente y actualizado en Tesorería General.', true); } catch (error) { form.dataset.submitting = 'false'; if (submit) submit.disabled = false; setStatus(error.message || 'No fue posible registrar el pago.', false); }
 }
 
 function syncPaymentTypeAmount(event) {

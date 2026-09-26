@@ -24,10 +24,10 @@ export async function onRequest({ request, env }) {
 
     if (!permisos.read) throw fail('No autorizado para acceder a Cuotas de Miembros.', 403);
 
-    if (request.method === 'GET') return listCuotas(request, cfg, user, permisos);
-    if (request.method === 'POST') return createRecord(request, cfg, user, permisos);
-    if (request.method === 'PATCH') return updateMember(request, cfg, user, permisos);
-    if (request.method === 'DELETE') return deletePayment(request, cfg, permisos);
+    if (request.method === 'GET') return await listCuotas(request, cfg, user, permisos);
+    if (request.method === 'POST') return await createRecord(request, cfg, user, permisos);
+    if (request.method === 'PATCH') return await updateMember(request, cfg, user, permisos);
+    if (request.method === 'DELETE') return await deletePayment(request, cfg, permisos);
 
     return reply({ error: 'Método no permitido.' }, 405);
   } catch (error) {
@@ -114,8 +114,10 @@ async function createPayment(fields, file, cfg, user) {
   if (!memberId) throw fail('Falta el miembro asociado al pago.', 400);
 
   const member = await getMemberById(cfg, memberId);
+  const basePayload = paymentToDb(fields, user, null, member);
+  await rejectDuplicatePayment(cfg, basePayload);
   const archivo = file ? await uploadComprobante(cfg, file, fields.anio || new Date().getFullYear()) : null;
-  const payload = paymentToDb(fields, user, archivo, member);
+  const payload = archivo ? { ...basePayload, ...archivo } : basePayload;
 
   const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}`, {
     method: 'POST',
@@ -130,6 +132,20 @@ async function createPayment(fields, file, cfg, user) {
   }
 
   return reply({ pago: await fromPaymentDb(Array.isArray(data) ? data[0] : data, cfg) }, 201);
+}
+
+async function rejectDuplicatePayment(cfg, payment) {
+  const memberId = encodeURIComponent(payment.member_id);
+  const year = encodeURIComponent(payment.anio);
+  const type = encodeURIComponent(payment.tipo_pago);
+  const monthFilter = payment.tipo_pago === 'anual' ? '' : `&mes=eq.${encodeURIComponent(payment.mes)}`;
+  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?select=id&member_id=eq.${memberId}&anio=eq.${year}&tipo_pago=eq.${type}${monthFilter}&limit=1`);
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible verificar si el pago ya existe.', res.status);
+  if (Array.isArray(data) && data.length) {
+    const period = payment.tipo_pago === 'anual' ? `el año ${payment.anio}` : `el mes ${payment.mes} de ${payment.anio}`;
+    throw fail(`Ya existe un pago registrado para ${period}.`, 409);
+  }
 }
 
 async function deletePayment(request, cfg, permisos) {

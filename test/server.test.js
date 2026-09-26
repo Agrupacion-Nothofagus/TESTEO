@@ -220,6 +220,44 @@ test('Cuotas permite guardar el nuevo estado benefactor', async () => {
   }
 });
 
+test('Cuotas rechaza un pago mensual duplicado antes de insertarlo', async () => {
+  const module = await import('../functions/api/cuotas-miembros.js');
+  const originalFetch = globalThis.fetch;
+  let insertRequests = 0;
+
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.endsWith('/auth/v1/user')) {
+      return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero' } });
+    }
+    if (target.includes('/tesoreria_cuotas_miembros?id=eq.miembro-1')) {
+      return Response.json([{ id: 'miembro-1', nombre: 'Integrante', cuota_mensual: 6000 }]);
+    }
+    if (target.includes('/tesoreria_cuotas_pagos?select=id&member_id=eq.miembro-1&anio=eq.2026&tipo_pago=eq.mensual&mes=eq.6')) {
+      return Response.json([{ id: 'pago-existente' }]);
+    }
+    if (options.method === 'POST') insertRequests += 1;
+    return Response.json([], { status: 500 });
+  };
+
+  try {
+    const response = await module.onRequest({
+      request: new Request('http://localhost/api/cuotas-miembros', {
+        method: 'POST',
+        headers: { authorization: 'Bearer token-tesoreria', 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'payment', member_id: 'miembro-1', tipo_pago: 'mensual', mes: 6, anio: 2026, monto: 6000, fecha_pago: '2026-09-22' })
+      }),
+      env: { SUPABASE_URL: 'https://proyecto-prueba.supabase.co', SUPABASE_ADMIN_KEY: 'sb_secret_prueba' }
+    });
+
+    assert.equal(response.status, 409);
+    assert.match((await response.json()).error, /Ya existe un pago registrado/);
+    assert.equal(insertRequests, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('devuelve 404 JSON para APIs inexistentes', async () => {
   const response = await fetch(baseUrl + '/api/no-existe');
   assert.equal(response.status, 404);
