@@ -119,6 +119,31 @@
   cursor: pointer;
 }
 
+#tesoreria-general-view [data-treasury-refresh] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+#tesoreria-general-view [data-treasury-refresh]:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+#tesoreria-general-view [data-treasury-refresh].is-loading .treasury-refresh-icon {
+  animation: treasury-refresh-spin 0.8s linear infinite;
+}
+
+#tesoreria-general-view .tesoreria-panel.is-refreshing .treasury-saas-dashboard {
+  opacity: 0.78;
+  transition: opacity 0.18s ease;
+}
+
+@keyframes treasury-refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
 #tesoreria-general-view .treasury-saas-balance {
   display: grid;
   align-content: center;

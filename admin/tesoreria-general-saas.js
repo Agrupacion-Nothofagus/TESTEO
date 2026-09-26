@@ -34,7 +34,7 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
     scheduleRender.timer = window.setTimeout(render, delay);
   }
 
-  async function render() {
+  async function render({ force = false, trigger = null } = {}) {
     const panel = document.querySelector('#tesoreria-general-view.is-active .tesoreria-panel');
     if (!panel) return;
     if (state.loading) {
@@ -44,17 +44,36 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
 
     const requestId = ++state.sequence;
     state.loading = true;
+    panel.setAttribute('aria-busy', 'true');
+    panel.classList.toggle('is-refreshing', force);
+    if (trigger) {
+      trigger.disabled = true;
+      trigger.classList.add('is-loading');
+      trigger.setAttribute('aria-busy', 'true');
+      const label = trigger.querySelector('[data-refresh-label]');
+      if (label) label.textContent = 'Actualizando...';
+      else trigger.textContent = 'Actualizando...';
+    }
     if (!panel.querySelector('.treasury-saas-dashboard')) {
       panel.innerHTML = '<section class="treasury-saas-dashboard"><div class="treasury-saas-panel"><p class="treasury-saas-empty">Calculando el resumen financiero...</p></div></section>';
     }
 
     try {
-      const data = await getData(state.year);
+      const data = await getData(state.year, force);
       if (requestId === state.sequence) panel.innerHTML = template(data);
     } catch (error) {
       panel.innerHTML = '<section class="treasury-saas-dashboard"><div class="treasury-saas-panel"><h4>Tesorería general</h4><p class="treasury-saas-empty">' + esc(error.message || 'No fue posible cargar el resumen financiero.') + '</p><button type="button" data-treasury-refresh>Reintentar</button></div></section>';
     } finally {
       state.loading = false;
+      panel.removeAttribute('aria-busy');
+      panel.classList.remove('is-refreshing');
+      if (trigger?.isConnected) {
+        trigger.disabled = false;
+        trigger.classList.remove('is-loading');
+        trigger.removeAttribute('aria-busy');
+        const label = trigger.querySelector('[data-refresh-label]');
+        if (label) label.textContent = 'Actualizar';
+      }
       if (state.pending) {
         state.pending = false;
         scheduleRender(80);
@@ -62,15 +81,22 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
     }
   }
 
-  async function getData(year) {
+  async function getData(year, force = false) {
     if (!client) throw new Error('Supabase no está configurado.');
     const session = await client.auth.getSession();
     const token = session.data?.session?.access_token;
     if (!token) throw new Error('Sesión no disponible para Tesorería.');
-    const options = { cache: 'no-store', headers: { authorization: 'Bearer ' + token } };
+    const nonce = force ? Date.now() : 0;
+    const options = { cache: 'no-store', headers: { authorization: 'Bearer ' + token, 'cache-control': 'no-cache', pragma: 'no-cache' } };
+    const generalUrl = `/api/tesoreria${nonce ? `?_=${nonce}` : ''}`;
+    const quotasQuery = new URLSearchParams({ anio: String(year) });
+    if (force) {
+      quotasQuery.set('sync', '1');
+      quotasQuery.set('_', String(nonce));
+    }
     const [generalResult, quotasResult] = await Promise.allSettled([
-      fetch('/api/tesoreria', options),
-      fetch('/api/cuotas-miembros?anio=' + encodeURIComponent(year), options)
+      fetch(generalUrl, options),
+      fetch(`/api/cuotas-miembros?${quotasQuery}`, options)
     ]);
 
     const generalResponse = generalResult.status === 'fulfilled' ? generalResult.value : null;
@@ -207,7 +233,7 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
           <div class="treasury-saas-hero-actions"><button type="button" data-saas-treasury-go="ingresos">Registrar ingreso</button><button type="button" class="secondary" data-saas-treasury-go="egresos">Registrar egreso</button><button type="button" class="secondary" data-saas-treasury-go="cuotas">Registro de pagos</button></div>
         </div>
         <aside class="treasury-saas-snapshot">
-          <div class="treasury-saas-toolbar"><label>Año<select data-treasury-year>${yearOptions(data.year)}</select></label><button type="button" data-treasury-refresh>↻ Actualizar</button></div>
+          <div class="treasury-saas-toolbar"><label>Año<select data-treasury-year>${yearOptions(data.year)}</select></label><button type="button" data-treasury-refresh><span class="treasury-refresh-icon" aria-hidden="true">↻</span><span data-refresh-label>Actualizar</span></button></div>
           <div class="treasury-saas-balance ${data.balance < 0 ? 'is-negative' : ''}"><span>Saldo disponible</span><strong>${money(data.balance)}</strong><small>${money(data.totalIncome)} ingresos − ${money(data.totalExpense)} egresos</small></div>
         </aside>
       </header>
@@ -241,7 +267,7 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
       const refresh = event.target.closest?.('[data-treasury-refresh]');
       if (refresh) {
         event.preventDefault();
-        scheduleRender(0);
+        render({ force: true, trigger: refresh });
         return;
       }
       const button = event.target.closest?.('[data-saas-treasury-go]');
@@ -301,7 +327,7 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
   function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)) || fallback; } catch { return fallback; } }
 
   function loadStyles() {
-    const href = 'tesoreria-general-saas.css?v=20260921-integral-1';
+    const href = 'tesoreria-general-saas.css?v=20260924-refresh';
     const existing = document.querySelector('link[data-treasury-saas-general]');
     if (existing) return void (existing.href = href);
     const link = document.createElement('link');
