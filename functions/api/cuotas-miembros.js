@@ -48,15 +48,17 @@ function getConfig(env) {
 async function listCuotas(request, cfg, user, permisos) {
   const url = new URL(request.url);
   const year = getYear(url.searchParams.get('anio'));
+  const includeFiles = url.searchParams.get('include_files') !== '0';
+  const shouldSync = url.searchParams.get('sync') !== '0';
 
-  if (!permisos.ownOnly) {
+  if (!permisos.ownOnly && shouldSync) {
     await maybeSyncActiveRegistryMembers(cfg, user, year, url.searchParams.get('sync') === '1');
   }
 
   const members = await listMembers(cfg, user, permisos);
   const payments = await listPayments(cfg, year);
   const allowedIds = new Set(members.map((item) => item.id));
-  const normalizedPayments = await Promise.all(payments.filter((item) => allowedIds.has(item.member_id)).map((item) => fromPaymentDb(item, cfg)));
+  const normalizedPayments = await Promise.all(payments.filter((item) => allowedIds.has(item.member_id)).map((item) => fromPaymentDb(item, cfg, includeFiles)));
   const byMember = groupPayments(normalizedPayments);
   const items = members.map((member) => withFinancialSummary(fromMemberDb(member), byMember.get(member.id) || [], year));
 
@@ -525,7 +527,7 @@ function fromMemberDb(row = {}) {
   };
 }
 
-async function fromPaymentDb(row = {}, cfg) {
+async function fromPaymentDb(row = {}, cfg, includeFiles = true) {
   const comprobantePath = row.comprobante_path || '';
   return {
     id: row.id || '',
@@ -541,7 +543,7 @@ async function fromPaymentDb(row = {}, cfg) {
     comprobanteNombre: row.comprobante_nombre || '',
     comprobanteTipo: row.comprobante_tipo || '',
     comprobanteTamano: Number(row.comprobante_tamano || 0),
-    comprobanteUrl: comprobantePath ? await createSignedUrl(cfg, comprobantePath) : '',
+    comprobanteUrl: includeFiles && comprobantePath ? await createSignedUrl(cfg, comprobantePath) : '',
     creadoPor: row.creado_por || '',
     creadoEn: row.created_at || ''
   };

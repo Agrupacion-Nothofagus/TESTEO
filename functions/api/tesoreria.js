@@ -15,7 +15,7 @@ export async function onRequest({ request, env }) {
 
     if (!permisos.tesoreria) throw fail('No autorizado para acceder a Tesorería.', 403);
 
-    if (request.method === 'GET') return await listMovimientos(cfg);
+    if (request.method === 'GET') return await listMovimientos(request, cfg);
     if (request.method === 'POST') return await saveMovimiento(request, cfg, user);
     if (request.method === 'DELETE') return await deleteMovimiento(request, cfg, user);
 
@@ -37,12 +37,13 @@ function getConfig(env) {
   return { url, key, admins };
 }
 
-async function listMovimientos(cfg) {
+async function listMovimientos(request, cfg) {
+  const includeFiles = new URL(request.url).searchParams.get('include_files') !== '0';
   const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?select=*&order=fecha.desc&order=created_at.desc&limit=1000`);
   const data = await res.json().catch(() => []);
   if (!res.ok) throw fail(data.message || 'No fue posible listar movimientos de Tesorería.', res.status);
 
-  const movimientos = await Promise.all((data || []).map((row) => fromDb(row, cfg)));
+  const movimientos = await Promise.all((data || []).map((row) => fromDb(row, cfg, includeFiles)));
   return reply({ movimientos });
 }
 
@@ -241,7 +242,7 @@ function toDb(item, user, archivo = null) {
   };
 }
 
-async function fromDb(row = {}, cfg) {
+async function fromDb(row = {}, cfg, includeFiles = true) {
   if (!row) return null;
 
   const archivoPath = row.archivo_path || '';
@@ -257,7 +258,7 @@ async function fromDb(row = {}, cfg) {
     archivoNombre: row.archivo_nombre || '',
     archivoTipo: row.archivo_tipo || '',
     archivoTamano: Number(row.archivo_tamano || 0),
-    archivoUrl: archivoPath ? await createSignedUrl(cfg, archivoPath) : '',
+    archivoUrl: includeFiles && archivoPath ? await createSignedUrl(cfg, archivoPath) : '',
     eliminado: Boolean(row.eliminado),
     eliminadoPor: row.eliminado_por || '',
     eliminadoEmail: row.eliminado_email || '',
