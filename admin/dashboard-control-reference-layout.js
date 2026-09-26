@@ -78,9 +78,10 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       });
       renderModel(model);
       const failures = Object.values(sources).filter((source) => !source.available);
+      const rosterMismatch = sources.members.available && sources.cuotas.available && model.activeMembers.length !== model.quotaAccounts;
       setStatus(
         status,
-        failures.length ? `Panel actualizado con ${failures.length} ${failures.length === 1 ? 'fuente pendiente' : 'fuentes pendientes'}.` : 'Panel actualizado y conciliado.',
+        failures.length ? `Panel actualizado con ${failures.length} ${failures.length === 1 ? 'fuente pendiente' : 'fuentes pendientes'}.` : rosterMismatch ? 'Panel actualizado. Revisa la diferencia entre nóminas.' : 'Panel actualizado y conciliado.',
         failures.length === 0
       );
     } catch (error) {
@@ -160,6 +161,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const quotaPayments = getQuotaPayments(cuotas);
     const cuotaIncome = quotaPayments.reduce((sum, payment) => sum + Number(payment.monto || 0), 0);
     const cuotaPending = Number(cuotasSummary.saldoPendiente || 0);
+    const quotaAccounts = Number(cuotasSummary.totalMiembros ?? (cuotas.miembros || []).filter((member) => normalizeText(member.estadoCuenta || member.estado_cuenta) !== 'inactivo').length);
     const totalIncome = incomeManual + cuotaIncome;
     const balance = totalIncome - expenseManual;
     const monthly = buildMonthlySeries(activeMovements, quotaPayments);
@@ -190,6 +192,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       expenseManual,
       cuotaIncome,
       cuotaPending,
+      quotaAccounts,
       totalIncome,
       balance,
       monthly,
@@ -373,8 +376,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     if (!box) return;
     const sources = model.sourceStatus;
     const rows = [
-      { icon: '🤝', label: 'Miembros', value: sources.members.available ? model.registeredMembers.length : '—', detail: sources.members.available ? `${model.pendingMembers.length} respuestas pendientes` : 'No disponible', view: 'members-list-view' },
+      { icon: '🤝', label: 'Nómina de miembros', value: sources.members.available ? model.activeMembers.length : '—', detail: sources.members.available ? `${model.pendingMembers.length} respuestas pendientes` : 'No disponible', view: 'members-list-view' },
       { icon: '💰', label: 'Tesorería', value: sources.treasury.available && sources.cuotas.available ? money(model.balance) : '—', detail: `${model.activeMovements.length} movimientos · ${model.quotaPayments.length} pagos`, view: 'tesoreria-general-view' },
+      { icon: '🧾', label: 'Cuentas de cuotas', value: sources.cuotas.available ? model.quotaAccounts : '—', detail: sources.cuotas.available ? `${money(model.cuotaIncome)} recaudados · ${money(model.cuotaPending)} pendientes` : 'No disponible', view: 'tesoreria-cuotas-view' },
       { icon: '🗒️', label: 'Actas', value: sources.actas.available ? model.actas.length : '—', detail: sources.actas.available ? `${model.approvedMinutes.length} aprobadas · ${model.finishedMinutes.length} finalizadas` : 'No disponible', view: 'registro-actas-view' },
       { icon: '📚', label: 'Publicaciones', value: sources.posts.available ? model.posts.length : '—', detail: sources.posts.available ? `${model.activePosts.length} publicadas · ${model.draftPosts.length} en edición` : 'No disponible', view: 'gestion-view' },
       { icon: '👤', label: 'Usuarios', value: sources.users.available ? model.users.length : '—', detail: sources.users.available ? `${adminUserCount(model)} administradores` : 'No disponible', view: 'usuarios-view' }
@@ -391,10 +395,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const available = sources.filter(([, value]) => value.available).length;
     const total = sources.length;
     const complete = available === total;
-    setText('[data-dashboard-system-title]', complete ? 'Información sincronizada' : 'Sincronización parcial');
-    setText('[data-dashboard-system-detail]', complete ? `${total} de ${total} fuentes administrativas disponibles.` : `${available} de ${total} fuentes disponibles. Usa actualizar para reintentar.`);
+    const rosterMismatch = model.sourceStatus.members.available && model.sourceStatus.cuotas.available && model.activeMembers.length !== model.quotaAccounts;
+    setText('[data-dashboard-system-title]', !complete ? 'Sincronización parcial' : rosterMismatch ? 'Nóminas por conciliar' : 'Información sincronizada');
+    setText('[data-dashboard-system-detail]', !complete ? `${available} de ${total} fuentes disponibles. Usa actualizar para reintentar.` : rosterMismatch ? `${model.activeMembers.length} miembros activos · ${model.quotaAccounts} cuentas activas de cuotas.` : `${total} de ${total} fuentes administrativas disponibles.`);
     document.querySelectorAll('[data-dashboard-system-indicator]').forEach((element) => {
-      element.classList.toggle('is-warning', !complete);
+      element.classList.toggle('is-warning', !complete || rosterMismatch);
     });
   }
 
@@ -444,7 +449,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
   function templateShell() {
     return `
       <section class="dashboard-reference" aria-label="Panel de control">
-        <header class="dashboard-reference-welcome"><div><span class="dashboard-reference-eyebrow">Resumen institucional</span><h3>¡Bienvenido/a, <span data-dashboard-user-name>Administrador/a</span>!</h3><p>Información conciliada de todos los módulos administrativos.</p></div><div class="dashboard-reference-context"><span data-dashboard-user-role>Administrador/a</span><time><b>📅</b><strong data-dashboard-current-date>—</strong></time></div></header>
+        <header class="dashboard-reference-welcome"><div><span class="dashboard-reference-eyebrow">Resumen institucional</span><h3>¡Bienvenido/a, <span data-dashboard-user-name>Administrador/a</span>!</h3><p>Información de todos los módulos administrativos.</p></div><div class="dashboard-reference-context"><span data-dashboard-user-role>Administrador/a</span><time><b>📅</b><strong data-dashboard-current-date>—</strong></time></div></header>
         <div class="dashboard-reference-kpis" aria-label="Indicadores principales">${kpiCard('🤝', 'Miembros activos', 'miembros', 'Nómina con participación vigente', '', 'members-list-view')}${kpiCard('🧡', 'Pendientes', 'pendientes', '', 'data-dashboard-pending-note', 'members-contacted-view')}${kpiCard('💳', 'Balance disponible', 'tesoreria-saldo', '', 'data-dashboard-balance-note', 'tesoreria-general-view')}${kpiCard('📚', 'Publicaciones activas', 'publicaciones', '', 'data-dashboard-post-note', 'gestion-view')}${kpiCard('🗒️', 'Actas registradas', 'actas', '', 'data-dashboard-actas-note', 'registro-actas-view')}${kpiCard('👤', 'Usuarios internos', 'usuarios', '', 'data-dashboard-users-note', 'usuarios-view')}</div>
         <section class="dashboard-reference-columns">
           <div class="dashboard-reference-column">
