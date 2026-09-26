@@ -24,6 +24,7 @@ const state = {
 
 if (!window.__nothofagusTesoreriaCuotas) {
   window.__nothofagusTesoreriaCuotas = true;
+  window.__nothofagusRefreshCuotasMatrix = () => loadCuotas(true);
   initCuotasMiembros();
 }
 
@@ -136,7 +137,10 @@ function getCuotasTemplate() {
           <section class="cuotas-table-card cuotas-monthly-matrix-card">
             <div class="cuotas-card-heading">
               <div><h4>Matriz mensual de pagos por integrante</h4><p>Estado mensual de cuotas: pagado, pendiente, atrasado o sin registro.</p></div>
-              <div class="cuotas-legend"><span><i class="status-dot pagado"></i>Pagado</span><span><i class="status-dot pendiente"></i>Pendiente</span><span><i class="status-dot atrasado"></i>Atrasado</span><span><i class="status-dot sin_registro"></i>Sin registro</span></div>
+              <div class="cuotas-matrix-tools">
+                <div class="cuotas-legend"><span><i class="status-dot pagado"></i>Pagado</span><span><i class="status-dot pendiente"></i>Pendiente</span><span><i class="status-dot atrasado"></i>Atrasado</span><span><i class="status-dot sin_registro"></i>Sin registro</span></div>
+                <button type="button" class="cuotas-refresh-matrix" data-cuotas-refresh-matrix><span aria-hidden="true">↻</span> Actualizar matriz</button>
+              </div>
             </div>
             <div class="cuotas-table-wrap" data-cuotas-table></div>
           </section>
@@ -174,6 +178,9 @@ function instalarEventosCuotas() {
     if (event.target.matches?.('[data-cuotas-filter="estado"], [data-cuotas-filter="pago"]')) renderCuotas();
     if (event.target.matches?.('[data-cuotas-month]')) { state.mes = Number(event.target.value || currentMonth); renderCuotas(); }
     if (event.target.matches?.('[data-cuotas-year], [data-cuotas-filter-year]')) await updateYear(event.target.value);
+  });
+  window.addEventListener('nothofagus:cuotas-status-record-changed', (event) => {
+    if (['updated', 'deleted'].includes(event.detail?.action) && document.querySelector('#tesoreria-cuotas-view.is-active')) loadCuotas(true);
   });
 }
 
@@ -228,20 +235,25 @@ function cerrarOtrosMenus() {
 
 async function loadCuotas(force = false) {
   if (!force && state.loaded) return;
+  const refreshButton = document.querySelector('[data-cuotas-refresh-matrix]');
+  if (refreshButton) { refreshButton.disabled = true; refreshButton.classList.add('is-loading'); }
   setStatus('Cargando registro de pagos mensuales...', true);
   try {
-    const data = await api(`${API_URL}?anio=${encodeURIComponent(state.anio)}`);
+    const data = await api(`${API_URL}?anio=${encodeURIComponent(state.anio)}&t=${Date.now()}`, { cache: 'no-store' });
     state.miembros = data.miembros || [];
     state.resumen = data.resumen || null;
     state.permisos = data.permisos || state.permisos;
     state.loaded = true;
     applyPermissionsToUi();
     renderCuotas();
+    window.dispatchEvent(new CustomEvent('nothofagus:cuotas-matrix-refreshed', { detail: { anio: state.anio } }));
     setStatus('Registro de pagos actualizado.', true);
   } catch (error) {
     state.loaded = false;
     renderEmpty(error.message || 'No fue posible cargar cuotas de miembros.');
     setStatus(error.message || 'No fue posible cargar cuotas de miembros.', false);
+  } finally {
+    if (refreshButton) { refreshButton.disabled = false; refreshButton.classList.remove('is-loading'); }
   }
 }
 
@@ -397,6 +409,7 @@ function handleCuotasAction(event) {
   const registerPayment = event.target.closest?.('[data-cuotas-register-payment]');
   const exportButton = event.target.closest?.('[data-cuotas-export]');
   const pdfButton = event.target.closest?.('[data-cuotas-pdf]');
+  const refreshMatrix = event.target.closest?.('[data-cuotas-refresh-matrix]');
   const close = event.target.closest?.('[data-cuotas-close]');
   const backdrop = event.target.matches?.('[data-cuotas-modal]');
   const deletePaymentButton = event.target.closest?.('[data-cuotas-delete-payment]');
@@ -410,8 +423,14 @@ function handleCuotasAction(event) {
   if (registerPayment && state.permisos.write) openPaymentModal(state.miembros[0] || null, state.mes);
   if (exportButton && state.permisos.export) exportExcel();
   if (pdfButton && state.permisos.export) generatePdfReport();
+  if (refreshMatrix) refreshCuotasMatrix();
   if (close || backdrop) closeModal();
   if (deletePaymentButton && state.permisos.write) deletePayment(deletePaymentButton.dataset.cuotasDeletePayment);
+}
+
+async function refreshCuotasMatrix() {
+  setStatus('Actualizando matriz y estados guardados...', true);
+  await loadCuotas(true);
 }
 
 function closeActionMenus(except = null) { document.querySelectorAll('[data-payment-actions].is-open').forEach((menu) => { if (except && menu === except) return; menu.classList.remove('is-open'); }); }

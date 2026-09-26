@@ -8,16 +8,17 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   let year = new Date().getFullYear();
   const DELETED_QUOTAS_KEY = 'nothofagus_cuotas_ingresos_eliminados_v1';
-  let cache = { general: [], cuotas: [], cuotasEliminadas: [] };
+  let cache = { general: [], cuotas: [], cuotasEliminadas: [], estados: [] };
   let loading = false;
   let refreshPending = false;
 
   loadStyle();
-  bindDeleteActions();
+  bindMovementActions();
   document.addEventListener('DOMContentLoaded', queueRefreshIfVisible);
   window.addEventListener('hashchange', queueRefreshIfVisible);
   window.addEventListener('nothofagus:tesoreria-updated', queueRefreshIfVisible);
   window.addEventListener('nothofagus:cuotas-payment-changed', queueRefreshIfVisible);
+  window.addEventListener('nothofagus:cuotas-status-record-changed', queueRefreshIfVisible);
   window.addEventListener('nothofagus:treasury-year-changed', (event) => {
     const nextYear = Number(event.detail?.year);
     if (Number.isInteger(nextYear)) year = nextYear;
@@ -37,14 +38,33 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (document.querySelector('#tesoreria-movimientos-view.is-active')) queueRefresh();
   }
 
-  function bindDeleteActions() {
+  function bindMovementActions() {
     document.addEventListener('click', async (event) => {
       const button = event.target.closest?.('[data-tesoreria-cuota-delete]');
-      if (!button) return;
+      const editStatus = event.target.closest?.('[data-tesoreria-status-edit]');
+      const deleteStatus = event.target.closest?.('[data-tesoreria-status-delete]');
+      const closeStatus = event.target.closest?.('[data-tesoreria-status-close]');
+      if (button) {
+        event.preventDefault(); event.stopPropagation();
+        await deleteQuotaIncome(button.dataset.tesoreriaCuotaDelete, button);
+      }
+      if (editStatus) {
+        event.preventDefault(); event.stopPropagation();
+        openStatusEditor(editStatus.dataset.tesoreriaStatusEdit);
+      }
+      if (deleteStatus) {
+        event.preventDefault(); event.stopPropagation();
+        await deleteStatusChange(deleteStatus.dataset.tesoreriaStatusDelete, deleteStatus);
+      }
+      if (closeStatus || event.target.matches?.('[data-tesoreria-status-modal]')) {
+        event.preventDefault(); event.stopPropagation();
+        closeStatusEditor();
+      }
+    }, true);
+    document.addEventListener('submit', (event) => {
+      if (!event.target.matches?.('[data-tesoreria-status-form]')) return;
       event.preventDefault();
-      event.stopPropagation();
-      const sourceId = button.dataset.tesoreriaCuotaDelete;
-      await deleteQuotaIncome(sourceId, button);
+      saveStatusChange(event.target);
     }, true);
   }
 
@@ -68,18 +88,22 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       loading = true;
       const token = await getToken();
       if (!token) return;
-      const [generalResult, cuotasResult] = await Promise.allSettled([
+      const [generalResult, cuotasResult, statusResult] = await Promise.allSettled([
         fetch('/api/tesoreria', { headers: { authorization: 'Bearer ' + token } }),
-        fetch('/api/cuotas-miembros?anio=' + encodeURIComponent(year), { headers: { authorization: 'Bearer ' + token } })
+        fetch('/api/cuotas-miembros?anio=' + encodeURIComponent(year), { headers: { authorization: 'Bearer ' + token } }),
+        fetch('/api/cuotas-estados?anio=' + encodeURIComponent(year), { headers: { authorization: 'Bearer ' + token }, cache: 'no-store' })
       ]);
       const generalResponse = generalResult.status === 'fulfilled' ? generalResult.value : null;
       const cuotasResponse = cuotasResult.status === 'fulfilled' ? cuotasResult.value : null;
+      const statusResponse = statusResult.status === 'fulfilled' ? statusResult.value : null;
       const generalData = generalResponse?.ok ? await generalResponse.json().catch(() => ({})) : {};
       const cuotasData = cuotasResponse?.ok ? await cuotasResponse.json().catch(() => ({})) : {};
+      const statusData = statusResponse?.ok ? await statusResponse.json().catch(() => ({})) : {};
       const deleted = readDeletedQuotaRows();
       cache.general = Array.isArray(generalData.movimientos) ? generalData.movimientos.filter(Boolean) : [];
       cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData).filter((item) => !deleted[item.sourceId]);
       cache.cuotasEliminadas = Object.values(deleted).filter((item) => item && Number(item.anio || year) === year);
+      cache.estados = statusChangesToRows(statusData);
       renderCuotasAsIncome();
     } finally {
       loading = false;
@@ -127,11 +151,37 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     return Array.from(unique.values()).sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')));
   }
 
+  function statusChangesToRows(data) {
+    const changes = Array.isArray(data.cambios) ? data.cambios : [];
+    return changes.map((change) => ({
+      id: `estado-${change.id}`,
+      sourceId: change.id,
+      tipo: 'estado_cuota',
+      origen: 'estado_cuota',
+      fecha: change.fecha || String(change.creadoEn || '').slice(0, 10),
+      anio: Number(change.anio || year),
+      mes: Number(change.mes || 0),
+      memberId: change.memberId || '',
+      memberNombre: change.memberNombre || 'Integrante',
+      descripcion: `Estado de cuota ${monthName(change.mes)} · ${change.memberNombre || 'Integrante'}`,
+      monto: 0,
+      observaciones: change.observacion || '',
+      estadoAnterior: change.estadoAnterior || 'sin_registro',
+      estadoNuevo: change.estadoNuevo || 'sin_registro',
+      eliminado: Boolean(change.eliminado),
+      eliminadoPor: change.eliminadoPor || '',
+      eliminadoEmail: change.eliminadoEmail || '',
+      eliminadoEn: change.eliminadoEn || '',
+      creadoPor: change.creadoPor || '',
+      actualizadoPor: change.actualizadoPor || ''
+    }));
+  }
+
   function renderCuotasAsIncome() {
     if (!document.querySelector('#tesoreria-movimientos-view.is-active')) return;
-    const mergedAll = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas]);
+    const mergedAll = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas, ...cache.estados]);
     renderList('movimiento', filterMovementRows(mergedAll), false);
-    annotateMovementPanel(mergedAll.length, cache.cuotas.length);
+    annotateMovementPanel(mergedAll.length, cache.cuotas.length, cache.estados.filter((item) => !item.eliminado).length);
   }
 
   function renderList(type, items, onlyIncome) {
@@ -151,7 +201,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   function rowTemplate(item) {
     const isQuota = item.origen === 'cuota';
+    const isStatus = item.origen === 'estado_cuota';
     const deleted = Boolean(item.eliminado);
+    if (isStatus) return statusRowTemplate(item, deleted);
     const fileUrl = item.comprobanteUrl || item.archivoUrl || '';
     const fileName = item.comprobanteNombre || item.archivoNombre || 'Comprobante';
     const comprobante = fileUrl
@@ -172,6 +224,23 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
         <div class="tesoreria-cuota-actions">${comprobante}${action}</div>
       </article>
     `;
+  }
+
+  function statusRowTemplate(item, deleted) {
+    const transition = `<span class="tesoreria-status-transition"><b class="status-${escapeAttr(item.estadoAnterior)}">${escapeHTML(statusLabel(item.estadoAnterior))}</b><i aria-hidden="true">→</i><b class="status-${escapeAttr(item.estadoNuevo)}">${escapeHTML(statusLabel(item.estadoNuevo))}</b></span>`;
+    const note = item.observaciones
+      ? `<small class="tesoreria-status-note">${escapeHTML(item.observaciones)}</small>`
+      : '<small class="tesoreria-status-note is-empty">Sin información adicional</small>';
+    const actions = deleted
+      ? deletedBadge(item)
+      : `<button type="button" class="tesoreria-edit-button" data-tesoreria-status-edit="${escapeAttr(item.sourceId)}">Editar / agregar información</button><button type="button" class="tesoreria-delete-button" data-tesoreria-status-delete="${escapeAttr(item.sourceId)}">Eliminar</button>`;
+    return `
+      <article class="tesoreria-row is-status-change ${deleted ? 'is-deleted' : ''}">
+        <small>${formatDate(item.fecha)}</small>
+        <div class="tesoreria-row-description"><span class="tesoreria-type-badge">Cambio de estado</span><strong>${escapeHTML(item.descripcion)}</strong>${note}</div>
+        <div class="tesoreria-status-value">${transition}</div>
+        <div class="tesoreria-cuota-actions">${actions}</div>
+      </article>`;
   }
 
   async function deleteQuotaIncome(sourceId, button) {
@@ -199,6 +268,96 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     }
   }
 
+  function openStatusEditor(sourceId) {
+    const item = cache.estados.find((row) => String(row.sourceId) === String(sourceId));
+    if (!item || item.eliminado) return;
+    closeStatusEditor();
+    const modal = document.createElement('div');
+    modal.className = 'tesoreria-status-modal';
+    modal.dataset.tesoreriaStatusModal = 'true';
+    modal.innerHTML = `
+      <section class="tesoreria-status-dialog" role="dialog" aria-modal="true" aria-labelledby="tesoreria-status-dialog-title">
+        <header><div><span>Cambio de estado</span><h4 id="tesoreria-status-dialog-title">${escapeHTML(item.memberNombre)}</h4><p>${escapeHTML(monthName(item.mes))} ${escapeHTML(item.anio)}</p></div><button type="button" data-tesoreria-status-close aria-label="Cerrar">×</button></header>
+        <form data-tesoreria-status-form>
+          <input type="hidden" name="id" value="${escapeAttr(item.sourceId)}">
+          <div class="tesoreria-status-form-grid">
+            <label>Fecha del cambio<input type="date" name="fecha" value="${escapeAttr(String(item.fecha || '').slice(0, 10))}" required></label>
+            <label>Estado anterior<select name="estado_anterior">${statusOptions(item.estadoAnterior)}</select></label>
+            <label>Estado nuevo<select name="estado_nuevo">${statusOptions(item.estadoNuevo)}</select></label>
+            <label class="full">Información adicional<textarea name="observacion" rows="4" maxlength="1200" placeholder="Motivo, acuerdo, respaldo o comentario del cambio">${escapeHTML(item.observaciones || '')}</textarea></label>
+          </div>
+          <p class="tesoreria-status-form-message" data-tesoreria-status-form-message aria-live="polite"></p>
+          <footer><button type="button" class="secondary" data-tesoreria-status-close>Cancelar</button><button type="submit">Guardar cambios</button></footer>
+        </form>
+      </section>`;
+    document.body.appendChild(modal);
+    modal.querySelector('textarea')?.focus();
+  }
+
+  function closeStatusEditor() {
+    document.querySelectorAll('[data-tesoreria-status-modal]').forEach((modal) => modal.remove());
+  }
+
+  async function saveStatusChange(form) {
+    const submit = form.querySelector('button[type="submit"]');
+    const message = form.querySelector('[data-tesoreria-status-form-message]');
+    const data = Object.fromEntries(new FormData(form).entries());
+    try {
+      if (submit) submit.disabled = true;
+      if (message) message.textContent = 'Guardando cambios...';
+      const token = await getToken();
+      if (!token) throw new Error('Sesión no disponible.');
+      const response = await fetch('/api/cuotas-estados', {
+        method: 'PATCH',
+        headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No fue posible actualizar el cambio de estado.');
+      const updated = statusChangesToRows({ cambios: [result.cambio] })[0];
+      cache.estados = cache.estados.map((row) => String(row.sourceId) === String(updated.sourceId) ? updated : row);
+      closeStatusEditor();
+      renderCuotasAsIncome();
+      notifyStatusRecordChanged('updated', result.cambio);
+    } catch (error) {
+      if (submit) submit.disabled = false;
+      if (message) message.textContent = error.message || 'No fue posible guardar los cambios.';
+    }
+  }
+
+  async function deleteStatusChange(sourceId, button) {
+    const item = cache.estados.find((row) => String(row.sourceId) === String(sourceId));
+    if (!item || item.eliminado) return;
+    if (!confirm(`¿Eliminar el cambio de estado de ${item.memberNombre} para ${monthName(item.mes)}? La auditoría de eliminación se conservará.`)) return;
+    try {
+      button.disabled = true;
+      const token = await getToken();
+      if (!token) throw new Error('Sesión no disponible.');
+      const response = await fetch('/api/cuotas-estados?id=' + encodeURIComponent(sourceId), { method: 'DELETE', headers: { authorization: 'Bearer ' + token } });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No fue posible eliminar el cambio de estado.');
+      const updated = statusChangesToRows({ cambios: [result.cambio] })[0];
+      cache.estados = cache.estados.map((row) => String(row.sourceId) === String(updated.sourceId) ? updated : row);
+      renderCuotasAsIncome();
+      notifyStatusRecordChanged('deleted', result.cambio);
+    } catch (error) {
+      alert(error.message || 'No fue posible eliminar el cambio de estado.');
+      button.disabled = false;
+    }
+  }
+
+  function notifyStatusRecordChanged(action, change) {
+    window.dispatchEvent(new CustomEvent('nothofagus:cuotas-status-record-changed', { detail: { action, change } }));
+  }
+
+  function statusOptions(selected) {
+    return ['pagado', 'pendiente', 'atrasado', 'sin_registro'].map((value) => `<option value="${value}" ${value === selected ? 'selected' : ''}>${escapeHTML(statusLabel(value))}</option>`).join('');
+  }
+
+  function statusLabel(status) {
+    return { pagado: 'Pagado', pendiente: 'Pendiente', atrasado: 'Atrasado', sin_registro: 'Sin registro' }[status] || 'Sin registro';
+  }
+
   async function getAuditUser() {
     if (!client) return { name: 'Usuario interno', email: '' };
     const session = await client.auth.getSession();
@@ -213,11 +372,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     return `<span class="tesoreria-deleted-badge">Eliminado por ${escapeHTML(user)} · ${escapeHTML(date)}</span>`;
   }
 
-  function annotateMovementPanel(totalRows, cuotaRows) {
+  function annotateMovementPanel(totalRows, cuotaRows, statusRows) {
     const result = document.querySelector('#tesoreria-movimientos-view [data-tesoreria-results]');
     if (!result) return;
     const filtered = document.querySelectorAll('#tesoreria-movimientos-view [data-tesoreria-list="movimiento"] .tesoreria-row').length;
-    result.textContent = `${filtered} de ${totalRows} registros · ${cuotaRows} pagos de cuotas`;
+    result.textContent = `${filtered} de ${totalRows} registros · ${cuotaRows} pagos · ${statusRows} cambios de estado`;
   }
 
   function filterMovementRows(items) {

@@ -2,31 +2,17 @@
   if (window.__nothofagusCuotasManualStatusCalculator) return;
   window.__nothofagusCuotasManualStatusCalculator = true;
 
-  const STORAGE_KEY = 'nothofagus_cuotas_month_status_overrides_v1';
   const MONEY = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
   const monthNames = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
   window.__nothofagusCuotasManualStatusRecalculate = recalculateNow;
 
-  observeCuotas();
   bindEvents();
   queueRecalculate();
   document.addEventListener('DOMContentLoaded', queueRecalculate);
   window.addEventListener('hashchange', queueRecalculate);
   window.setTimeout(queueRecalculate, 500);
   window.setTimeout(queueRecalculate, 1400);
-
-  function observeCuotas() {
-    const start = () => {
-      const view = document.querySelector('#tesoreria-cuotas-view');
-      if (!view || view.dataset.manualStatusCalculatorObserved) return;
-      view.dataset.manualStatusCalculatorObserved = 'true';
-      new MutationObserver(() => queueRecalculate()).observe(view, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'data-manual-status'] });
-    };
-    start();
-    document.addEventListener('DOMContentLoaded', start);
-    window.setTimeout(start, 700);
-  }
 
   function bindEvents() {
     document.addEventListener('click', (event) => {
@@ -36,10 +22,8 @@
     document.addEventListener('change', (event) => {
       if (event.target.matches?.('[data-cuotas-month], [data-cuotas-year], [data-cuotas-filter-year]')) window.setTimeout(recalculateNow, 80);
     }, true);
-    window.addEventListener('storage', (event) => {
-      if (event.key === STORAGE_KEY) recalculateNow();
-    });
     window.addEventListener('nothofagus:cuotas-status-changed', recalculateNow);
+    window.addEventListener('nothofagus:cuotas-matrix-refreshed', queueRecalculate);
     document.addEventListener('nothofagus:cuotas-status-changed', recalculateNow);
   }
 
@@ -58,8 +42,6 @@
     const view = document.querySelector('#tesoreria-cuotas-view');
     const rows = Array.from(view?.querySelectorAll('.cuotas-monthly-table tbody tr') || []);
     if (!view || !rows.length) return;
-
-    applyStoredOverrides(view);
 
     const selectedMonth = getSelectedMonth(view);
     const year = getSelectedYear(view);
@@ -122,19 +104,6 @@
     row.dataset.manualVisualTotalPaid = String(visualTotalPaid);
     row.dataset.manualPendingAnnual = String(pendingAnnual);
     return { cuota, paidByMonth, expectedByMonth, totalPaid, expectedAnnual, pendingAnnual };
-  }
-
-  function applyStoredOverrides(view) {
-    const overrides = readOverrides();
-    const year = getSelectedYear(view);
-    view.querySelectorAll('[data-cuotas-payment-month]').forEach((dot) => {
-      const key = `${dot.dataset.cuotasPaymentMonth}:${year}:${dot.dataset.month}`;
-      const status = overrides[key];
-      if (!['pagado', 'pendiente', 'atrasado', 'sin_registro'].includes(status)) return;
-      dot.classList.remove('pagado', 'pendiente', 'atrasado', 'sin_registro');
-      dot.classList.add(status, 'is-manual-status');
-      dot.dataset.manualStatus = status;
-    });
   }
 
   function renderSummary(view, summary, selectedMonth, year) {
@@ -217,10 +186,6 @@
 
   function getSelectedYear(view) {
     return String(view.querySelector('[data-cuotas-year]')?.value || view.querySelector('[data-cuotas-filter-year]')?.value || new Date().getFullYear());
-  }
-
-  function readOverrides() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { return {}; }
   }
 
   function parseMoney(value) {

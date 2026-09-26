@@ -14,6 +14,49 @@
   outline-offset: 3px !important;
 }
 
+#tesoreria-cuotas-view .cuotas-matrix-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#tesoreria-cuotas-view .cuotas-refresh-matrix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: #1f3d2b;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(31, 61, 43, 0.12);
+}
+
+#tesoreria-cuotas-view .cuotas-refresh-matrix:hover:not(:disabled) {
+  background: #315c3f;
+}
+
+#tesoreria-cuotas-view .cuotas-refresh-matrix:disabled {
+  opacity: 0.62;
+  cursor: wait;
+}
+
+#tesoreria-cuotas-view .cuotas-refresh-matrix.is-loading span {
+  animation: cuotas-refresh-spin 0.8s linear infinite;
+}
+
+@keyframes cuotas-refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
 #tesoreria-cuotas-view .cuotas-status-menu {
   position: fixed !important;
   z-index: 900 !important;
@@ -174,5 +217,11 @@
 @media (max-width: 900px) {
   #tesoreria-cuotas-view .cuotas-status-menu {
     width: min(220px, calc(100vw - 28px)) !important;
+  }
+
+  #tesoreria-cuotas-view .cuotas-matrix-tools {
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
   }
 }

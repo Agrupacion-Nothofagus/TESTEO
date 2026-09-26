@@ -201,7 +201,7 @@ function getMovimientoTemplate() {
         <div>
           <p class="section-tag">Tesorería</p>
           <h3>Movimientos</h3>
-          <p>Libro único de ingresos y egresos. Cada registro conserva su tipo, fecha, responsable y comprobante.</p>
+          <p>Libro único de ingresos, egresos, pagos de cuotas y cambios de estado con su historial de auditoría.</p>
         </div>
         <div class="tesoreria-actions-row"><button type="button" data-tesoreria-go="general">Ver general</button></div>
       </div>
@@ -220,7 +220,7 @@ function getMovimientoTemplate() {
       <section class="tesoreria-list-card">
         <div class="tesoreria-list-heading"><div><h4>Libro de movimientos</h4><p data-tesoreria-results>0 registros</p></div></div>
         <div class="tesoreria-filters" aria-label="Filtros de movimientos">
-          <label>Tipo<select data-tesoreria-filter="tipo"><option value="todos">Todos</option><option value="ingreso">Ingresos</option><option value="egreso">Egresos</option></select></label>
+          <label>Tipo<select data-tesoreria-filter="tipo"><option value="todos">Todos</option><option value="ingreso">Ingresos</option><option value="egreso">Egresos</option><option value="estado_cuota">Cambios de estado</option></select></label>
           <label>Mes<input type="month" data-tesoreria-filter="mes"></label>
           <label class="tesoreria-search">Buscar<input type="search" data-tesoreria-filter="busqueda" placeholder="Descripción o responsable"></label>
           <label class="tesoreria-check"><input type="checkbox" data-tesoreria-filter="eliminados"> Mostrar eliminados</label>

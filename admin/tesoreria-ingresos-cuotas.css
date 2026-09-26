@@ -28,6 +28,117 @@
   white-space: nowrap !important;
 }
 
+.tesoreria-row.is-status-change {
+  border-color: rgba(53, 94, 112, 0.2) !important;
+  background: linear-gradient(135deg, rgba(71, 118, 138, 0.08), rgba(250, 248, 242, 0.94)) !important;
+}
+
+.tesoreria-row.is-status-change .tesoreria-type-badge {
+  background: rgba(71, 118, 138, 0.14) !important;
+  color: #274f60 !important;
+}
+
+.tesoreria-status-value {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tesoreria-status-transition {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.tesoreria-status-transition b {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #e8ece6;
+  color: #4f5e52;
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.tesoreria-status-transition .status-pagado { background: rgba(67, 139, 95, 0.16); color: #24613c; }
+.tesoreria-status-transition .status-pendiente { background: rgba(235, 163, 39, 0.18); color: #855a06; }
+.tesoreria-status-transition .status-atrasado { background: rgba(217, 83, 79, 0.16); color: #962e2b; }
+.tesoreria-status-transition i { color: #6a776d; font-style: normal; font-weight: 950; }
+
+.tesoreria-status-note {
+  display: block;
+  margin-top: 5px;
+  color: #53665a;
+  line-height: 1.4;
+}
+
+.tesoreria-status-note.is-empty { color: #879188; font-style: italic; }
+
+.tesoreria-edit-button {
+  min-height: 32px;
+  border: 1px solid rgba(31, 61, 43, 0.16);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #ffffff;
+  color: #1f3d2b;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tesoreria-status-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 33, 24, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.tesoreria-status-dialog {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+  border: 1px solid rgba(31, 61, 43, 0.12);
+  border-radius: 24px;
+  background: #fffdf7;
+  box-shadow: 0 28px 78px rgba(20, 42, 29, 0.3);
+}
+
+.tesoreria-status-dialog > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  background: linear-gradient(135deg, #1f3d2b, #4f7d4a);
+  color: #ffffff;
+}
+
+.tesoreria-status-dialog header span { font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.82; }
+.tesoreria-status-dialog header h4 { margin: 4px 0 0; color: #ffffff; font-size: 1.35rem; }
+.tesoreria-status-dialog header p { margin: 5px 0 0; color: rgba(255, 255, 255, 0.84); font-weight: 800; }
+.tesoreria-status-dialog header button { width: 38px; height: 38px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1.25rem; cursor: pointer; }
+.tesoreria-status-dialog form { display: grid; gap: 16px; padding: 22px; }
+.tesoreria-status-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.tesoreria-status-form-grid label { display: grid; gap: 7px; color: #1f3d2b; font-weight: 900; }
+.tesoreria-status-form-grid .full { grid-column: 1 / -1; }
+.tesoreria-status-form-grid input,
+.tesoreria-status-form-grid select,
+.tesoreria-status-form-grid textarea { width: 100%; min-height: 44px; border: 1px solid rgba(31, 61, 43, 0.16); border-radius: 13px; padding: 10px 12px; background: #ffffff; color: #1f2d24; font: inherit; font-weight: 800; }
+.tesoreria-status-form-grid textarea { min-height: 104px; resize: vertical; }
+.tesoreria-status-form-message { min-height: 22px; margin: 0; color: #9b2c2c; font-weight: 850; }
+.tesoreria-status-dialog footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.tesoreria-status-dialog footer button { min-height: 42px; border: 0; border-radius: 999px; padding: 9px 15px; background: #1f3d2b; color: #ffffff; font: inherit; font-weight: 900; cursor: pointer; }
+.tesoreria-status-dialog footer .secondary { background: rgba(31, 61, 43, 0.08); color: #1f3d2b; }
+.tesoreria-status-dialog footer button:disabled { opacity: 0.6; cursor: wait; }
+
 .tesoreria-cuota-badge {
   background: rgba(79, 125, 74, 0.12) !important;
   color: #1f3d2b !important;
@@ -43,4 +154,8 @@
     justify-content: flex-start !important;
     grid-column: auto;
   }
+
+  .tesoreria-status-value { justify-content: flex-start; }
+  .tesoreria-status-form-grid { grid-template-columns: 1fr; }
+  .tesoreria-status-dialog footer { display: grid; }
 }

@@ -259,6 +259,47 @@ test('Cuotas rechaza un pago mensual duplicado antes de insertarlo', async () =>
   }
 });
 
+test('Los cambios manuales de estado se guardan como auditoría sin monto contable', async () => {
+  const module = await import('../functions/api/cuotas-estados.js');
+  const originalFetch = globalThis.fetch;
+  let insertedPayload;
+
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.endsWith('/auth/v1/user')) {
+      return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero', nombre: 'Tesorería' } });
+    }
+    if (target.includes('/tesoreria_cuotas_miembros?select=id,nombre&id=eq.miembro-1')) {
+      return Response.json([{ id: 'miembro-1', nombre: 'Integrante de prueba' }]);
+    }
+    if (target.endsWith('/rest/v1/tesoreria_cuotas_estados') && options.method === 'POST') {
+      insertedPayload = JSON.parse(options.body);
+      return Response.json([{ id: 'estado-1', ...insertedPayload, created_at: '2026-09-24T12:00:00Z' }]);
+    }
+    return Response.json({ message: 'Ruta inesperada' }, { status: 500 });
+  };
+
+  try {
+    const response = await module.onRequest({
+      request: new Request('http://localhost/api/cuotas-estados', {
+        method: 'POST',
+        headers: { authorization: 'Bearer token-tesoreria', 'content-type': 'application/json' },
+        body: JSON.stringify({ member_id: 'miembro-1', anio: 2026, mes: 7, estado_anterior: 'atrasado', estado_nuevo: 'pendiente', observacion: 'Acuerdo de regularización' })
+      }),
+      env: { SUPABASE_URL: 'https://proyecto-prueba.supabase.co', SUPABASE_ADMIN_KEY: 'sb_secret_prueba' }
+    });
+
+    const result = await response.json();
+    assert.equal(response.status, 201);
+    assert.equal(insertedPayload.estado_nuevo, 'pendiente');
+    assert.equal(insertedPayload.member_nombre, 'Integrante de prueba');
+    assert.equal(insertedPayload.monto, undefined);
+    assert.equal(result.cambio.estadoNuevo, 'pendiente');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('Tesorería general concilia pagos reales, egresos e integrantes activos', () => {
   const ledger = [
     { tipo: 'ingreso', monto: 5000, fecha: '2026-09-10' },
