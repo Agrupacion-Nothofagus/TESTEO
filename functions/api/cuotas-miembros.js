@@ -3,7 +3,7 @@ const MEMBERS_TABLE = 'tesoreria_cuotas_miembros';
 const PAYMENTS_TABLE = 'tesoreria_cuotas_pagos';
 const MEMBER_REGISTRY_TABLE = 'solicitudes_miembros';
 const BUCKET = 'tesoreria-comprobantes';
-const MEMBER_STATES = ['estudiante', 'trabajador', 'cesante'];
+const MEMBER_STATES = ['estudiante', 'trabajador', 'cesante', 'benefactor'];
 const MEMBER_ACCOUNT_STATES = ['activo', 'inactivo'];
 const PAYMENT_METHODS = ['transferencia', 'efectivo', 'deposito', 'webpay', 'otro'];
 const PAYMENT_TYPES = ['mensual', 'anual'];
@@ -531,12 +531,14 @@ function adminHeaders(key) {
 
 function inferMemberStateFromRegistry(socio = {}) {
   const text = `${socio.ocupacion || ''} ${socio.categoria_socio || ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/benefactor/.test(text)) return 'benefactor';
   if (/cesante|desemplead|sin trabajo|buscando trabajo/.test(text)) return 'cesante';
   if (/estudiante|universitari|liceo|colegio|instituto|tecnico/.test(text)) return 'estudiante';
   return 'trabajador';
 }
 
 function defaultCuotaForState(state) {
+  if (state === 'benefactor') return 10000;
   return state === 'trabajador' ? 6000 : 3000;
 }
 

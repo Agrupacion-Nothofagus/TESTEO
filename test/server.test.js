@@ -165,6 +165,61 @@ test('Tesorería rechaza movimientos sin descripción antes de escribir en Supab
   }
 });
 
+test('Cuotas permite guardar el nuevo estado benefactor', async () => {
+  const module = await import('../functions/api/cuotas-miembros.js');
+  const originalFetch = globalThis.fetch;
+  let savedPayload;
+
+  globalThis.fetch = async (url, options = {}) => {
+    if (String(url).endsWith('/auth/v1/user')) {
+      return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero' } });
+    }
+
+    assert.match(String(url), /\/rest\/v1\/tesoreria_cuotas_miembros\?id=eq\.miembro-1$/);
+    assert.equal(options.method, 'PATCH');
+    savedPayload = JSON.parse(options.body);
+    return Response.json([{
+      id: 'miembro-1',
+      nombre: 'Socio Benefactor',
+      correo: 'benefactor@example.cl',
+      estado_miembro: savedPayload.estado_miembro,
+      estado_cuenta: savedPayload.estado_cuenta,
+      cuota_mensual: savedPayload.cuota_mensual,
+      anio: savedPayload.anio,
+      exento: false
+    }]);
+  };
+
+  try {
+    const response = await module.onRequest({
+      request: new Request('http://localhost/api/cuotas-miembros', {
+        method: 'PATCH',
+        headers: {
+          authorization: 'Bearer token-tesoreria',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: 'miembro-1',
+          estado_miembro: 'benefactor',
+          estado_cuenta: 'activo',
+          cuota_mensual: 10000,
+          anio: 2026
+        })
+      }),
+      env: {
+        SUPABASE_URL: 'https://proyecto-prueba.supabase.co',
+        SUPABASE_ADMIN_KEY: 'sb_secret_prueba'
+      }
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal(savedPayload.estado_miembro, 'benefactor');
+    assert.equal((await response.json()).miembro.estadoMiembro, 'benefactor');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('devuelve 404 JSON para APIs inexistentes', async () => {
   const response = await fetch(baseUrl + '/api/no-existe');
   assert.equal(response.status, 404);

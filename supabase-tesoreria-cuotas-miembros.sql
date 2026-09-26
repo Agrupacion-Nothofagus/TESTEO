@@ -9,7 +9,7 @@ create table if not exists public.tesoreria_cuotas_miembros (
   rut text,
   correo text not null,
   telefono text,
-  estado_miembro text not null default 'estudiante' check (estado_miembro in ('estudiante', 'trabajador', 'cesante')),
+  estado_miembro text not null default 'estudiante' check (estado_miembro in ('estudiante', 'trabajador', 'cesante', 'benefactor')),
   cuota_mensual numeric(12,0) not null default 0 check (cuota_mensual >= 0),
   anio integer not null default extract(year from now())::integer,
   observaciones text,
