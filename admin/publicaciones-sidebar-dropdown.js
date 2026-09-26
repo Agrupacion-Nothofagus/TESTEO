@@ -8,11 +8,17 @@ if (!window.__nothofagusPublicacionesSidebarDropdown) {
 }
 
 function cargarEstilosPublicacionesSidebar() {
-  if (document.querySelector('link[href="publicaciones-sidebar-dropdown.css"]')) return;
+  const href = 'publicaciones-sidebar-dropdown.css?v=20260924-editorial-menu';
+  const existing = document.querySelector('link[data-publicaciones-sidebar-style]');
+  if (existing) {
+    existing.href = href;
+    return;
+  }
 
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'publicaciones-sidebar-dropdown.css';
+  link.href = href;
+  link.dataset.publicacionesSidebarStyle = 'true';
   document.head.appendChild(link);
 }
 
@@ -41,6 +47,8 @@ function instalarPublicacionesDropdown() {
 
   gestionButton.classList.add('publicaciones-sidebar-link');
   nuevaButton.classList.add('publicaciones-sidebar-link');
+  prepararAccesoEditorial(nuevaButton, '+', 'Nueva publicación', 'Crear contenido');
+  prepararAccesoEditorial(gestionButton, '▦', 'Administrar publicaciones', 'Revisar y editar');
 
   menu.appendChild(nuevaButton);
   menu.appendChild(gestionButton);
@@ -48,7 +56,28 @@ function instalarPublicacionesDropdown() {
   group.querySelector('[data-publicaciones-toggle]')?.addEventListener('click', alternarMenuPublicaciones);
 
   menu.querySelectorAll('[data-admin-view]').forEach((button) => {
-    button.addEventListener('click', () => abrirMenuPublicaciones());
+    button.addEventListener('click', () => {
+      abrirMenuPublicaciones();
+      actualizarEstadoActual(button);
+    });
+  });
+
+  actualizarEstadoActual(menu.querySelector('.is-active'));
+}
+
+function prepararAccesoEditorial(button, icon, label, note) {
+  button.innerHTML = `
+    <span class="publicaciones-item-icon" aria-hidden="true">${icon}</span>
+    <span class="publicaciones-item-copy"><strong>${label}</strong><small>${note}</small></span>
+  `;
+  button.title = `${label}: ${note}`;
+}
+
+function actualizarEstadoActual(activeButton) {
+  document.querySelectorAll('[data-publicaciones-menu] [data-admin-view]').forEach((button) => {
+    const isActive = button === activeButton || button.classList.contains('is-active');
+    if (isActive) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
   });
 }
 
