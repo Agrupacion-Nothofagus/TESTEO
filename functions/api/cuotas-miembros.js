@@ -13,6 +13,8 @@ const ADMIN_ROLES = ['administrador', 'admin'];
 const TREASURY_ROLES = ['tesorero', 'tesorera'];
 const SECRETARY_ROLES = ['secretario', 'secretaria', 'secretariado'];
 const MEMBER_ROLES = ['miembro', 'socio', 'socia', 'member'];
+const REGISTRY_SYNC_TTL_MS = 5 * 60 * 1000;
+const registrySyncState = new Map();
 
 export async function onRequest({ request, env }) {
   try {
@@ -44,10 +46,11 @@ function getConfig(env) {
 }
 
 async function listCuotas(request, cfg, user, permisos) {
-  const year = getYear(new URL(request.url).searchParams.get('anio'));
+  const url = new URL(request.url);
+  const year = getYear(url.searchParams.get('anio'));
 
   if (!permisos.ownOnly) {
-    await syncActiveRegistryMembers(cfg, user, year);
+    await maybeSyncActiveRegistryMembers(cfg, user, year, url.searchParams.get('sync') === '1');
   }
 
   const members = await listMembers(cfg, user, permisos);
@@ -63,6 +66,22 @@ async function listCuotas(request, cfg, user, permisos) {
     miembros: items,
     resumen: buildGlobalSummary(items)
   });
+}
+
+async function maybeSyncActiveRegistryMembers(cfg, user, year, force = false) {
+  const current = registrySyncState.get(year);
+  if (current?.promise) return current.promise;
+  if (!force && current?.completedAt && Date.now() - current.completedAt < REGISTRY_SYNC_TTL_MS) return;
+
+  const promise = syncActiveRegistryMembers(cfg, user, year);
+  registrySyncState.set(year, { completedAt: current?.completedAt || 0, promise });
+  try {
+    await promise;
+    registrySyncState.set(year, { completedAt: Date.now(), promise: null });
+  } catch (error) {
+    registrySyncState.delete(year);
+    throw error;
+  }
 }
 
 async function createRecord(request, cfg, user, permisos) {
@@ -465,7 +484,8 @@ async function fromPaymentDb(row = {}, cfg) {
 }
 
 function withFinancialSummary(member, payments, year) {
-  const cuotaAnualEsperada = member.exento ? 0 : Number(member.cuotaMensual || 0) * 12;
+  const inactive = String(member.estadoCuenta || '').toLowerCase() === 'inactivo';
+  const cuotaAnualEsperada = member.exento || inactive ? 0 : Number(member.cuotaMensual || 0) * 12;
   const paymentsForYear = payments.filter((pago) => Number(pago.anio) === Number(year));
   const totalPagado = paymentsForYear.reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
   const saldoPendiente = Math.max(cuotaAnualEsperada - totalPagado, 0);
@@ -478,6 +498,7 @@ function withFinancialSummary(member, payments, year) {
 }
 
 function getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, tienePagoAnual) {
+  if (String(member.estadoCuenta || '').toLowerCase() === 'inactivo') return 'inactivo';
   if (member.exento || cuotaAnualEsperada === 0) return 'exento';
   if (totalPagado >= cuotaAnualEsperada || tienePagoAnual) return 'pagada_anual';
 
@@ -493,14 +514,17 @@ function getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, tienePa
 
 function buildGlobalSummary(items) {
   return items.reduce((acc, item) => {
-    acc.totalMiembros += 1;
-    if (item.estadoPago === 'al_dia') acc.alDia += 1;
-    if (item.estadoPago === 'atrasado') acc.atrasados += 1;
-    if (item.estadoPago === 'pagada_anual') acc.cuotasAnualesPagadas += 1;
     acc.totalRecaudado += Number(item.totalPagado || 0);
-    acc.saldoPendiente += Number(item.saldoPendiente || 0);
+    if (String(item.estadoCuenta || '').toLowerCase() !== 'inactivo') {
+      acc.totalMiembros += 1;
+      if (item.estadoPago === 'al_dia') acc.alDia += 1;
+      if (item.estadoPago === 'atrasado') acc.atrasados += 1;
+      if (item.estadoPago === 'pagada_anual') acc.cuotasAnualesPagadas += 1;
+      acc.esperadoAnual += Number(item.cuotaAnualEsperada || 0);
+      acc.saldoPendiente += Number(item.saldoPendiente || 0);
+    }
     return acc;
-  }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado: 0, saldoPendiente: 0 });
+  }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado: 0, esperadoAnual: 0, saldoPendiente: 0 });
 }
 
 function groupPayments(payments) {
@@ -586,7 +610,7 @@ function getYear(value) {
 }
 
 function labelStatus(value) {
-  return { al_dia: 'Al día', atrasado: 'Atrasado', parcial: 'Parcial', pagada_anual: 'Pagada anual', exento: 'Exento' }[value] || 'Parcial';
+  return { al_dia: 'Al día', atrasado: 'Atrasado', parcial: 'Parcial', pagada_anual: 'Pagada anual', exento: 'Exento', inactivo: 'Inactivo' }[value] || 'Parcial';
 }
 
 function isEmail(value) {

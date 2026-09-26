@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { Readable } from 'node:stream';
 import { after, before, test } from 'node:test';
+import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from '../admin/tesoreria-calculos.js';
 
 process.env.NODE_ENV = 'test';
 process.env.SUPABASE_URL = 'https://proyecto-prueba.supabase.co';
@@ -256,6 +257,34 @@ test('Cuotas rechaza un pago mensual duplicado antes de insertarlo', async () =>
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test('Tesorería general concilia pagos reales, egresos e integrantes activos', () => {
+  const ledger = [
+    { tipo: 'ingreso', monto: 5000, fecha: '2026-09-10' },
+    { tipo: 'ingreso', monto: 12000, fecha: '2026-09-22' },
+    { tipo: 'egreso', monto: 4000, fecha: '2026-09-18' },
+    { tipo: 'ingreso', monto: 9000, fecha: '2026-09-01', eliminado: true }
+  ];
+  const members = [
+    { estadoCuenta: 'activo', cuotaMensual: 3000, exento: false },
+    { estadoCuenta: 'activo', cuotaMensual: 6000, exento: false },
+    { estadoCuenta: 'inactivo', cuotaMensual: 10000, exento: false }
+  ];
+
+  const totals = summarizeLedger(ledger);
+  const quotas = buildQuotaMetrics(members, 12000, 2026, new Date('2026-09-21T12:00:00Z'));
+  const monthly = buildMonthlySeries(ledger);
+
+  assert.deepEqual({ income: totals.income, expense: totals.expense, balance: totals.balance }, { income: 17000, expense: 4000, balance: 13000 });
+  assert.equal(quotas.activeMembers, 2);
+  assert.equal(quotas.monthlyExpected, 9000);
+  assert.equal(quotas.annualExpected, 108000);
+  assert.equal(quotas.expectedToDate, 81000);
+  assert.equal(quotas.annualPending, 96000);
+  assert.equal(quotas.overdueToDate, 69000);
+  assert.equal(monthly[8].income, 17000);
+  assert.equal(monthly[8].expense, 4000);
 });
 
 test('devuelve 404 JSON para APIs inexistentes', async () => {

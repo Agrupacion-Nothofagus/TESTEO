@@ -6,22 +6,25 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   window.__nothofagusTesoreriaIngresosCuotas = true;
 
   const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-  const year = new Date().getFullYear();
+  let year = new Date().getFullYear();
   const DELETED_QUOTAS_KEY = 'nothofagus_cuotas_ingresos_eliminados_v1';
   let cache = { general: [], cuotas: [], cuotasEliminadas: [] };
   let loading = false;
   let refreshPending = false;
 
   loadStyle();
-  observeTreasury();
   bindDeleteActions();
-  queueRefresh();
-  document.addEventListener('DOMContentLoaded', queueRefresh);
-  window.addEventListener('hashchange', queueRefresh);
-  window.addEventListener('nothofagus:tesoreria-updated', queueRefresh);
-  window.addEventListener('nothofagus:cuotas-payment-changed', queueRefresh);
+  document.addEventListener('DOMContentLoaded', queueRefreshIfVisible);
+  window.addEventListener('hashchange', queueRefreshIfVisible);
+  window.addEventListener('nothofagus:tesoreria-updated', queueRefreshIfVisible);
+  window.addEventListener('nothofagus:cuotas-payment-changed', queueRefreshIfVisible);
+  window.addEventListener('nothofagus:treasury-year-changed', (event) => {
+    const nextYear = Number(event.detail?.year);
+    if (Number.isInteger(nextYear)) year = nextYear;
+    queueRefreshIfVisible();
+  });
   document.addEventListener('click', (event) => {
-    if (event.target.closest?.('[data-tesoreria-open], [data-tesoreria-go]')) window.setTimeout(queueRefresh, 160);
+    if (event.target.closest?.('[data-tesoreria-open="movimientos"], [data-tesoreria-go="movimientos"]')) window.setTimeout(queueRefresh, 80);
     if (event.target.closest?.('[data-tesoreria-clear]')) window.setTimeout(queueRender, 0);
   }, true);
   document.addEventListener('input', (event) => {
@@ -30,13 +33,8 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   document.addEventListener('change', (event) => {
     if (event.target.closest?.('[data-tesoreria-filter]')) window.setTimeout(queueRender, 0);
   }, true);
-  window.setTimeout(queueRefresh, 700);
-  window.setTimeout(queueRefresh, 1800);
-
-  function observeTreasury() {
-    if (!document.body || document.body.dataset.ingresosCuotasObserved) return;
-    document.body.dataset.ingresosCuotasObserved = 'true';
-    new MutationObserver(() => queueRender()).observe(document.body, { childList: true, subtree: true });
+  function queueRefreshIfVisible() {
+    if (document.querySelector('#tesoreria-movimientos-view.is-active')) queueRefresh();
   }
 
   function bindDeleteActions() {
@@ -65,7 +63,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       refreshPending = true;
       return;
     }
-    if (!document.querySelector('#tesoreria-movimientos-view, #tesoreria-general-view')) return;
+    if (!document.querySelector('#tesoreria-movimientos-view.is-active')) return;
     try {
       loading = true;
       const token = await getToken();
@@ -130,22 +128,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   }
 
   function renderCuotasAsIncome() {
-    if (!document.querySelector('#tesoreria-movimientos-view, #tesoreria-general-view')) return;
-    const activeManual = cache.general.filter((item) => !item.eliminado);
-    const baseIncome = activeManual.filter((item) => item.tipo === 'ingreso');
-    const baseExpense = activeManual.filter((item) => item.tipo === 'egreso');
+    if (!document.querySelector('#tesoreria-movimientos-view.is-active')) return;
     const mergedAll = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas]);
-    const mergedGeneral = mergedAll.filter((item) => !item.eliminado).slice(0, 8);
-    const totalIncome = [...baseIncome, ...cache.cuotas].reduce((sum, item) => sum + Number(item.monto || 0), 0);
-    const totalExpense = baseExpense.reduce((sum, item) => sum + Number(item.monto || 0), 0);
-
-    setText('[data-tesoreria-total="ingresos"]', money(totalIncome));
-    setText('[data-tesoreria-total="egresos"]', money(totalExpense));
-    setText('[data-tesoreria-total="saldo"]', money(totalIncome - totalExpense));
-    document.querySelector('[data-tesoreria-saldo-card]')?.classList.toggle('negative', totalIncome - totalExpense < 0);
-
     renderList('movimiento', filterMovementRows(mergedAll), false);
-    renderList('general', mergedGeneral, false);
     annotateMovementPanel(mergedAll.length, cache.cuotas.length);
   }
 
