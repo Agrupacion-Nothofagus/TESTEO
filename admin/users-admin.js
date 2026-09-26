@@ -10,6 +10,7 @@ const usersViewButton = document.querySelector('[data-admin-view="usuarios-view"
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let loadedOnce = false;
+let currentUserId = '';
 
 usersViewButton?.addEventListener('click', () => {
   if (!loadedOnce) loadUsers();
@@ -42,6 +43,7 @@ form?.addEventListener('submit', async (event) => {
     document.querySelector('#user-role').value = 'editor';
 
     show('Usuario creado correctamente.', true);
+    window.dispatchEvent(new Event('nothofagus:user-created'));
     await loadUsers();
   } catch (error) {
     show(error.message || 'No fue posible crear el usuario.', false);
@@ -69,6 +71,10 @@ async function loadUsers() {
     const data = await api('/api/users');
     const users = data.users || [];
 
+    window.dispatchEvent(new CustomEvent('nothofagus:users-loaded', {
+      detail: { users, currentUserId }
+    }));
+
     if (!users.length) {
       list.innerHTML = '<p class="admin-status">No hay usuarios disponibles.</p>';
       return;
@@ -87,9 +93,14 @@ async function updateUser(id) {
   const nombre = card.querySelector('[data-user-name]').value.trim();
   const rol = card.querySelector('[data-user-role]').value;
   const password = card.querySelector('[data-user-password]').value.trim();
+  const visibleSave = card.querySelector('[data-visible-save-user]');
 
   try {
     show('Actualizando usuario...', true);
+    if (visibleSave) {
+      visibleSave.disabled = true;
+      visibleSave.textContent = 'Guardando...';
+    }
 
     await api('/api/users', {
       method: 'PATCH',
@@ -105,6 +116,10 @@ async function updateUser(id) {
     await loadUsers();
   } catch (error) {
     show(error.message || 'No fue posible actualizar el usuario.', false);
+    if (visibleSave) {
+      visibleSave.disabled = false;
+      visibleSave.textContent = 'Guardar';
+    }
   }
 }
 
@@ -135,6 +150,7 @@ async function api(url, options = {}) {
 
   const sessionResponse = await client.auth.getSession();
   const token = sessionResponse.data?.session?.access_token;
+  currentUserId = String(sessionResponse.data?.session?.user?.id || currentUserId || '');
 
   if (!token) {
     throw new Error('Sesión no disponible. Vuelve a iniciar sesión.');
@@ -159,8 +175,9 @@ async function api(url, options = {}) {
 }
 
 function renderUser(user) {
+  const isCurrentUser = String(user.id || '') === currentUserId;
   return `
-    <article class="user-admin-card user-admin-edit-card" data-user-card="${escapeAttr(user.id)}">
+    <article class="user-admin-card user-admin-edit-card" data-user-card="${escapeAttr(user.id)}" data-user-name-filter="${escapeAttr(user.nombre || '')}" data-user-email-filter="${escapeAttr(user.email)}" data-user-role-filter="${escapeAttr(user.rol || 'editor')}">
       <div class="user-admin-main">
         <div class="user-admin-headline">
           <div>
@@ -171,9 +188,7 @@ function renderUser(user) {
             </small>
           </div>
 
-          <span class="user-admin-badge">
-            ${user.email_confirmed_at ? 'Confirmado' : 'Pendiente'}
-          </span>
+          <span class="user-admin-badge">${isCurrentUser ? 'Tu sesión' : (user.email_confirmed_at ? 'Confirmado' : 'Sin confirmar')}</span>
         </div>
 
         <div class="user-admin-fields">
@@ -188,6 +203,8 @@ function renderUser(user) {
               <option value="administrador" ${user.rol === 'administrador' ? 'selected' : ''}>Administrador</option>
               <option value="editor" ${user.rol === 'editor' ? 'selected' : ''}>Editor</option>
               <option value="lector" ${user.rol === 'lector' ? 'selected' : ''}>Lector</option>
+              <option value="gestor_miembros" ${user.rol === 'gestor_miembros' ? 'selected' : ''}>Secretariado</option>
+              <option value="tesorero" ${user.rol === 'tesorero' ? 'selected' : ''}>Tesorero</option>
             </select>
           </label>
 
@@ -203,7 +220,7 @@ function renderUser(user) {
           Guardar cambios
         </button>
 
-        <button type="button" class="user-delete-button" data-remove-user="${escapeAttr(user.id)}" data-user-email="${escapeAttr(user.email)}">
+        <button type="button" class="user-delete-button" data-remove-user="${escapeAttr(user.id)}" data-user-email="${escapeAttr(user.email)}" ${isCurrentUser ? 'disabled aria-disabled="true" title="No puedes eliminar tu propia sesión"' : ''}>
           Eliminar usuario
         </button>
       </div>

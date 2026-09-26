@@ -1,0 +1,414 @@
+#users-panel {
+  --users-grid-columns: minmax(150px, 1.05fr) minmax(210px, 1.45fr) minmax(125px, 0.72fr) minmax(190px, 1.2fr) minmax(175px, 0.95fr);
+  --users-table-min: 0px;
+  overflow: hidden !important;
+  padding: clamp(18px, 2.4vw, 30px) !important;
+}
+
+#users-panel .admin-topbar {
+  align-items: center !important;
+  gap: 18px !important;
+  margin-bottom: 0 !important;
+}
+
+#users-panel .admin-topbar h3 {
+  margin: 4px 0 6px !important;
+  font-size: clamp(1.55rem, 2.6vw, 2.2rem) !important;
+}
+
+#users-panel .admin-topbar p:last-child {
+  max-width: 680px !important;
+  margin-bottom: 0 !important;
+}
+
+.users-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.users-topbar-actions .secondary-admin-button {
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+}
+
+#users-panel .user-admin-form {
+  margin: 18px 0 0 !important;
+  padding: 18px !important;
+  border-radius: 18px !important;
+  background: #f7f6f0 !important;
+}
+
+#users-panel .user-admin-form label {
+  min-width: 0 !important;
+}
+
+#users-panel .user-admin-form input,
+#users-panel .user-admin-form select {
+  min-height: 44px !important;
+  border-radius: 12px !important;
+}
+
+.users-cancel-create {
+  min-height: 42px !important;
+  border: 1px solid rgba(31, 61, 43, 0.18) !important;
+  border-radius: 999px !important;
+  padding: 9px 18px !important;
+  background: #fff !important;
+  color: #1f3d2b !important;
+  font: inherit !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.users-overview {
+  display: grid !important;
+  gap: 14px !important;
+  margin-top: 18px !important;
+}
+
+.users-summary-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.users-summary-grid article {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+  padding: 16px 17px !important;
+  border: 1px solid rgba(31, 61, 43, 0.12) !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, #fffefb, #f4f7f1) !important;
+  box-shadow: 0 8px 20px rgba(31, 61, 43, 0.055) !important;
+}
+
+.users-summary-grid span,
+.users-summary-grid small {
+  color: #617066 !important;
+  font-size: 0.73rem !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+}
+
+.users-summary-grid strong {
+  color: #163725 !important;
+  font-size: clamp(1.4rem, 2.3vw, 1.9rem) !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+}
+
+.users-filter-bar {
+  display: grid !important;
+  grid-template-columns: minmax(230px, 1.4fr) minmax(180px, 0.75fr) auto !important;
+  gap: 12px !important;
+  align-items: end !important;
+  padding: 14px !important;
+  border: 1px solid rgba(31, 61, 43, 0.12) !important;
+  border-radius: 18px !important;
+  background: #f7f6f0 !important;
+}
+
+.users-filter-bar label {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 6px !important;
+  color: #53635a !important;
+  font-size: 0.76rem !important;
+  font-weight: 900 !important;
+}
+
+.users-filter-bar input,
+.users-filter-bar select {
+  width: 100% !important;
+  min-height: 42px !important;
+  border: 1px solid rgba(31, 61, 43, 0.16) !important;
+  border-radius: 12px !important;
+  padding: 9px 12px !important;
+  background: #fff !important;
+  color: #1f2d24 !important;
+  font: inherit !important;
+  font-size: 0.84rem !important;
+  font-weight: 750 !important;
+}
+
+.users-filter-bar p {
+  min-width: 150px !important;
+  margin: 0 2px 11px !important;
+  color: #617066 !important;
+  font-size: 0.8rem !important;
+  font-weight: 850 !important;
+  text-align: right !important;
+}
+
+#users-panel > .admin-status {
+  min-height: 0 !important;
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
+}
+
+#users-panel .users-table-header,
+#users-panel .users-admin-list,
+#users-panel .user-admin-card,
+#users-panel .user-admin-edit-card {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+#users-panel .users-table-header {
+  margin-top: 12px !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+#users-panel .users-table-header span {
+  min-height: 48px !important;
+  padding: 0 8px !important;
+  font-size: 0.66rem !important;
+}
+
+#users-panel .users-admin-list {
+  gap: 0 !important;
+  border: 1px solid rgba(31, 61, 43, 0.14) !important;
+  border-top: 0 !important;
+  border-radius: 0 0 16px 16px !important;
+  overflow: hidden !important;
+}
+
+#users-panel .user-admin-card,
+#users-panel .user-admin-edit-card {
+  border: 0 !important;
+  border-bottom: 1px solid rgba(31, 61, 43, 0.14) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+#users-panel .user-admin-card[hidden] {
+  display: none !important;
+}
+
+#users-panel .user-admin-card.is-dirty {
+  background: rgba(236, 244, 231, 0.95) !important;
+}
+
+#users-panel .user-admin-headline h4,
+#users-panel .user-admin-fields label,
+#users-panel .user-admin-actions {
+  min-height: 70px !important;
+  padding: 10px !important;
+}
+
+#users-panel .user-admin-headline h4 {
+  justify-content: flex-start !important;
+  text-align: left !important;
+  font-size: 0.78rem !important;
+}
+
+#users-panel .user-admin-fields input,
+#users-panel .user-admin-fields select {
+  min-height: 42px !important;
+  border-radius: 12px !important;
+  text-align: left !important;
+  font-size: 0.78rem !important;
+}
+
+#users-panel .user-row-action-buttons {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1fr 38px !important;
+  gap: 7px !important;
+}
+
+#users-panel .user-row-save,
+#users-panel .user-row-remove {
+  min-width: 0 !important;
+  min-height: 38px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  padding: 8px 10px !important;
+  font: inherit !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+#users-panel .user-row-save {
+  background: #1f3d2b !important;
+  color: #fff !important;
+}
+
+#users-panel .user-row-save:disabled {
+  background: rgba(31, 61, 43, 0.09) !important;
+  color: #68766d !important;
+  cursor: default !important;
+}
+
+#users-panel .user-row-remove {
+  overflow: hidden !important;
+  color: transparent !important;
+  background: rgba(180, 35, 24, 0.1) !important;
+  position: relative !important;
+}
+
+#users-panel .user-row-remove::after {
+  content: '×' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  color: #9b2c2c !important;
+  font-size: 1.25rem !important;
+}
+
+#users-panel .user-row-remove:disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+}
+
+@media (max-width: 1180px) {
+  #users-panel {
+    --users-grid-columns: minmax(135px, 1fr) minmax(185px, 1.35fr) minmax(115px, 0.72fr) minmax(170px, 1.1fr) minmax(150px, 0.9fr);
+  }
+
+  .users-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  #users-panel .users-table-header {
+    display: none !important;
+  }
+
+  #users-panel .users-admin-list {
+    gap: 12px !important;
+    margin-top: 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  #users-panel .user-admin-card,
+  #users-panel .user-admin-edit-card {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    border: 1px solid rgba(31, 61, 43, 0.14) !important;
+    border-radius: 18px !important;
+    background: #fffdf8 !important;
+    box-shadow: 0 8px 20px rgba(31, 61, 43, 0.06) !important;
+  }
+
+  #users-panel .user-admin-headline h4,
+  #users-panel .user-admin-headline small,
+  #users-panel .user-admin-badge,
+  #users-panel .user-admin-fields label,
+  #users-panel .user-admin-actions {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  #users-panel .user-admin-headline h4 {
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    gap: 4px !important;
+  }
+
+  #users-panel .user-admin-headline h4::before {
+    content: 'Correo electrónico' !important;
+    color: #617066 !important;
+    font-size: 0.66rem !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+  }
+
+  #users-panel .user-admin-headline small {
+    grid-column: 1 / -1 !important;
+    display: block !important;
+    color: #617066 !important;
+    font-size: 0.72rem !important;
+    line-height: 1.45 !important;
+  }
+
+  #users-panel .user-admin-badge {
+    display: inline-flex !important;
+    justify-self: start !important;
+    align-items: center !important;
+    padding: 6px 10px !important;
+    border-radius: 999px !important;
+    background: rgba(79, 125, 74, 0.12) !important;
+    color: #1f3d2b !important;
+    font-size: 0.7rem !important;
+    font-weight: 900 !important;
+  }
+
+  #users-panel .user-admin-fields label {
+    display: grid !important;
+    gap: 6px !important;
+    color: #53635a !important;
+    font-size: 0.74rem !important;
+    font-weight: 900 !important;
+  }
+
+  #users-panel .user-admin-actions {
+    grid-column: 1 / -1 !important;
+    display: block !important;
+  }
+
+  #users-panel .user-row-action-buttons {
+    grid-template-columns: 1fr minmax(90px, 0.4fr) !important;
+  }
+
+  #users-panel .user-row-remove {
+    color: #9b2c2c !important;
+  }
+
+  #users-panel .user-row-remove::after {
+    content: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  #users-panel {
+    padding: 16px 12px !important;
+  }
+
+  #users-panel .admin-topbar,
+  .users-topbar-actions,
+  .users-summary-grid,
+  .users-filter-bar,
+  #users-panel .user-admin-card,
+  #users-panel .user-admin-edit-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .users-topbar-actions {
+    display: grid !important;
+    width: 100% !important;
+  }
+
+  .users-topbar-actions button {
+    width: 100% !important;
+  }
+
+  .users-filter-bar p {
+    min-width: 0 !important;
+    margin: 2px 0 0 !important;
+    text-align: left !important;
+  }
+
+  #users-panel .user-admin-headline h4,
+  #users-panel .user-admin-headline small,
+  #users-panel .user-admin-actions {
+    grid-column: 1 !important;
+  }
+}
