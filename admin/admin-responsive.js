@@ -11,7 +11,7 @@
 
   const stylesheet = document.querySelector('link[data-admin-responsive]') || document.createElement('link');
   stylesheet.rel ||= 'stylesheet';
-  stylesheet.href ||= 'admin-responsive.css?v=20260921-2';
+  stylesheet.href ||= 'admin-responsive.css?v=20260921-3';
   stylesheet.dataset.adminResponsive = 'true';
   // Reinsert the already loaded stylesheet after module-specific styles.
   document.head.appendChild(stylesheet);

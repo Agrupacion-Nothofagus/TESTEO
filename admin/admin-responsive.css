@@ -559,3 +559,64 @@ table th {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Evita que nombres largos invadan la columna Estado en las matrices. */
+#tesoreria-cuotas-view .cuotas-monthly-table th:first-child,
+#tesoreria-benefactores-view .cuotas-monthly-table th:first-child,
+#tesoreria-cuotas-view .cuotas-monthly-table td[data-label="Integrante"],
+#tesoreria-benefactores-view .cuotas-monthly-table td[data-label="Integrante"] {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  overflow: hidden !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name,
+#tesoreria-benefactores-view .cuotas-monthly-table .cuotas-member-name {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name > div,
+#tesoreria-benefactores-view .cuotas-monthly-table .cuotas-member-name > div {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table .cuotas-member-name strong,
+#tesoreria-benefactores-view .cuotas-monthly-table .cuotas-member-name strong {
+  width: 100% !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-overflow: clip !important;
+  line-height: 1.25 !important;
+}
+
+#tesoreria-cuotas-view .cuotas-monthly-table th:nth-child(2),
+#tesoreria-benefactores-view .cuotas-monthly-table th:nth-child(2),
+#tesoreria-cuotas-view .cuotas-monthly-table td[data-label="Estado"],
+#tesoreria-benefactores-view .cuotas-monthly-table td[data-label="Estado"] {
+  width: 120px !important;
+  min-width: 120px !important;
+  padding-left: 12px !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 900px) {
+  #tesoreria-cuotas-view .cuotas-monthly-table td[data-label="Integrante"],
+  #tesoreria-benefactores-view .cuotas-monthly-table td[data-label="Integrante"],
+  #tesoreria-cuotas-view .cuotas-monthly-table td[data-label="Estado"],
+  #tesoreria-benefactores-view .cuotas-monthly-table td[data-label="Estado"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
