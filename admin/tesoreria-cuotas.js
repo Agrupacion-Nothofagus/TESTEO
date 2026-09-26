@@ -332,9 +332,11 @@ function renderRow(member) {
 
 function renderMonthCell(member, month) {
   const status = getMonthStatus(member, month);
-  const payment = getMonthPayment(member, month);
-  const title = `${monthNames[month]} · ${labelMonthStatus(status)}${payment ? ` · ${formatCLP(payment.monto)} · ${formatDate(payment.fechaPago)}${payment.comprobanteUrl ? ' · Con comprobante' : ''}` : ''}`;
-  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" data-month="${month}" data-member-id="${escapeAttr(member.id)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${payment?.id ? `data-cuotas-payment-id="${escapeAttr(payment.id)}" data-payment-amount="${escapeAttr(payment.monto)}"` : ''} ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}"` : ''}></button></td>`;
+  const payments = getPaymentsForMonth(member, month);
+  const payment = payments[0];
+  const paidAmount = payments.reduce((sum, item) => sum + Number(item.monto || 0), 0);
+  const title = `${monthNames[month]} · ${labelMonthStatus(status)}${payment ? ` · ${formatCLP(paidAmount)} abonados · ${formatDate(payment.fechaPago)}${payment.comprobanteUrl ? ' · Con comprobante' : ''}` : ''}`;
+  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" data-month="${month}" data-member-id="${escapeAttr(member.id)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${payment?.id ? `data-cuotas-payment-id="${escapeAttr(payment.id)}" data-payment-amount="${escapeAttr(paidAmount)}"` : ''} ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}"` : ''}></button></td>`;
 }
 
 function renderActions(member, write) {
@@ -558,8 +560,7 @@ function exportExcel() {
 
 function generatePdfReport() { exportExcel(); }
 function renderEmpty(message) { document.querySelector('[data-cuotas-table]') && (document.querySelector('[data-cuotas-table]').innerHTML = `<p class="cuotas-empty">${escapeHTML(message)}</p>`); renderSummary(buildDashboardSummary([])); }
-function getMonthStatus(member, month) { if (member.exento || member.estadoCuenta === 'inactivo') return 'sin_registro'; if (getMonthPayment(member, month)) return 'pagado'; if ((member.mesesNoAplican || []).includes(month)) return 'sin_registro'; if (hasAnnualPayment(member) && Number(member.totalPagado || 0) >= Number(member.cuotaAnualEsperada || 0)) return 'pagado'; if (Number(state.anio) < currentYear) return 'atrasado'; if (Number(state.anio) > currentYear) return 'pendiente'; return month < currentMonth ? 'atrasado' : 'pendiente'; }
-function getMonthPayment(member, month) { return (member.pagos || []).find((p) => Number(p.mes) === Number(month) && p.tipoPago !== 'anual'); }
+function getMonthStatus(member, month) { if (member.exento || member.estadoCuenta === 'inactivo') return 'sin_registro'; if (getPaymentsForMonth(member, month).reduce((sum, payment) => sum + Number(payment.monto || 0), 0) >= Number(member.cuotaMensual || 0) && Number(member.cuotaMensual || 0) > 0) return 'pagado'; if ((member.mesesNoAplican || []).includes(month)) return 'sin_registro'; if (hasAnnualPayment(member) && Number(member.totalPagado || 0) >= Number(member.cuotaAnualEsperada || 0)) return 'pagado'; if (Number(state.anio) < currentYear) return 'atrasado'; if (Number(state.anio) > currentYear) return 'pendiente'; return month < currentMonth ? 'atrasado' : 'pendiente'; }
 function getPaymentsForMonth(member, month) { return (member.pagos || []).filter((p) => Number(p.mes) === Number(month) && p.tipoPago !== 'anual'); }
 function hasAnnualPayment(member) { return (member.pagos || []).some((p) => p.tipoPago === 'anual' || Number(p.mes) === 0); }
 async function api(url, options = {}) { if (!client) throw new Error('Supabase no está configurado.'); const session = await client.auth.getSession(); const token = session.data?.session?.access_token; if (!token) throw new Error('Sesión no disponible.'); const response = await fetch(url, { ...options, headers: { authorization: `Bearer ${token}`, ...(options.skipContentType ? {} : { 'content-type': 'application/json; charset=utf-8' }), ...(options.headers || {}) } }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || 'Error de solicitud.'); return data; }

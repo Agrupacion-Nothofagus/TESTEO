@@ -49,6 +49,30 @@ test('No aplica reduce el esperado y el sobrepago de otra persona no oculta la d
   }
 });
 
+test('Un abono parcial no marca el mes como pagado ni permite excluir su obligación', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    const target = String(url);
+    if (target.endsWith('/auth/v1/user')) return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero' } });
+    if (target.includes('/tesoreria_cuotas_miembros?select=')) return Response.json([{ id: 'm1', nombre: 'Integrante A', correo: 'a@example.cl', estado_cuenta: 'activo', cuota_mensual: 1000, exento: false }]);
+    if (target.includes('/tesoreria_cuotas_pagos?select=')) return Response.json([{ id: 'p1', member_id: 'm1', anio: 2026, mes: 7, monto: 500, fecha_pago: '2026-07-20', tipo_pago: 'mensual' }]);
+    if (target.includes('/tesoreria_cuotas_estados?select=')) return Response.json([{ member_id: 'm1', mes: 7, estado_nuevo: 'sin_registro', eliminado: false }]);
+    return Response.json({ error: 'Ruta inesperada' }, { status: 500 });
+  };
+  try {
+    const response = await cuotasRequest({ request: new Request('http://localhost/api/cuotas-miembros?anio=2026&sync=0&include_files=0', { headers: auth }), env });
+    assert.equal(response.status, 200);
+    const { miembros, resumen } = await response.json();
+    assert.deepEqual(miembros[0].mesesNoAplican, []);
+    assert.equal(miembros[0].mesesPagados, 0);
+    assert.equal(miembros[0].totalPagado, 500);
+    assert.equal(miembros[0].saldoPendiente, 11500);
+    assert.equal(resumen.esperadoAnual, 12000);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('Tesorería pagina más de mil movimientos y excluye los eliminados', async () => {
   const originalFetch = globalThis.fetch;
   const firstPage = Array.from({ length: 1000 }, (_, index) => ({ id: String(index), tipo: 'ingreso', fecha: '2026-09-01', monto: 1, eliminado: false }));

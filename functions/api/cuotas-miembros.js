@@ -574,8 +574,15 @@ async function fromPaymentDb(row = {}, cfg, includeFiles = true) {
 function withFinancialSummary(member, payments, year, notApplicable = new Set()) {
   const inactive = String(member.estadoCuenta || '').toLowerCase() === 'inactivo';
   const paymentsForYear = payments.filter((pago) => Number(pago.anio) === Number(year));
-  const paidMonths = new Set(paymentsForYear.filter((pago) => Number(pago.mes) >= 1 && Number(pago.mes) <= 12 && Number(pago.monto) > 0).map((pago) => Number(pago.mes)));
-  const applicableExclusions = new Set([...notApplicable].filter((month) => !paidMonths.has(month)));
+  const amountsByMonth = new Map();
+  for (const pago of paymentsForYear) {
+    const month = Number(pago.mes);
+    if (month < 1 || month > 12 || pago.tipoPago === 'anual') continue;
+    amountsByMonth.set(month, (amountsByMonth.get(month) || 0) + Number(pago.monto || 0));
+  }
+  const recordedMonths = new Set([...amountsByMonth].filter(([, amount]) => amount > 0).map(([month]) => month));
+  const paidMonths = new Set([...amountsByMonth].filter(([, amount]) => Number(member.cuotaMensual) > 0 && amount >= Number(member.cuotaMensual)).map(([month]) => month));
+  const applicableExclusions = new Set([...notApplicable].filter((month) => !recordedMonths.has(month)));
   const mesesNoAplican = [...applicableExclusions].sort((a, b) => a - b);
   const cuotaAnualEsperada = member.exento || inactive ? 0 : Number(member.cuotaMensual || 0) * (12 - mesesNoAplican.length);
   const totalPagado = paymentsForYear.reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
