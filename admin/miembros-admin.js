@@ -4,8 +4,8 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const MEMBER_STATUS = ['pendiente', 'contactado', 'rechazado', 'miembro'];
 const MEMBER_STATUS_LABELS = {
-  pendiente: 'Nuevo',
-  contactado: 'Contactado',
+  pendiente: 'Pendiente',
+  contactado: 'En seguimiento',
   rechazado: 'Rechazado',
   miembro: 'Miembro'
 };
@@ -242,8 +242,10 @@ function updateViewSummary(view, visibleCount) {
 
   const result = view.querySelector('[data-members-result-count]');
   if (result) {
-    const label = statusView === 'miembro' ? 'miembro' : 'contacto';
-    result.textContent = `${visibleCount} ${label}${visibleCount === 1 ? '' : 's'} en esta vista`;
+    const label = statusView === 'miembro'
+      ? `miembro${visibleCount === 1 ? '' : 's'}`
+      : `respuesta${visibleCount === 1 ? '' : 's'} pendiente${visibleCount === 1 ? '' : 's'}`;
+    result.textContent = `${visibleCount} ${label} en esta vista`;
   }
 }
 
@@ -380,12 +382,12 @@ function renderAdultSection(item) {
 function renderActions(status, id) {
   const actions = {
     pendiente: [
-      ['contactado', 'Marcar como contactado'],
+      ['contactado', 'Marcar en seguimiento'],
       ['rechazado', 'Rechazar'],
       ['miembro', 'Aceptar como miembro']
     ],
     contactado: [
-      ['pendiente', 'Marcar como nuevo'],
+      ['pendiente', 'Devolver a sin revisar'],
       ['rechazado', 'Rechazar'],
       ['miembro', 'Aceptar como miembro']
     ],
@@ -543,7 +545,7 @@ function showActiveStatus(message, ok) {
 function emptyState(status) {
   const text = {
     pendiente: 'No hay solicitudes pendientes.',
-    contactado: 'No hay solicitudes nuevas ni contactos en seguimiento.',
+    contactado: 'No hay respuestas pendientes del formulario Súmate a Nothofagus.',
     rechazado: 'No hay solicitudes rechazadas.',
     miembro: 'No hay miembros registrados.'
   }[status] || 'No hay registros disponibles.';

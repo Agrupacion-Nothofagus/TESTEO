@@ -75,8 +75,8 @@ function instalarVistasMiembros() {
         Miembros <strong class="member-sidebar-counter" data-member-counter="miembro">0</strong>
       </button>
       <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-contacted-view" data-member-counter-key="contactado">
-        <span>📞</span>
-        Contactados <strong class="member-sidebar-counter" data-member-counter="contactado">0</strong>
+        <span>🕘</span>
+        Pendientes <strong class="member-sidebar-counter" data-member-counter="contactado">0</strong>
       </button>
     </div>
   `;
@@ -87,7 +87,7 @@ function instalarVistasMiembros() {
 
   const vistas = [
     crearVista('members-list-view', 'Miembros', 'Nómina institucional, estado y antecedentes de socios/as.', 'miembro'),
-    crearVista('members-contacted-view', 'Contactados', 'Solicitudes nuevas y seguimiento de personas contactadas.', 'contactado')
+    crearVista('members-contacted-view', 'Pendientes', 'Respuestas recibidas desde el formulario “Súmate a Nothofagus”.', 'contactado')
   ];
 
   vistas.forEach((section) => adminContent.appendChild(section));
@@ -116,16 +116,16 @@ function crearVista(id, title, description, status) {
         <button type="button" class="secondary-admin-button" data-reload-members>Actualizar</button>
       </div>
 
-      <div class="members-summary-grid" data-members-summary aria-label="Resumen de ${esNomina ? 'miembros' : 'contactos'}">
+      <div class="members-summary-grid" data-members-summary aria-label="Resumen de ${esNomina ? 'miembros' : 'respuestas pendientes'}">
         ${esNomina ? `
           <article><span>Total miembros</span><strong data-member-summary="total">0</strong><small>Nómina registrada</small></article>
           <article><span>Activos/as</span><strong data-member-summary="activo">0</strong><small>Participación vigente</small></article>
           <article><span>Inactivos/as</span><strong data-member-summary="inactivo">0</strong><small>Estado administrativo</small></article>
           <article><span>Suspendidos/as</span><strong data-member-summary="suspendido">0</strong><small>Requieren revisión</small></article>
         ` : `
-          <article><span>Nuevos</span><strong data-member-summary="pendiente">0</strong><small>Sin contacto registrado</small></article>
-          <article><span>Contactados</span><strong data-member-summary="contactado">0</strong><small>En seguimiento</small></article>
-          <article><span>Total seguimiento</span><strong data-member-summary="seguimiento">0</strong><small>Solicitudes visibles</small></article>
+          <article><span>Respuestas recibidas</span><strong data-member-summary="seguimiento">0</strong><small>Formulario Súmate a Nothofagus</small></article>
+          <article><span>Sin revisar</span><strong data-member-summary="pendiente">0</strong><small>Esperan primera gestión</small></article>
+          <article><span>En seguimiento</span><strong data-member-summary="contactado">0</strong><small>Ya fueron contactadas</small></article>
         `}
       </div>
 
@@ -152,8 +152,8 @@ function crearVista(id, title, description, status) {
               <option value="inactivo">Inactivo/a</option>
               <option value="suspendido">Suspendido/a</option>
             ` : `
-              <option value="pendiente">Nuevo</option>
-              <option value="contactado">Contactado</option>
+              <option value="pendiente">Sin revisar</option>
+              <option value="contactado">En seguimiento</option>
             `}
           </select>
         </label>

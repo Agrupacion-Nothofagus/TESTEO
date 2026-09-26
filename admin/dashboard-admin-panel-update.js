@@ -7,7 +7,7 @@
     ['Publicaciones', 'Listado editorial', 'gestion-view'],
     ['Nueva publicación', 'Crear contenido', 'nueva-view'],
     ['Miembros', 'Nómina institucional', 'members-list-view'],
-    ['Contactados', 'Seguimiento', 'members-contacted-view'],
+    ['Pendientes', 'Formulario Súmate', 'members-contacted-view'],
     ['Tesorería general', 'Ingresos y egresos', 'tesoreria:general'],
     ['Registro de pagos', 'Cuotas mensuales', 'tesoreria:cuotas'],
     ['Ingresos', 'Registrar entrada', 'tesoreria:ingresos'],
@@ -114,7 +114,7 @@
   function moduleCards() {
     const modules = [
       ['Publicaciones', 'Gestión editorial, creación y actualización de contenidos.', 'gestion-view'],
-      ['Contactos', 'Solicitudes nuevas y seguimiento de personas contactadas.', 'members-contacted-view'],
+      ['Pendientes', 'Respuestas recibidas desde el formulario Súmate a Nothofagus.', 'members-contacted-view'],
       ['Miembros', 'Nómina de socios/as y antecedentes principales.', 'members-list-view'],
       ['Tesorería', 'Ingresos, egresos y resumen financiero.', 'tesoreria:general'],
       ['Registro de pagos', 'Matriz mensual de cuotas y nómina de cuotas.', 'tesoreria:cuotas'],
