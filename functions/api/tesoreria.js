@@ -131,8 +131,7 @@ async function uploadComprobante(cfg, file, tipoMovimiento) {
   const res = await fetch(`${cfg.url}/storage/v1/object/${BUCKET}/${encodeStoragePath(path)}`, {
     method: 'POST',
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': tipoArchivo,
       'x-upsert': 'false'
     },
@@ -156,8 +155,7 @@ async function createSignedUrl(cfg, path) {
   const res = await fetch(`${cfg.url}/storage/v1/object/sign/${BUCKET}/${encodeStoragePath(path)}`, {
     method: 'POST',
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': 'application/json'
     },
     body: JSON.stringify({ expiresIn: 60 * 60 })
@@ -177,8 +175,7 @@ async function deleteStorageObject(cfg, path) {
   await fetch(`${cfg.url}/storage/v1/object/${BUCKET}`, {
     method: 'DELETE',
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': 'application/json'
     },
     body: JSON.stringify({ prefixes: [path] })
@@ -273,12 +270,17 @@ function supabaseFetch(cfg, path, options = {}) {
   return fetch(`${cfg.url}${path}`, {
     ...options,
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': 'application/json',
       ...(options.headers || {})
     }
   });
+}
+
+function adminHeaders(key) {
+  return String(key).startsWith('sb_secret_')
+    ? { apikey: key }
+    : { apikey: key, authorization: `Bearer ${key}` };
 }
 
 function normalizarTipo(value) {

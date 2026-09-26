@@ -1,0 +1,14 @@
+{
+  "name": "agrupacion-nothofagus-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sitio y API de Agrupación Nothofagus para Node.js y Docker",
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

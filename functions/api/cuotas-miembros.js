@@ -371,8 +371,7 @@ async function uploadComprobante(cfg, file, yearValue) {
   const res = await fetch(`${cfg.url}/storage/v1/object/${BUCKET}/${encodeStoragePath(path)}`, {
     method: 'POST',
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': tipoArchivo,
       'x-upsert': 'false'
     },
@@ -389,7 +388,7 @@ async function createSignedUrl(cfg, path) {
   if (!path) return '';
   const res = await fetch(`${cfg.url}/storage/v1/object/sign/${BUCKET}/${encodeStoragePath(path)}`, {
     method: 'POST',
-    headers: { apikey: cfg.key, authorization: `Bearer ${cfg.key}`, 'content-type': 'application/json' },
+    headers: { ...adminHeaders(cfg.key), 'content-type': 'application/json' },
     body: JSON.stringify({ expiresIn: 60 * 60 })
   });
   const data = await res.json().catch(() => ({}));
@@ -402,7 +401,7 @@ async function deleteStorageObject(cfg, path) {
   if (!path) return;
   await fetch(`${cfg.url}/storage/v1/object/${BUCKET}`, {
     method: 'DELETE',
-    headers: { apikey: cfg.key, authorization: `Bearer ${cfg.key}`, 'content-type': 'application/json' },
+    headers: { ...adminHeaders(cfg.key), 'content-type': 'application/json' },
     body: JSON.stringify({ prefixes: [path] })
   });
 }
@@ -520,8 +519,14 @@ function getPermisos(user, cfg) {
 function supabaseFetch(cfg, path, options = {}) {
   return fetch(`${cfg.url}${path}`, {
     ...options,
-    headers: { apikey: cfg.key, authorization: `Bearer ${cfg.key}`, 'content-type': 'application/json', ...(options.headers || {}) }
+    headers: { ...adminHeaders(cfg.key), 'content-type': 'application/json', ...(options.headers || {}) }
   });
+}
+
+function adminHeaders(key) {
+  return String(key).startsWith('sb_secret_')
+    ? { apikey: key }
+    : { apikey: key, authorization: `Bearer ${key}` };
 }
 
 function inferMemberStateFromRegistry(socio = {}) {

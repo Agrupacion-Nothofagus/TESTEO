@@ -336,11 +336,16 @@ function callSupabase(cfg, path, options = {}) {
     ...options,
     headers: {
       ...headers,
-      apikey: cfg.key,
-      authorization: authHeader(cfg.key),
+      ...adminHeaders(cfg.key),
       ...(options.headers || {})
     }
   });
+}
+
+function adminHeaders(key) {
+  return String(key).startsWith('sb_secret_')
+    ? { apikey: key }
+    : { apikey: key, authorization: authHeader(key) };
 }
 
 function authHeader(token) {

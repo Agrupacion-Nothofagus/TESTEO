@@ -20,23 +20,7 @@ export async function onRequestPut(context) {
 
     validarPublicacion(publicacion, id);
 
-    await env.DB.prepare(`
-      UPDATE publicaciones
-      SET titulo = ?, resumen = ?, contenido = ?, categoria = ?, imagen = ?, enlace = ?, estado = ?, fecha = ?, actualizado_en = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `)
-      .bind(
-        publicacion.titulo,
-        publicacion.resumen,
-        publicacion.contenido,
-        publicacion.categoria,
-        publicacion.imagen,
-        publicacion.enlace,
-        publicacion.estado,
-        publicacion.fecha,
-        id
-      )
-      .run();
+    await actualizarPublicacion(env, id, publicacion);
 
     return new Response(JSON.stringify({ ok: true, id }), { headers: jsonHeaders });
   } catch (error) {
@@ -58,7 +42,7 @@ export async function onRequestDelete(context) {
     const id = Number(params.id);
     if (!Number.isInteger(id) || id < 1) throw new Error('ID inválido.');
 
-    await env.DB.prepare('DELETE FROM publicaciones WHERE id = ?').bind(id).run();
+    await eliminarPublicacion(env, id);
 
     return new Response(JSON.stringify({ ok: true, id }), { headers: jsonHeaders });
   } catch (error) {
@@ -90,6 +74,49 @@ function estaAutorizado(request, env) {
   const header = request.headers.get('Authorization') || '';
   const token = header.replace('Bearer ', '').trim();
   return Boolean(env.ADMIN_TOKEN && token && token === env.ADMIN_TOKEN);
+}
+
+async function actualizarPublicacion(env, id, publicacion) {
+  const response = await supabaseRequest(env, `?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ ...publicacion, actualizado_en: new Date().toISOString() })
+  });
+  if (!response.ok) throw await supabaseError(response);
+}
+
+async function eliminarPublicacion(env, id) {
+  const response = await supabaseRequest(env, `?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' }
+  });
+  if (!response.ok) throw await supabaseError(response);
+}
+
+function supabaseRequest(env, query, options) {
+  const url = String(env.SUPABASE_URL || '').replace(/\/$/, '');
+  const key = String(env.SUPABASE_ADMIN_KEY || '');
+  if (!url || !key) throw new Error('Faltan variables SUPABASE_URL o SUPABASE_ADMIN_KEY.');
+
+  return fetch(`${url}/rest/v1/publicaciones${query}`, {
+    ...options,
+    headers: {
+      ...adminHeaders(key),
+      'content-type': 'application/json; charset=utf-8',
+      ...(options.headers || {})
+    }
+  });
+}
+
+function adminHeaders(key) {
+  return String(key).startsWith('sb_secret_')
+    ? { apikey: key }
+    : { apikey: key, authorization: `Bearer ${key}` };
+}
+
+async function supabaseError(response) {
+  const data = await response.json().catch(() => ({}));
+  return new Error(data.message || data.error || `Supabase respondió HTTP ${response.status}.`);
 }
 
 function errorResponse(mensaje, error, status = 500) {

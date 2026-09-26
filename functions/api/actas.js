@@ -160,12 +160,17 @@ function callSupabase(cfg, path, options = {}) {
   return fetch(`${cfg.url}${path}`, {
     ...options,
     headers: {
-      apikey: cfg.key,
-      authorization: `Bearer ${cfg.key}`,
+      ...adminHeaders(cfg.key),
       'content-type': 'application/json',
       ...(options.headers || {})
     }
   });
+}
+
+function adminHeaders(key) {
+  return String(key).startsWith('sb_secret_')
+    ? { apikey: key }
+    : { apikey: key, authorization: `Bearer ${key}` };
 }
 
 function reply(body, status = 200) {
