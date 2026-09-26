@@ -78,10 +78,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       });
       renderModel(model);
       const failures = Object.values(sources).filter((source) => !source.available);
-      const rosterMismatch = sources.members.available && sources.cuotas.available && model.activeMembers.length !== model.quotaAccounts;
       setStatus(
         status,
-        failures.length ? `Panel actualizado con ${failures.length} ${failures.length === 1 ? 'fuente pendiente' : 'fuentes pendientes'}.` : rosterMismatch ? 'Panel actualizado. Revisa la diferencia entre nóminas.' : 'Panel actualizado y conciliado.',
+        failures.length ? `Panel actualizado con ${failures.length} ${failures.length === 1 ? 'fuente pendiente' : 'fuentes pendientes'}.` : 'Panel actualizado.',
         failures.length === 0
       );
     } catch (error) {
@@ -395,11 +394,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const available = sources.filter(([, value]) => value.available).length;
     const total = sources.length;
     const complete = available === total;
-    const rosterMismatch = model.sourceStatus.members.available && model.sourceStatus.cuotas.available && model.activeMembers.length !== model.quotaAccounts;
-    setText('[data-dashboard-system-title]', !complete ? 'Sincronización parcial' : rosterMismatch ? 'Nóminas por conciliar' : 'Información sincronizada');
-    setText('[data-dashboard-system-detail]', !complete ? `${available} de ${total} fuentes disponibles. Usa actualizar para reintentar.` : rosterMismatch ? `${model.activeMembers.length} miembros activos · ${model.quotaAccounts} cuentas activas de cuotas.` : `${total} de ${total} fuentes administrativas disponibles.`);
+    const separateRosters = model.sourceStatus.members.available && model.sourceStatus.cuotas.available && model.activeMembers.length !== model.quotaAccounts;
+    setText('[data-dashboard-system-title]', complete ? 'Información sincronizada' : 'Sincronización parcial');
+    setText('[data-dashboard-system-detail]', !complete ? `${available} de ${total} fuentes disponibles. Usa actualizar para reintentar.` : separateRosters ? `${model.activeMembers.length} miembros activos · ${model.quotaAccounts} cuentas activas de cuotas.` : `${total} de ${total} fuentes administrativas disponibles.`);
     document.querySelectorAll('[data-dashboard-system-indicator]').forEach((element) => {
-      element.classList.toggle('is-warning', !complete || rosterMismatch);
+      element.classList.toggle('is-warning', !complete);
     });
   }
 
