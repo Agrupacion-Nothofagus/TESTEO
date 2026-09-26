@@ -182,6 +182,11 @@ function instalarEventosCuotas() {
   window.addEventListener('nothofagus:cuotas-status-record-changed', (event) => {
     if (['updated', 'deleted'].includes(event.detail?.action) && document.querySelector('#tesoreria-cuotas-view.is-active')) loadCuotas(true);
   });
+  window.addEventListener('nothofagus:cuotas-edit-payment', (event) => {
+    if (!state.permisos.write) return;
+    const found = getPaymentById(event.detail?.paymentId);
+    if (found) openPaymentEditModal(found.member, found.payment);
+  });
 }
 
 async function updateYear(value) {
@@ -413,6 +418,7 @@ function handleCuotasAction(event) {
   const close = event.target.closest?.('[data-cuotas-close]');
   const backdrop = event.target.matches?.('[data-cuotas-modal]');
   const deletePaymentButton = event.target.closest?.('[data-cuotas-delete-payment]');
+  const editPaymentButton = event.target.closest?.('[data-cuotas-edit-payment]');
   if (edit) openMemberModal(getMember(edit.dataset.cuotasEdit));
   if (payment && state.permisos.write) openPaymentModal(getMember(payment.dataset.cuotasPayment), state.mes);
   if (paymentMonth && state.permisos.write) openPaymentModal(getMember(paymentMonth.dataset.cuotasPaymentMonth), Number(paymentMonth.dataset.month || state.mes));
@@ -426,6 +432,10 @@ function handleCuotasAction(event) {
   if (refreshMatrix) refreshCuotasMatrix();
   if (close || backdrop) closeModal();
   if (deletePaymentButton && state.permisos.write) deletePayment(deletePaymentButton.dataset.cuotasDeletePayment);
+  if (editPaymentButton && state.permisos.write) {
+    const found = getPaymentById(editPaymentButton.dataset.cuotasEditPayment);
+    if (found) openPaymentEditModal(found.member, found.payment);
+  }
 }
 
 async function refreshCuotasMatrix() {
@@ -453,6 +463,17 @@ function openPaymentModal(member = null, month = state.mes) {
   form?.addEventListener('submit', savePaymentForm);
 }
 
+function openPaymentEditModal(member, payment) {
+  if (!state.permisos.write || !member || !payment) return;
+  const currentFile = payment.comprobanteUrl
+    ? `<a class="cuotas-file-link" href="${escapeAttr(payment.comprobanteUrl)}" target="_blank" rel="noopener">Ver comprobante actual</a>`
+    : '<small>Este pago no tiene comprobante adjunto.</small>';
+  openModal(`<div class="cuotas-modal"><div class="cuotas-modal-header"><div><p class="section-tag">Pago registrado</p><h3>Editar pago</h3><p>${escapeHTML(member.nombre)} · ${escapeHTML(monthNames[Number(payment.mes || 0)] || 'Pago anual')}</p></div><button type="button" class="cuotas-modal-close" data-cuotas-close>×</button></div><form class="cuotas-form" data-cuotas-payment-edit-form enctype="multipart/form-data"><input type="hidden" name="action" value="payment"><input type="hidden" name="id" value="${escapeAttr(payment.id)}"><div class="cuotas-form-grid"><label>Integrante<select name="member_id" required>${state.miembros.map((item) => `<option value="${escapeAttr(item.id)}" ${String(item.id) === String(member.id) ? 'selected' : ''}>${escapeHTML(item.nombre)}</option>`).join('')}</select></label><label>Tipo de pago<select name="tipo_pago">${option('mensual', payment.tipoPago, 'Cuota mensual')}${option('anual', payment.tipoPago, 'Cuota anual')}</select></label><label>Mes<select name="mes">${monthOptions(payment.mes || 1)}</select></label><label>Año<input name="anio" type="number" min="2020" max="2100" value="${escapeAttr(payment.anio || state.anio)}" required></label><label>Monto<input name="monto" type="number" min="1" step="1" value="${escapeAttr(payment.monto || '')}" required></label><label>Fecha de pago<input name="fecha_pago" type="date" value="${escapeAttr(payment.fechaPago || '')}" required></label><label>Método de pago<select name="metodo_pago">${option('transferencia', payment.metodoPago, 'Transferencia')}${option('efectivo', payment.metodoPago, 'Efectivo')}${option('deposito', payment.metodoPago, 'Depósito')}${option('webpay', payment.metodoPago, 'Webpay')}${option('otro', payment.metodoPago, 'Otro')}</select></label><label class="full">Observación<textarea name="observacion">${escapeHTML(payment.observacion || '')}</textarea></label><label class="full">Reemplazar comprobante (opcional)<input name="comprobante" type="file" accept="application/pdf,image/jpeg,image/png">${currentFile}</label></div><div class="cuotas-modal-actions"><button type="button" class="secondary" data-cuotas-close>Cancelar</button><button type="submit">Guardar cambios</button></div></form></div>`);
+  const form = document.querySelector('[data-cuotas-payment-edit-form]');
+  form?.addEventListener('change', syncPaymentTypeAmount);
+  form?.addEventListener('submit', savePaymentEditForm);
+}
+
 function openHistoryModal(member) {
   if (!member) return;
   const pagos = [...(member.pagos || [])].sort((a, b) => String(b.fechaPago || '').localeCompare(String(a.fechaPago || '')));
@@ -461,8 +482,9 @@ function openHistoryModal(member) {
 
 function renderHistoryRow(payment) {
   const file = payment.comprobanteUrl ? `<a class="cuotas-file-link" href="${escapeAttr(payment.comprobanteUrl)}" target="_blank" rel="noopener">Comprobante</a>` : '<small>Sin comprobante</small>';
+  const edit = state.permisos.write ? `<button type="button" class="secondary" data-cuotas-edit-payment="${escapeAttr(payment.id)}">Editar</button>` : '';
   const del = state.permisos.write ? `<button type="button" class="danger" data-cuotas-delete-payment="${escapeAttr(payment.id)}">Eliminar</button>` : '';
-  return `<article class="cuotas-history-row"><strong>${escapeHTML(monthNames[Number(payment.mes || 0)] || 'Mes')}</strong><span>${formatCLP(payment.monto)}</span><small>${escapeHTML(payment.metodoPago || 'transferencia')} · ${escapeHTML(payment.observacion || 'Sin observación')}</small><span>${formatDate(payment.fechaPago)}</span><div class="cuotas-history-actions">${file}${del}</div></article>`;
+  return `<article class="cuotas-history-row"><strong>${escapeHTML(monthNames[Number(payment.mes || 0)] || 'Mes')}</strong><span>${formatCLP(payment.monto)}</span><small>${escapeHTML(payment.metodoPago || 'transferencia')} · ${escapeHTML(payment.observacion || 'Sin observación')}</small><span>${formatDate(payment.fechaPago)}</span><div class="cuotas-history-actions">${file}${edit}${del}</div></article>`;
 }
 
 function openModal(html) { const backdrop = document.querySelector('[data-cuotas-modal]'); if (!backdrop) return; backdrop.innerHTML = html; backdrop.classList.add('is-open'); backdrop.setAttribute('aria-hidden', 'false'); }
@@ -486,6 +508,18 @@ async function savePaymentForm(event) {
   const formData = new FormData(form);
   const detail = { memberId: String(formData.get('member_id') || ''), month: Number(formData.get('mes') || 0), anio: Number(formData.get('anio') || state.anio), tipoPago: String(formData.get('tipo_pago') || 'mensual') };
   try { setStatus('Registrando pago...', true); await api(API_URL, { method: 'POST', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); notifyPaymentChange('saved', detail); setStatus('Pago registrado correctamente y actualizado en Tesorería General.', true); } catch (error) { form.dataset.submitting = 'false'; if (submit) submit.disabled = false; setStatus(error.message || 'No fue posible registrar el pago.', false); }
+}
+
+async function savePaymentEditForm(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  if (form.dataset.submitting === 'true') return;
+  form.dataset.submitting = 'true';
+  const submit = form.querySelector('button[type="submit"]');
+  if (submit) submit.disabled = true;
+  const formData = new FormData(form);
+  const detail = { paymentId: String(formData.get('id') || ''), memberId: String(formData.get('member_id') || ''), month: Number(formData.get('mes') || 0), anio: Number(formData.get('anio') || state.anio), tipoPago: String(formData.get('tipo_pago') || 'mensual') };
+  try { setStatus('Actualizando pago...', true); await api(API_URL, { method: 'PATCH', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); notifyPaymentChange('updated', detail); setStatus('Pago actualizado correctamente y reflejado en Tesorería General.', true); } catch (error) { form.dataset.submitting = 'false'; if (submit) submit.disabled = false; setStatus(error.message || 'No fue posible actualizar el pago.', false); }
 }
 
 function syncPaymentTypeAmount(event) {
@@ -526,6 +560,7 @@ function getPaymentsForMonth(member, month) { return (member.pagos || []).filter
 function hasAnnualPayment(member) { return (member.pagos || []).some((p) => p.tipoPago === 'anual' || Number(p.mes) === 0); }
 async function api(url, options = {}) { if (!client) throw new Error('Supabase no está configurado.'); const session = await client.auth.getSession(); const token = session.data?.session?.access_token; if (!token) throw new Error('Sesión no disponible.'); const response = await fetch(url, { ...options, headers: { authorization: `Bearer ${token}`, ...(options.skipContentType ? {} : { 'content-type': 'application/json; charset=utf-8' }), ...(options.headers || {}) } }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || 'Error de solicitud.'); return data; }
 function getMember(id) { return state.miembros.find((m) => String(m.id) === String(id)); }
+function getPaymentById(id) { for (const member of state.miembros) { const payment = (member.pagos || []).find((item) => String(item.id) === String(id)); if (payment) return { member, payment }; } return null; }
 function option(value, current, label) { return `<option value="${value}" ${String(current || '') === value ? 'selected' : ''}>${label}</option>`; }
 function initials(name = '') { const parts = String(name).trim().split(/\s+/).slice(0, 2); return parts.map((p) => p[0] || '').join('').toUpperCase() || 'N'; }
 function labelPaymentStatus(status) { return { al_dia: 'Al día', atrasado: 'Atrasado', parcial: 'Parcial', pagada_anual: 'Pagada anual', exento: 'Exento' }[status] || 'Parcial'; }

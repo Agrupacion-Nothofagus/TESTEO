@@ -67,7 +67,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     menu.className = 'cuotas-status-menu';
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
-      <button type="button" data-status-choice="pagado">${dot.dataset.cuotasPaymentId ? 'Pago registrado' : 'Registrar pago'}</button>
+      <button type="button" data-status-choice="${dot.dataset.cuotasPaymentId ? 'editar_pago' : 'pagado'}">${dot.dataset.cuotasPaymentId ? 'Editar pago registrado' : 'Registrar pago'}</button>
       <button type="button" data-status-choice="pendiente">Pendiente</button>
       <button type="button" data-status-choice="atrasado">Atrasado</button>
       <button type="button" data-status-choice="sin_registro">N/A</button>
@@ -95,15 +95,20 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       openDetails(info);
       return;
     }
+    if (choice === 'editar_pago') {
+      const dot = activeDot;
+      const info = getDotInfo(dot);
+      closeMenu();
+      window.dispatchEvent(new CustomEvent('nothofagus:cuotas-edit-payment', {
+        detail: { paymentId: dot.dataset.cuotasPaymentId || '', memberId: info.memberId, month: info.month, anio: info.anio }
+      }));
+      return;
+    }
     if (!STATUS_CLASSES.includes(choice)) return closeMenu();
     if (choice === 'pagado') {
       const dot = activeDot;
       const info = getDotInfo(dot);
       closeMenu();
-      if (dot.dataset.cuotasPaymentId) {
-        showStatus(`${info.mesLabel} ya tiene un pago registrado. Puedes revisarlo en el historial.`, true);
-        return;
-      }
       forwardingPaymentClick = true;
       dot.click();
       forwardingPaymentClick = false;

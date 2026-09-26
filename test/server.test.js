@@ -259,6 +259,75 @@ test('Cuotas rechaza un pago mensual duplicado antes de insertarlo', async () =>
   }
 });
 
+test('Cuotas permite editar un pago real sin duplicarlo ni borrar su comprobante', async () => {
+  const module = await import('../functions/api/cuotas-miembros.js');
+  const originalFetch = globalThis.fetch;
+  let updatedPayload;
+  const currentPayment = {
+    id: 'pago-1',
+    member_id: 'miembro-1',
+    mes: 7,
+    anio: 2026,
+    monto: 10000,
+    fecha_pago: '2026-07-17',
+    metodo_pago: 'transferencia',
+    observacion: 'Pago original',
+    tipo_pago: 'mensual',
+    comprobante_path: 'cuotas/2026/comprobante.pdf',
+    comprobante_nombre: 'comprobante.pdf',
+    comprobante_tipo: 'application/pdf',
+    comprobante_tamano: 2048,
+    creado_por: 'Tesorería',
+    created_at: '2026-07-17T12:00:00Z'
+  };
+
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.endsWith('/auth/v1/user')) {
+      return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero', nombre: 'Tesorería' } });
+    }
+    if (target.includes('/tesoreria_cuotas_pagos?id=eq.pago-1&select=*&limit=1')) {
+      return Response.json([currentPayment]);
+    }
+    if (target.includes('/tesoreria_cuotas_miembros?id=eq.miembro-1')) {
+      return Response.json([{ id: 'miembro-1', nombre: 'Francisco Rubilar', cuota_mensual: 10000 }]);
+    }
+    if (target.includes('/tesoreria_cuotas_pagos?select=id&member_id=eq.miembro-1&anio=eq.2026&tipo_pago=eq.mensual&mes=eq.7')) {
+      return Response.json([{ id: 'pago-1' }]);
+    }
+    if (target.includes('/tesoreria_cuotas_pagos?id=eq.pago-1') && options.method === 'PATCH') {
+      updatedPayload = JSON.parse(options.body);
+      return Response.json([{ ...currentPayment, ...updatedPayload }]);
+    }
+    if (target.includes('/storage/v1/object/sign/tesoreria-comprobantes/')) {
+      return Response.json({ signedURL: '/object/sign/tesoreria-comprobantes/comprobante.pdf?token=prueba' });
+    }
+    return Response.json({ message: `Ruta inesperada: ${target}` }, { status: 500 });
+  };
+
+  try {
+    const response = await module.onRequest({
+      request: new Request('http://localhost/api/cuotas-miembros', {
+        method: 'PATCH',
+        headers: { authorization: 'Bearer token-tesoreria', 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'payment', id: 'pago-1', member_id: 'miembro-1', tipo_pago: 'mensual', mes: 7, anio: 2026, monto: 12000, fecha_pago: '2026-07-18', metodo_pago: 'deposito', observacion: 'Monto corregido' })
+      }),
+      env: { SUPABASE_URL: 'https://proyecto-prueba.supabase.co', SUPABASE_ADMIN_KEY: 'sb_secret_prueba' }
+    });
+
+    const result = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(updatedPayload.monto, 12000);
+    assert.equal(updatedPayload.metodo_pago, 'deposito');
+    assert.equal(updatedPayload.observacion, 'Monto corregido');
+    assert.equal(updatedPayload.comprobante_path, undefined);
+    assert.equal(updatedPayload.creado_por, undefined);
+    assert.equal(result.pago.comprobantePath, currentPayment.comprobante_path);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('Los cambios manuales de estado se guardan como auditoría sin monto contable', async () => {
   const module = await import('../functions/api/cuotas-estados.js');
   const originalFetch = globalThis.fetch;

@@ -28,7 +28,7 @@ export async function onRequest({ request, env }) {
 
     if (request.method === 'GET') return await listCuotas(request, cfg, user, permisos);
     if (request.method === 'POST') return await createRecord(request, cfg, user, permisos);
-    if (request.method === 'PATCH') return await updateMember(request, cfg, user, permisos);
+    if (request.method === 'PATCH') return await updateRecord(request, cfg, user, permisos);
     if (request.method === 'DELETE') return await deletePayment(request, cfg, permisos);
 
     return reply({ error: 'Método no permitido.' }, 405);
@@ -109,10 +109,20 @@ async function createMember(fields, cfg, user) {
   return reply({ miembro: fromMemberDb(Array.isArray(data) ? data[0] : data) }, 201);
 }
 
-async function updateMember(request, cfg, user, permisos) {
-  if (!permisos.write) throw fail('Solo administración o tesorería pueden editar miembros.', 403);
+async function updateRecord(request, cfg, user, permisos) {
+  if (!permisos.write) throw fail('Solo administración o tesorería pueden editar registros.', 403);
 
-  const body = await request.json().catch(() => ({}));
+  const contentType = String(request.headers.get('content-type') || '').toLowerCase();
+  const isMultipart = contentType.includes('multipart/form-data');
+  const { fields, file } = isMultipart ? await readMultipart(request) : { fields: await request.json().catch(() => ({})), file: null };
+  const action = limpiar(fields.action || fields.tipo_registro || 'member');
+
+  if (action === 'payment') return updatePayment(fields, file, cfg, user);
+  return updateMember(fields, cfg, user, permisos);
+}
+
+async function updateMember(body, cfg, user, permisos) {
+  if (!permisos.write) throw fail('Solo administración o tesorería pueden editar miembros.', 403);
   const id = limpiar(body.id);
   if (!id) throw fail('Falta el ID del miembro.', 400);
 
@@ -153,15 +163,60 @@ async function createPayment(fields, file, cfg, user) {
   return reply({ pago: await fromPaymentDb(Array.isArray(data) ? data[0] : data, cfg) }, 201);
 }
 
-async function rejectDuplicatePayment(cfg, payment) {
+async function updatePayment(fields, file, cfg, user) {
+  const id = limpiar(fields.id || fields.payment_id || fields.paymentId);
+  if (!id) throw fail('Falta el ID del pago.', 400);
+
+  const current = await getPaymentById(cfg, id);
+  const memberId = limpiar(fields.member_id || fields.memberId || current.member_id);
+  const member = await getMemberById(cfg, memberId);
+  const normalized = paymentToDb(fields, user, null, member);
+  await rejectDuplicatePayment(cfg, normalized, id);
+
+  const payload = {
+    member_id: normalized.member_id,
+    mes: normalized.mes,
+    anio: normalized.anio,
+    monto: normalized.monto,
+    fecha_pago: normalized.fecha_pago,
+    metodo_pago: normalized.metodo_pago,
+    observacion: normalized.observacion,
+    tipo_pago: normalized.tipo_pago,
+    actualizado_por: normalized.actualizado_por,
+    updated_at: normalized.updated_at
+  };
+  const archivo = file ? await uploadComprobante(cfg, file, normalized.anio) : null;
+  if (archivo) Object.assign(payload, archivo);
+
+  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(() => []);
+  if (!res.ok) {
+    if (archivo?.comprobante_path) await deleteStorageObject(cfg, archivo.comprobante_path).catch(() => null);
+    throw fail(data.message || 'No fue posible actualizar el pago.', res.status);
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) throw fail('Pago no encontrado.', 404);
+  if (archivo?.comprobante_path && current.comprobante_path && current.comprobante_path !== archivo.comprobante_path) {
+    await deleteStorageObject(cfg, current.comprobante_path).catch(() => null);
+  }
+  return reply({ pago: await fromPaymentDb(row, cfg) });
+}
+
+async function rejectDuplicatePayment(cfg, payment, excludeId = '') {
   const memberId = encodeURIComponent(payment.member_id);
   const year = encodeURIComponent(payment.anio);
   const type = encodeURIComponent(payment.tipo_pago);
   const monthFilter = payment.tipo_pago === 'anual' ? '' : `&mes=eq.${encodeURIComponent(payment.mes)}`;
-  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?select=id&member_id=eq.${memberId}&anio=eq.${year}&tipo_pago=eq.${type}${monthFilter}&limit=1`);
+  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?select=id&member_id=eq.${memberId}&anio=eq.${year}&tipo_pago=eq.${type}${monthFilter}&limit=2`);
   const data = await res.json().catch(() => []);
   if (!res.ok) throw fail(data.message || 'No fue posible verificar si el pago ya existe.', res.status);
-  if (Array.isArray(data) && data.length) {
+  const duplicate = Array.isArray(data) && data.some((item) => String(item.id) !== String(excludeId || ''));
+  if (duplicate) {
     const period = payment.tipo_pago === 'anual' ? `el año ${payment.anio}` : `el mes ${payment.mes} de ${payment.anio}`;
     throw fail(`Ya existe un pago registrado para ${period}.`, 409);
   }
@@ -318,6 +373,15 @@ async function getMemberById(cfg, id) {
   if (!res.ok) throw fail(data.message || 'No fue posible revisar el miembro.', res.status);
   const item = Array.isArray(data) ? data[0] : data;
   if (!item) throw fail('Miembro no encontrado.', 404);
+  return item;
+}
+
+async function getPaymentById(cfg, id) {
+  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw fail(data.message || 'No fue posible revisar el pago.', res.status);
+  const item = Array.isArray(data) ? data[0] : data;
+  if (!item) throw fail('Pago no encontrado.', 404);
   return item;
 }
 
