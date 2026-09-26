@@ -462,6 +462,163 @@ table th {
   }
 }
 
+/*
+ * Capa final del shell móvil. Algunos temas históricos del panel también
+ * definen el sidebar entre 920 y 980 px y lo convierten en una sección
+ * relativa. Con zoom del navegador esas reglas se mezclaban con el menú
+ * móvil, expandían los enlaces y dejaban texto claro sobre fondo claro.
+ */
+@media (max-width: 920px) {
+  html body .admin-dashboard {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html body #admin-sidebar.admin-sidebar {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    z-index: 120 !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+    margin: 0 !important;
+    padding: 9px var(--admin-shell-gutter) !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 0 16px 16px !important;
+    background: #0d2f20 !important;
+    color: #fffdf2 !important;
+    box-shadow: 0 8px 30px rgba(10, 38, 25, 0.28) !important;
+  }
+
+  html body #admin-sidebar.admin-sidebar.is-mobile-open {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  #admin-sidebar .sidebar-brand {
+    width: 100% !important;
+    max-width: 100% !important;
+    color: #fffdf2 !important;
+  }
+
+  #admin-sidebar .sidebar-brand p,
+  #admin-sidebar .sidebar-brand h1 {
+    color: inherit !important;
+  }
+
+  #admin-sidebar .sidebar-nav,
+  #admin-sidebar .sidebar-footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  #admin-sidebar.is-mobile-open .sidebar-nav,
+  #admin-sidebar.is-mobile-open .sidebar-footer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  #admin-sidebar.is-mobile-open .sidebar-nav {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+    max-height: none !important;
+    margin: 14px 0 0 !important;
+    padding: 8px 0 16px !important;
+    overflow: visible !important;
+  }
+
+  #admin-sidebar.is-mobile-open .sidebar-footer {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+    margin: 8px 0 0 !important;
+    padding: 0 0 16px !important;
+  }
+
+  #admin-sidebar .sidebar-link,
+  #admin-sidebar .publicaciones-sidebar-toggle,
+  #admin-sidebar .members-sidebar-toggle,
+  #admin-sidebar .tesoreria-sidebar-toggle,
+  #admin-sidebar .actas-sidebar-toggle,
+  #admin-sidebar .sidebar-site-link,
+  #admin-sidebar .sidebar-logout {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+    font-size: clamp(0.82rem, 2.8vw, 0.94rem) !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #admin-sidebar .sidebar-link,
+  #admin-sidebar .publicaciones-sidebar-toggle,
+  #admin-sidebar .members-sidebar-toggle,
+  #admin-sidebar .tesoreria-sidebar-toggle,
+  #admin-sidebar .actas-sidebar-toggle {
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    gap: 10px !important;
+    color: #fffdf2 !important;
+    text-align: left !important;
+  }
+
+  #admin-sidebar .sidebar-link.is-active,
+  #admin-sidebar .sidebar-link:hover,
+  #admin-sidebar .publicaciones-sidebar-toggle.is-active,
+  #admin-sidebar .members-sidebar-toggle.is-active,
+  #admin-sidebar .tesoreria-sidebar-toggle.is-active,
+  #admin-sidebar .actas-sidebar-toggle.is-active {
+    background: #477f4c !important;
+    color: #ffffff !important;
+  }
+
+  #admin-sidebar .sidebar-site-link,
+  #admin-sidebar .sidebar-logout {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #fffdf2 !important;
+    text-align: center !important;
+  }
+
+  html body .admin-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-top: 68px !important;
+  }
+
+  html body .admin-header {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
 @media (max-width: 680px) {
   .admin-header {
     grid-template-columns: 1fr !important;
