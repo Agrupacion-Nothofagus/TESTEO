@@ -19,6 +19,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   window.addEventListener('hashchange', scheduleRender);
   window.addEventListener('storage', scheduleRender);
   window.addEventListener('nothofagus:cuotas-status-changed', scheduleRender);
+  window.addEventListener('nothofagus:cuotas-payment-changed', scheduleRender);
   window.addEventListener('nothofagus:cuotas-manual-status-calculated', scheduleRender);
   window.addEventListener('nothofagus:tesoreria-updated', scheduleRender);
   document.addEventListener('nothofagus:cuotas-status-changed', scheduleRender);

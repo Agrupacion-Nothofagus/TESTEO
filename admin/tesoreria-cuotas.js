@@ -313,7 +313,7 @@ function renderMonthCell(member, month) {
   const status = getMonthStatus(member, month);
   const payment = getMonthPayment(member, month);
   const title = `${monthNames[month]} · ${labelMonthStatus(status)}${payment ? ` · ${formatCLP(payment.monto)} · ${formatDate(payment.fechaPago)}${payment.comprobanteUrl ? ' · Con comprobante' : ''}` : ''}`;
-  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}" data-month="${month}"` : ''}></button></td>`;
+  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${payment?.id ? `data-cuotas-payment-id="${escapeAttr(payment.id)}"` : ''} ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}" data-month="${month}"` : ''}></button></td>`;
 }
 
 function renderActions(member, write) {
@@ -460,7 +460,8 @@ async function saveMemberForm(event) {
 async function savePaymentForm(event) {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
-  try { setStatus('Registrando pago...', true); await api(API_URL, { method: 'POST', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); setStatus('Pago registrado correctamente.', true); } catch (error) { setStatus(error.message || 'No fue posible registrar el pago.', false); }
+  const detail = { memberId: String(formData.get('member_id') || ''), month: Number(formData.get('mes') || 0), anio: Number(formData.get('anio') || state.anio), tipoPago: String(formData.get('tipo_pago') || 'mensual') };
+  try { setStatus('Registrando pago...', true); await api(API_URL, { method: 'POST', body: formData, skipContentType: true }); closeModal(); await loadCuotas(true); notifyPaymentChange('saved', detail); setStatus('Pago registrado correctamente y actualizado en Tesorería General.', true); } catch (error) { setStatus(error.message || 'No fue posible registrar el pago.', false); }
 }
 
 function syncPaymentTypeAmount(event) {
@@ -473,7 +474,7 @@ function syncPaymentTypeAmount(event) {
 
 async function markAnnualPayment(member) {
   if (!member || !confirm(`¿Registrar cuota anual para ${member.nombre}?`)) return;
-  try { await api(API_URL, { method: 'POST', body: JSON.stringify({ action: 'payment', member_id: member.id, tipo_pago: 'anual', mes: 1, anio: state.anio, monto: Math.max(Number(member.saldoPendiente || 0), Number(member.cuotaAnualEsperada || 0)), fecha_pago: new Date().toISOString().slice(0, 10), metodo_pago: 'transferencia', observacion: 'Cuota anual registrada desde el panel.' }) }); await loadCuotas(true); setStatus('Cuota anual registrada correctamente.', true); } catch (error) { setStatus(error.message || 'No fue posible registrar cuota anual.', false); }
+  try { await api(API_URL, { method: 'POST', body: JSON.stringify({ action: 'payment', member_id: member.id, tipo_pago: 'anual', mes: 1, anio: state.anio, monto: Math.max(Number(member.saldoPendiente || 0), Number(member.cuotaAnualEsperada || 0)), fecha_pago: new Date().toISOString().slice(0, 10), metodo_pago: 'transferencia', observacion: 'Cuota anual registrada desde el panel.' }) }); await loadCuotas(true); notifyPaymentChange('saved', { memberId: member.id, month: 0, anio: state.anio, tipoPago: 'anual' }); setStatus('Cuota anual registrada correctamente y actualizada en Tesorería General.', true); } catch (error) { setStatus(error.message || 'No fue posible registrar cuota anual.', false); }
 }
 
 async function markInactive(member) {
@@ -481,7 +482,11 @@ async function markInactive(member) {
   try { await api(API_URL, { method: 'PATCH', body: JSON.stringify({ id: member.id, nombre: member.nombre, correo: member.correo, rut: member.rut, telefono: member.telefono, estado_miembro: member.estadoMiembro, estado_cuenta: 'inactivo', cuota_mensual: member.cuotaMensual, anio: member.anio || state.anio, observaciones: member.observaciones, exento: member.exento }) }); await loadCuotas(true); setStatus('Integrante marcado como inactivo.', true); } catch (error) { setStatus(error.message || 'No fue posible actualizar integrante.', false); }
 }
 
-async function deletePayment(id) { if (!id || !confirm('¿Eliminar este pago?')) return; try { await api(`${API_URL}?payment_id=${encodeURIComponent(id)}`, { method: 'DELETE' }); closeModal(); await loadCuotas(true); setStatus('Pago eliminado correctamente.', true); } catch (error) { setStatus(error.message || 'No fue posible eliminar el pago.', false); } }
+async function deletePayment(id) { if (!id || !confirm('¿Eliminar este pago?')) return; try { await api(`${API_URL}?payment_id=${encodeURIComponent(id)}`, { method: 'DELETE' }); closeModal(); await loadCuotas(true); notifyPaymentChange('deleted', { paymentId: id, anio: state.anio }); setStatus('Pago eliminado correctamente y actualizado en Tesorería General.', true); } catch (error) { setStatus(error.message || 'No fue posible eliminar el pago.', false); } }
+
+function notifyPaymentChange(action, detail = {}) {
+  window.dispatchEvent(new CustomEvent('nothofagus:cuotas-payment-changed', { detail: { action, ...detail } }));
+}
 
 function exportExcel() {
   const items = getFilteredMembers();

@@ -13,6 +13,7 @@
 
   let activeDot = null;
   let menu = null;
+  let forwardingPaymentClick = false;
 
   loadStyles();
   applyOverridesSoon();
@@ -24,6 +25,7 @@
       closeDetails();
     }
   });
+  window.addEventListener('nothofagus:cuotas-payment-changed', clearSavedPaymentOverride);
 
   const observer = new MutationObserver(() => applyOverridesSoon());
   const startObserver = () => {
@@ -58,6 +60,7 @@
 
     const dot = event.target.closest?.('#tesoreria-cuotas-view [data-cuotas-payment-month]');
     if (dot) {
+      if (forwardingPaymentClick) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       openMenu(dot);
@@ -74,7 +77,7 @@
     menu.className = 'cuotas-status-menu';
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
-      <button type="button" data-status-choice="pagado">Pagado</button>
+      <button type="button" data-status-choice="pagado">${dot.dataset.cuotasPaymentId ? 'Pago registrado' : 'Registrar pago'}</button>
       <button type="button" data-status-choice="pendiente">Pendiente</button>
       <button type="button" data-status-choice="atrasado">Atrasado</button>
       <button type="button" data-status-choice="sin_registro">N/A</button>
@@ -105,6 +108,26 @@
       return;
     }
     if (!STATUS_CLASSES.includes(choice)) return closeMenu();
+    if (choice === 'pagado') {
+      const dot = activeDot;
+      const info = getDotInfo(dot);
+      closeMenu();
+      if (dot.dataset.cuotasPaymentId) {
+        showStatus(`${info.mesLabel} ya tiene un pago registrado. Puedes revisarlo en el historial.`, true);
+        return;
+      }
+      removeOverride(info);
+      forwardingPaymentClick = true;
+      dot.click();
+      forwardingPaymentClick = false;
+      return;
+    }
+    if (activeDot.dataset.cuotasPaymentId) {
+      const info = getDotInfo(activeDot);
+      showStatus(`${info.mesLabel} tiene un pago real. Elimínalo desde el historial antes de cambiar su estado.`, false);
+      closeMenu();
+      return;
+    }
     applyStatus(activeDot, choice, true);
     closeMenu();
   }
@@ -135,6 +158,22 @@
     }
   }
 
+  function removeOverride(info) {
+    const overrides = readOverrides();
+    delete overrides[makeKey(info.memberId, info.anio, info.month)];
+    writeOverrides(overrides);
+    info.dot?.classList.remove('is-manual-status');
+    delete info.dot?.dataset?.manualStatus;
+  }
+
+  function clearSavedPaymentOverride(event) {
+    const detail = event.detail || {};
+    if (detail.action !== 'saved' || detail.tipoPago === 'anual' || !detail.memberId || !detail.month) return;
+    const overrides = readOverrides();
+    delete overrides[makeKey(detail.memberId, detail.anio, detail.month)];
+    writeOverrides(overrides);
+  }
+
   function applyOverridesSoon() {
     window.clearTimeout(applyOverridesSoon.timer);
     applyOverridesSoon.timer = window.setTimeout(applyOverrides, 80);
@@ -143,6 +182,7 @@
   function applyOverrides() {
     const overrides = readOverrides();
     document.querySelectorAll('#tesoreria-cuotas-view [data-cuotas-payment-month]').forEach((dot) => {
+      if (dot.dataset.cuotasPaymentId) return;
       const info = getDotInfo(dot);
       const status = overrides[makeKey(info.memberId, info.anio, info.month)];
       if (STATUS_CLASSES.includes(status)) applyStatus(dot, status, false);

@@ -10,6 +10,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   const DELETED_QUOTAS_KEY = 'nothofagus_cuotas_ingresos_eliminados_v1';
   let cache = { general: [], cuotas: [], cuotasEliminadas: [] };
   let loading = false;
+  let refreshPending = false;
 
   loadStyle();
   observeTreasury();
@@ -18,6 +19,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   document.addEventListener('DOMContentLoaded', queueRefresh);
   window.addEventListener('hashchange', queueRefresh);
   window.addEventListener('nothofagus:tesoreria-updated', queueRefresh);
+  window.addEventListener('nothofagus:cuotas-payment-changed', queueRefresh);
   document.addEventListener('click', (event) => {
     if (event.target.closest?.('[data-tesoreria-open], [data-tesoreria-go]')) window.setTimeout(queueRefresh, 160);
     if (event.target.closest?.('[data-tesoreria-clear]')) window.setTimeout(queueRender, 0);
@@ -59,7 +61,10 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   }
 
   async function refreshData() {
-    if (loading) return;
+    if (loading) {
+      refreshPending = true;
+      return;
+    }
     if (!document.querySelector('#tesoreria-movimientos-view, #tesoreria-general-view')) return;
     try {
       loading = true;
@@ -80,6 +85,10 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       renderCuotasAsIncome();
     } finally {
       loading = false;
+      if (refreshPending) {
+        refreshPending = false;
+        queueRefresh();
+      }
     }
   }
 

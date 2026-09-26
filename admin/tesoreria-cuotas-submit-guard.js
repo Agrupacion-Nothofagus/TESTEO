@@ -22,7 +22,7 @@
     if (tipoPago !== 'mensual' || !memberId || !mes) return;
 
     const dot = document.querySelector(`[data-cuotas-payment-month="${cssEscape(memberId)}"][data-month="${mes}"]`);
-    if (!dot?.classList?.contains('pagado')) return;
+    if (!dot?.dataset?.cuotasPaymentId) return;
 
     event.preventDefault();
     event.stopImmediatePropagation();
