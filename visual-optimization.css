@@ -131,7 +131,7 @@ main:not(.admin-dashboard) {
 }
 
 .hero {
-  min-height: min(100svh, 920px) !important;
+  min-height: 100svh !important;
 }
 
 .hero-content {
