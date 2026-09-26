@@ -101,6 +101,14 @@ body {
   box-shadow: var(--admin-shell-shadow) !important;
 }
 
+/* An older theme draws one inset frame over the complete dashboard. Its
+   vertical edges overlap every card, so the frame must not participate in
+   the final responsive layout. */
+#dashboard-view .dashboard-panel::before {
+  content: none !important;
+  display: none !important;
+}
+
 .admin-panel,
 .members-card,
 .tesoreria-panel,
