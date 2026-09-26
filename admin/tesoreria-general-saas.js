@@ -114,8 +114,9 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
     const deletedQuotaMap = readJson(DELETED_QUOTAS_KEY, {});
     const quotaRowsAll = buildQuotaPaymentRows(quotasData, year);
     const activeQuotaRows = quotaRowsAll;
+    const activeQuotaIds = new Set(activeQuotaRows.map((row) => String(row.sourceId)));
     const deletedQuotaRows = Object.values(deletedQuotaMap)
-      .filter((row) => row && Number(row.anio || getYear(row.fecha)) === year)
+      .filter((row) => row && Number(row.anio || getYear(row.fecha)) === year && !activeQuotaIds.has(String(row.sourceId)))
       .map((row) => ({ ...row, eliminado: true, source: 'Cuota eliminada', sourceKind: 'cuota' }));
     const realPaymentKeys = new Set(activeQuotaRows.map((row) => row.paymentKey));
     const provisionalRows = buildProvisionalRows(quotasData, realPaymentKeys, deletedQuotaMap, year);

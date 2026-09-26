@@ -102,7 +102,8 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const deleted = readDeletedQuotaRows();
       cache.general = Array.isArray(generalData.movimientos) ? generalData.movimientos.filter(Boolean) : [];
       cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData);
-      cache.cuotasEliminadas = Object.values(deleted).filter((item) => item && Number(item.anio || year) === year);
+      const activeIds = new Set(cache.cuotas.map((item) => String(item.sourceId)));
+      cache.cuotasEliminadas = Object.values(deleted).filter((item) => item && Number(item.anio || year) === year && !activeIds.has(String(item.sourceId)));
       cache.estados = statusChangesToRows(statusData);
       renderCuotasAsIncome();
     } finally {
