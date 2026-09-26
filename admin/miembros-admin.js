@@ -4,7 +4,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const MEMBER_STATUS = ['pendiente', 'contactado', 'rechazado', 'miembro'];
 const MEMBER_STATUS_LABELS = {
-  pendiente: 'Pendiente',
+  pendiente: 'Nuevo',
   contactado: 'Contactado',
   rechazado: 'Rechazado',
   miembro: 'Miembro'
@@ -59,6 +59,18 @@ function installMemberAdmin() {
     };
     bar.addEventListener('input', handler);
     bar.addEventListener('change', handler);
+  });
+
+  document.querySelectorAll('[data-members-clear-filters]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const view = button.closest('[data-member-status-view]');
+      view?.querySelectorAll('[data-member-filter]').forEach((field) => {
+        field.value = '';
+      });
+      resetActiveLimit();
+      renderActiveView();
+      view?.querySelector('[data-member-filter="nombre"]')?.focus();
+    });
   });
 
   document.addEventListener('click', async (event) => {
@@ -163,6 +175,8 @@ function renderActiveView() {
   if (statusBox) statusBox.textContent = '';
   if (!list) return;
 
+  updateViewSummary(view, filtered.length);
+
   if (!filtered.length) {
     list.innerHTML = emptyState(statusView);
     return;
@@ -173,7 +187,7 @@ function renderActiveView() {
   const remaining = Math.max(filtered.length - visible.length, 0);
   const body = statusView === 'miembro'
     ? visible.map(renderMember).join('')
-    : visible.map((item) => renderSolicitud(item, statusView)).join('');
+    : visible.map((item) => renderSolicitud(item, item.estado)).join('');
 
   list.innerHTML = body + renderLoadMore(statusView, remaining, filtered.length);
 }
@@ -192,14 +206,45 @@ function getFilteredItems(view, statusView) {
   const filters = getFilters(view);
 
   return solicitudes
-    .filter((item) => item.estado === statusView)
+    .filter((item) => statusView === 'contactado'
+      ? item.estado === 'pendiente' || item.estado === 'contactado'
+      : item.estado === statusView)
     .filter((item) => {
-      const nombreOk = !filters.nombre || item.nombre.toLowerCase().includes(filters.nombre);
+      const nombreOk = !filters.nombre || String(item.nombre || '').toLowerCase().includes(filters.nombre);
       const categoriaOk = !filters.categoria || item.categoria_socio === filters.categoria;
-      const estadoOk = !filters.estado || item.estado === filters.estado;
-      const fechaOk = !filters.fecha || normalizeDate(item.created_at) === filters.fecha;
+      const estadoActual = statusView === 'miembro' ? item.estado_socio : item.estado;
+      const estadoOk = !filters.estado || estadoActual === filters.estado;
+      const fechaBase = statusView === 'miembro'
+        ? item.fecha_ingreso || item.updated_at || item.created_at
+        : item.created_at;
+      const fechaOk = !filters.fecha || normalizeDate(fechaBase) === filters.fecha;
       return nombreOk && categoriaOk && estadoOk && fechaOk;
     });
+}
+
+function updateViewSummary(view, visibleCount) {
+  const statusView = view.dataset.memberStatusView;
+  const members = solicitudes.filter((item) => item.estado === 'miembro');
+  const counts = {
+    total: members.length,
+    activo: members.filter((item) => item.estado_socio === 'activo').length,
+    inactivo: members.filter((item) => item.estado_socio === 'inactivo').length,
+    suspendido: members.filter((item) => item.estado_socio === 'suspendido').length,
+    pendiente: solicitudes.filter((item) => item.estado === 'pendiente').length,
+    contactado: solicitudes.filter((item) => item.estado === 'contactado').length
+  };
+  counts.seguimiento = counts.pendiente + counts.contactado;
+
+  view.querySelectorAll('[data-member-summary]').forEach((element) => {
+    const key = element.dataset.memberSummary;
+    if (Object.hasOwn(counts, key)) element.textContent = String(counts[key]);
+  });
+
+  const result = view.querySelector('[data-members-result-count]');
+  if (result) {
+    const label = statusView === 'miembro' ? 'miembro' : 'contacto';
+    result.textContent = `${visibleCount} ${label}${visibleCount === 1 ? '' : 's'} en esta vista`;
+  }
 }
 
 function getFilters(view) {
@@ -249,14 +294,14 @@ function renderSolicitud(item, statusView) {
 function renderMember(item) {
   return `
     <article class="member-row-card" data-member-card="${escapeAttr(item.id)}">
-      <button type="button" class="member-row-summary" data-toggle-member-detail="${escapeAttr(item.id)}" aria-expanded="false">
-        <span>${escapeHTML(item.nombre)}</span>
-        <span>${escapeHTML(item.edad || '—')}</span>
-        <span>${escapeHTML(item.telefono)}</span>
-        <span>${escapeHTML(item.correo)}</span>
-        <span>${escapeHTML(item.categoria_socio || '—')}</span>
-        <span>${formatDate(item.fecha_ingreso || item.updated_at || item.created_at)}</span>
-        <span>${escapeHTML(labelSocioStatus(item.estado_socio))}</span>
+      <button type="button" class="member-row-summary" data-toggle-member-detail="${escapeAttr(item.id)}" aria-expanded="false" aria-label="Ver detalle de ${escapeAttr(item.nombre)}">
+        <span class="member-cell-name">${escapeHTML(item.nombre)}</span>
+        <span class="member-cell-age">${escapeHTML(item.edad || '—')}</span>
+        <span class="member-cell-phone">${escapeHTML(item.telefono)}</span>
+        <span class="member-cell-email">${escapeHTML(item.correo)}</span>
+        <span class="member-cell-category">${escapeHTML(item.categoria_socio || '—')}</span>
+        <span class="member-cell-date">${formatDate(item.fecha_ingreso || item.updated_at || item.created_at)}</span>
+        <span class="member-cell-status is-${escapeAttr(item.estado_socio)}">${escapeHTML(labelSocioStatus(item.estado_socio))}</span>
       </button>
 
       <div class="member-extra" data-member-extra="${escapeAttr(item.id)}">
@@ -340,7 +385,7 @@ function renderActions(status, id) {
       ['miembro', 'Aceptar como miembro']
     ],
     contactado: [
-      ['pendiente', 'Volver a pendiente'],
+      ['pendiente', 'Marcar como nuevo'],
       ['rechazado', 'Rechazar'],
       ['miembro', 'Aceptar como miembro']
     ],
@@ -468,6 +513,10 @@ function updateCounters() {
       counter.textContent = value;
     });
   });
+
+  document.querySelectorAll('[data-member-counter="contactado"]').forEach((counter) => {
+    counter.textContent = String(counts.contactado + counts.pendiente);
+  });
 }
 
 function setLoadingState(message) {
@@ -494,7 +543,7 @@ function showActiveStatus(message, ok) {
 function emptyState(status) {
   const text = {
     pendiente: 'No hay solicitudes pendientes.',
-    contactado: 'No hay solicitudes contactadas.',
+    contactado: 'No hay solicitudes nuevas ni contactos en seguimiento.',
     rechazado: 'No hay solicitudes rechazadas.',
     miembro: 'No hay miembros registrados.'
   }[status] || 'No hay registros disponibles.';

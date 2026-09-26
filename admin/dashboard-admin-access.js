@@ -104,7 +104,7 @@ function observeSidebarForRestrictedItems(secretariado) {
 
 function openFallbackView(rol) {
   const candidates = rol === 'gestor_miembros' || rol === 'secretariado' || rol === 'secretaria' || rol === 'secretario'
-    ? ['members-pending-view', 'members-list-view', 'registro-actas-view', 'crear-acta-view']
+    ? ['members-list-view', 'members-contacted-view', 'registro-actas-view', 'crear-acta-view']
     : ['gestion-view', 'nueva-view'];
 
   for (const viewId of candidates) {

@@ -160,7 +160,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     setText('[data-dashboard-total="tesoreria-egresos"]', money(model.expenseManual));
     setText('[data-dashboard-total="tesoreria-saldo"]', money(model.balance));
     setText('[data-dashboard-total="usuarios"]', model.users.length || '—');
-    setText('[data-dashboard-pending-note]', `${model.pendingMembers.filter((item) => item.estado === 'pendiente').length} pendientes · ${model.pendingMembers.filter((item) => item.estado === 'contactado').length} contactadas`);
+    setText('[data-dashboard-pending-note]', `${model.pendingMembers.filter((item) => item.estado === 'pendiente').length} nuevas · ${model.pendingMembers.filter((item) => item.estado === 'contactado').length} contactadas`);
     setText('[data-dashboard-balance-note]', `Cuotas pendientes: ${money(model.cuotaPending)}`);
     setText('[data-dashboard-post-note]', `${model.draftPosts.length} borradores/archivo`);
     renderFinanceChart(model);
@@ -214,7 +214,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       <div class="dashboard-reference-statusbar" style="--active:${(active / total) * 100}%;--pending:${(pending / total) * 100}%;--inactive:${(inactive / total) * 100}%"></div>
       <div class="dashboard-reference-status-grid">
         ${statusItem('Activos', active, total, 'active')}
-        ${statusItem('Pendientes', pending, total, 'pending')}
+        ${statusItem('En seguimiento', pending, total, 'pending')}
         ${statusItem('Inactivos', inactive, total, 'inactive')}
       </div>
       <footer><span>Total de miembros</span><strong>${active + inactive}</strong></footer>
@@ -245,9 +245,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
         <span>${initials(item.nombre)}</span>
         <div><strong>${esc(item.nombre || 'Solicitud')}</strong><small>${esc(item.categoria_socio || 'Solicitud de ingreso')}</small></div>
         <time>${formatShortDate(item.created_at || item.fecha_ingreso || '')}</time>
-        <button type="button" data-dashboard-open-view="members-pending-view">Revisar</button>
+        <button type="button" data-dashboard-open-view="members-contacted-view">Revisar</button>
       </article>
-    `).join('') : '<p class="dashboard-empty">No hay aprobaciones pendientes.</p>';
+    `).join('') : '<p class="dashboard-empty">No hay solicitudes por revisar.</p>';
   }
 
   function renderMilestones() {
@@ -292,7 +292,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
       if (direct) return direct.click();
       if (view === 'tesoreria-general-view') return document.querySelector('[data-tesoreria-open="general"]')?.click();
       if (view === 'tesoreria-cuotas-view') return document.querySelector('[data-tesoreria-open="cuotas"]')?.click();
-      if (view === 'members-pending-view') return document.querySelector('[data-members-open="pending"]')?.click() || document.querySelector('[data-admin-view="members-pending-view"]')?.click();
+      if (view === 'members-pending-view' || view === 'members-rejected-view') return document.querySelector('[data-admin-view="members-contacted-view"]')?.click();
       if (view === 'registro-actas-view') return document.querySelector('[data-actas-open="registro"]')?.click() || document.querySelector('[data-admin-view="registro-actas-view"]')?.click();
     });
   }
@@ -301,14 +301,14 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     return `
       <section class="dashboard-reference" aria-label="Panel de control">
         <header class="dashboard-reference-welcome"><div><h3>¡Bienvenido de vuelta, Admin! 👋</h3><p>Aquí tienes lo más importante de Nothofagus hoy.</p></div><button type="button" class="dashboard-reference-date"><span>📅</span><strong data-dashboard-current-date>—</strong></button></header>
-        <div class="dashboard-reference-kpis" aria-label="Indicadores principales">${kpiCard('👥', 'Miembros activos', 'miembros', 'Socios/as activos registrados')}${kpiCard('🧡', 'Solicitudes pendientes', 'pendientes', '', 'data-dashboard-pending-note')}${kpiCard('💳', 'Balance disponible', 'tesoreria-saldo', '', 'data-dashboard-balance-note')}${kpiCard('📄', 'Publicaciones activas', 'publicaciones', '', 'data-dashboard-post-note')}</div>
+        <div class="dashboard-reference-kpis" aria-label="Indicadores principales">${kpiCard('👥', 'Miembros activos', 'miembros', 'Socios/as activos registrados')}${kpiCard('🧡', 'Solicitudes abiertas', 'pendientes', '', 'data-dashboard-pending-note')}${kpiCard('💳', 'Balance disponible', 'tesoreria-saldo', '', 'data-dashboard-balance-note')}${kpiCard('📄', 'Publicaciones activas', 'publicaciones', '', 'data-dashboard-post-note')}</div>
         <section class="dashboard-reference-grid">
           <article class="dashboard-reference-card dashboard-reference-finance"><div class="dashboard-reference-card-head"><h4>Resumen financiero ${currentYear}</h4><span><i></i>Ingresos</span><span class="expense"><i></i>Egresos</span></div><div data-dashboard-finance-chart></div></article>
           <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Estado de membresías</h4></div><div data-dashboard-membership-status></div></article>
           <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Actividad reciente</h4></div><div class="dashboard-reference-list" data-dashboard-recent-activity></div><button type="button" class="dashboard-reference-more" data-dashboard-open-view="tesoreria-general-view">Ver toda la actividad →</button></article>
-          <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Aprobaciones pendientes</h4></div><div class="dashboard-reference-list" data-dashboard-pending-approvals></div><button type="button" class="dashboard-reference-more" data-dashboard-open-view="members-pending-view">Ver todas las pendientes →</button></article>
+          <article class="dashboard-reference-card"><div class="dashboard-reference-card-head"><h4>Solicitudes por revisar</h4></div><div class="dashboard-reference-list" data-dashboard-pending-approvals></div><button type="button" class="dashboard-reference-more" data-dashboard-open-view="members-contacted-view">Ver seguimiento →</button></article>
           <article class="dashboard-reference-card dashboard-reference-milestones-card"><div class="dashboard-reference-card-head"><h4>Próximos hitos</h4></div><div class="dashboard-reference-milestones" data-dashboard-milestones></div></article>
-          <article class="dashboard-reference-card dashboard-reference-actions-card"><div class="dashboard-reference-card-head"><h4>Acciones rápidas</h4></div><div class="dashboard-reference-actions"><button type="button" data-dashboard-open-view="nueva-view"><span>📝</span><strong>Nueva publicación</strong></button><button type="button" data-dashboard-open-view="tesoreria-general-view"><span>💳</span><strong>Registrar pago</strong></button><button type="button" data-dashboard-open-view="members-pending-view"><span>👥</span><strong>Nuevo miembro</strong></button><button type="button" data-dashboard-open-view="registro-actas-view"><span>📋</span><strong>Crear acta</strong></button></div></article>
+          <article class="dashboard-reference-card dashboard-reference-actions-card"><div class="dashboard-reference-card-head"><h4>Acciones rápidas</h4></div><div class="dashboard-reference-actions"><button type="button" data-dashboard-open-view="nueva-view"><span>📝</span><strong>Nueva publicación</strong></button><button type="button" data-dashboard-open-view="tesoreria-general-view"><span>💳</span><strong>Registrar pago</strong></button><button type="button" data-dashboard-open-view="members-list-view"><span>👥</span><strong>Nuevo miembro</strong></button><button type="button" data-dashboard-open-view="registro-actas-view"><span>📋</span><strong>Crear acta</strong></button></div></article>
           <article class="dashboard-reference-card dashboard-reference-status-card"><span>🛡️</span><div><strong>Estado del sistema</strong><small>Todos los módulos administrativos cargados correctamente.</small></div><i></i></article><article class="dashboard-reference-card dashboard-reference-status-card"><span>🕒</span><div><strong>Última actualización</strong><small data-dashboard-last-update>—</small></div><button type="button" data-dashboard-refresh>↻</button></article>
         </section>
         <article class="dashboard-widget dashboard-treasury-widget is-hidden" aria-hidden="true"><div data-dashboard-treasury-summary></div></article><div class="dashboard-list is-hidden" data-dashboard-latest-posts></div><div class="dashboard-member-summary is-hidden" data-dashboard-member-summary></div><p class="admin-status dashboard-status" data-dashboard-status>Preparando panel de control...</p>

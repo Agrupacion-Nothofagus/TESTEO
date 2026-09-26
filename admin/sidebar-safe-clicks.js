@@ -67,6 +67,10 @@
 
   function routeToView(viewId, sourceButton = null) {
     if (!viewId) return false;
+    if (viewId === 'members-pending-view' || viewId === 'members-rejected-view') {
+      viewId = 'members-contacted-view';
+      sourceButton = null;
+    }
 
     const delegatedButton = getDelegatedModuleButton(viewId);
     if (delegatedButton) {

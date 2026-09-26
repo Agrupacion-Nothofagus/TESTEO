@@ -15,6 +15,7 @@ function cargarEstilosMiembros() {
   agregarHojaEstilo('members-admin.css');
   agregarHojaEstilo('members-layout-fixes.css');
   agregarHojaEstilo('members-sidebar-dropdown.css');
+  agregarHojaEstilo('members-panel-optimized.css?v=20260924');
 }
 
 function agregarHojaEstilo(href) {
@@ -57,7 +58,7 @@ function observarSelectoresDeRol() {
 function instalarVistasMiembros() {
   const nav = document.querySelector('.sidebar-nav');
   const adminContent = document.querySelector('.admin-content');
-  if (!nav || !adminContent || document.querySelector('[data-admin-view="members-pending-view"]')) return;
+  if (!nav || !adminContent || document.querySelector('[data-admin-view="members-list-view"]')) return;
 
   const group = document.createElement('div');
   group.className = 'sidebar-member-group is-hidden';
@@ -73,17 +74,9 @@ function instalarVistasMiembros() {
         <span>👥</span>
         Miembros <strong class="member-sidebar-counter" data-member-counter="miembro">0</strong>
       </button>
-      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-pending-view" data-member-counter-key="pendiente">
-        <span>🕓</span>
-        Pendientes <strong class="member-sidebar-counter" data-member-counter="pendiente">0</strong>
-      </button>
       <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-contacted-view" data-member-counter-key="contactado">
         <span>📞</span>
         Contactados <strong class="member-sidebar-counter" data-member-counter="contactado">0</strong>
-      </button>
-      <button type="button" class="sidebar-link member-sidebar-link is-hidden" data-admin-view="members-rejected-view" data-member-counter-key="rechazado">
-        <span>🚫</span>
-        Rechazados <strong class="member-sidebar-counter" data-member-counter="rechazado">0</strong>
       </button>
     </div>
   `;
@@ -93,10 +86,8 @@ function instalarVistasMiembros() {
   toggle?.addEventListener('click', () => alternarMenuMiembros());
 
   const vistas = [
-    crearVista('members-pending-view', 'Pendientes', 'Solicitudes recién ingresadas o aún no revisadas.', 'pendiente'),
-    crearVista('members-contacted-view', 'Contactados', 'Solicitudes revisadas y personas ya contactadas.', 'contactado'),
-    crearVista('members-rejected-view', 'Rechazados', 'Solicitudes no aceptadas con observaciones del rechazo.', 'rechazado'),
-    crearVista('members-list-view', 'Miembros', 'Personas aceptadas que forman parte de la organización como socios/as.', 'miembro')
+    crearVista('members-list-view', 'Miembros', 'Nómina institucional, estado y antecedentes de socios/as.', 'miembro'),
+    crearVista('members-contacted-view', 'Contactados', 'Solicitudes nuevas y seguimiento de personas contactadas.', 'contactado')
   ];
 
   vistas.forEach((section) => adminContent.appendChild(section));
@@ -107,6 +98,7 @@ function instalarVistasMiembros() {
 }
 
 function crearVista(id, title, description, status) {
+  const esNomina = status === 'miembro';
   const section = document.createElement('section');
   section.className = 'admin-view member-admin-view';
   section.id = id;
@@ -122,6 +114,19 @@ function crearVista(id, title, description, status) {
           <p>${description}</p>
         </div>
         <button type="button" class="secondary-admin-button" data-reload-members>Actualizar</button>
+      </div>
+
+      <div class="members-summary-grid" data-members-summary aria-label="Resumen de ${esNomina ? 'miembros' : 'contactos'}">
+        ${esNomina ? `
+          <article><span>Total miembros</span><strong data-member-summary="total">0</strong><small>Nómina registrada</small></article>
+          <article><span>Activos/as</span><strong data-member-summary="activo">0</strong><small>Participación vigente</small></article>
+          <article><span>Inactivos/as</span><strong data-member-summary="inactivo">0</strong><small>Estado administrativo</small></article>
+          <article><span>Suspendidos/as</span><strong data-member-summary="suspendido">0</strong><small>Requieren revisión</small></article>
+        ` : `
+          <article><span>Nuevos</span><strong data-member-summary="pendiente">0</strong><small>Sin contacto registrado</small></article>
+          <article><span>Contactados</span><strong data-member-summary="contactado">0</strong><small>En seguimiento</small></article>
+          <article><span>Total seguimiento</span><strong data-member-summary="seguimiento">0</strong><small>Solicitudes visibles</small></article>
+        `}
       </div>
 
       <div class="members-filter-bar" data-member-filter-bar>
@@ -142,16 +147,25 @@ function crearVista(id, title, description, status) {
           Estado
           <select data-member-filter="estado">
             <option value="">Todos</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="contactado">Contactado</option>
-            <option value="rechazado">Rechazado</option>
-            <option value="miembro">Miembro</option>
+            ${esNomina ? `
+              <option value="activo">Activo/a</option>
+              <option value="inactivo">Inactivo/a</option>
+              <option value="suspendido">Suspendido/a</option>
+            ` : `
+              <option value="pendiente">Nuevo</option>
+              <option value="contactado">Contactado</option>
+            `}
           </select>
         </label>
         <label>
-          Fecha de solicitud
+          ${esNomina ? 'Fecha de ingreso' : 'Fecha de solicitud'}
           <input type="date" data-member-filter="fecha">
         </label>
+      </div>
+
+      <div class="members-list-toolbar">
+        <p data-members-result-count aria-live="polite">Preparando registros...</p>
+        <button type="button" class="members-clear-filters" data-members-clear-filters>Limpiar filtros</button>
       </div>
 
       <p class="admin-status" data-members-status></p>
@@ -181,7 +195,7 @@ async function aplicarPermisosMiembros() {
   if (esSecretariado) {
     ocultarAccesosPublicaciones();
     abrirMenuMiembros();
-    activarVista('members-pending-view');
+    activarVista('members-list-view');
   }
 }
 
@@ -195,6 +209,9 @@ function ocultarAccesosPublicaciones() {
 }
 
 function activarVista(viewId) {
+  if (viewId === 'members-pending-view' || viewId === 'members-rejected-view') {
+    viewId = 'members-contacted-view';
+  }
   const esVistaMiembros = String(viewId || '').startsWith('members-');
   if (esVistaMiembros) abrirMenuMiembros();
 
