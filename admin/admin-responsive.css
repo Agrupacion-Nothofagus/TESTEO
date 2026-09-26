@@ -1,0 +1,553 @@
+/* Responsive shell loaded last so every admin module shares one predictable layout. */
+:root {
+  --admin-shell-sidebar: 284px;
+  --admin-shell-header: 86px;
+  --admin-shell-gutter: clamp(20px, 3vw, 46px);
+  --admin-shell-radius: 16px;
+  --admin-shell-border: rgba(31, 61, 43, 0.13);
+  --admin-shell-shadow: 0 10px 30px rgba(31, 61, 43, 0.08);
+}
+
+html {
+  scroll-padding-top: calc(var(--admin-shell-header) + 18px);
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
+}
+
+.admin-dashboard,
+.admin-content,
+.admin-view,
+.admin-panel,
+.dashboard-panel,
+.members-card,
+.tesoreria-panel,
+.formularios-panel,
+.actas-panel {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.admin-content {
+  margin-left: var(--admin-shell-sidebar) !important;
+  padding-top: var(--admin-shell-header) !important;
+}
+
+.admin-sidebar {
+  width: var(--admin-shell-sidebar) !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 61, 43, 0.28) transparent;
+}
+
+.admin-header {
+  left: var(--admin-shell-sidebar) !important;
+  min-height: var(--admin-shell-header) !important;
+  padding: 17px var(--admin-shell-gutter) !important;
+  align-items: center !important;
+  border-radius: 0 !important;
+  box-shadow: 0 6px 24px rgba(31, 61, 43, 0.08) !important;
+}
+
+.admin-header > div:first-child {
+  min-width: 0;
+}
+
+.admin-header h2 {
+  margin-bottom: 3px !important;
+  font-size: clamp(1.45rem, 2.2vw, 2.05rem) !important;
+  line-height: 1.1 !important;
+}
+
+#admin-view-description {
+  max-width: 76ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-session-card {
+  min-width: 0 !important;
+  max-width: min(28vw, 260px) !important;
+  padding: 10px 14px !important;
+}
+
+.admin-session-card strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-view.is-active {
+  width: 100% !important;
+  padding: clamp(20px, 2.6vw, 36px) var(--admin-shell-gutter) 48px !important;
+}
+
+.admin-panel,
+.dashboard-widget,
+.dashboard-stat-card,
+.members-card,
+.tesoreria-panel,
+.formularios-panel,
+.actas-panel,
+.list-card,
+.editor-card,
+.users-card {
+  border-radius: var(--admin-shell-radius) !important;
+  box-shadow: var(--admin-shell-shadow) !important;
+}
+
+.admin-panel,
+.members-card,
+.tesoreria-panel,
+.formularios-panel,
+.actas-panel {
+  padding: clamp(18px, 2.3vw, 30px) !important;
+}
+
+.admin-form,
+.tesoreria-form,
+.member-form {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea,
+.tesoreria-form input,
+.tesoreria-form select,
+.tesoreria-form textarea,
+.member-form input,
+.member-form select,
+.member-form textarea {
+  min-width: 0;
+  min-height: 44px !important;
+}
+
+button,
+[role='button'],
+.secondary-admin-button,
+.sidebar-link {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid rgba(21, 137, 120, 0.38) !important;
+  outline-offset: 2px !important;
+}
+
+.admin-topbar,
+.panel-heading,
+.formularios-heading-row,
+.member-heading-row,
+.tesoreria-heading-row {
+  min-width: 0;
+}
+
+.post-admin-card,
+.member-request-card,
+.member-row-card,
+.formulario-card,
+.tesoreria-list-card,
+.actas-registro-card,
+.user-row,
+.users-admin-list article,
+.admin-record-row {
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+}
+
+.cuotas-table-card,
+.table-responsive,
+.users-table-wrap,
+.admin-table-wrap,
+.tesoreria-table-wrap,
+.actas-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto !important;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f8faf7;
+}
+
+.admin-mobile-menu-toggle,
+.admin-mobile-backdrop {
+  display: none;
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --admin-shell-sidebar: 296px;
+  }
+
+  .dashboard-stats-grid,
+  .tesoreria-summary-grid,
+  .cuotas-summary-grid,
+  .formularios-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 921px) and (max-width: 1180px) {
+  :root {
+    --admin-shell-sidebar: 232px;
+    --admin-shell-gutter: 24px;
+  }
+
+  .admin-sidebar {
+    padding-inline: 14px !important;
+  }
+
+  .sidebar-link,
+  .publicaciones-sidebar-toggle,
+  .members-sidebar-toggle,
+  .tesoreria-sidebar-toggle,
+  .actas-sidebar-toggle {
+    font-size: 0.82rem !important;
+  }
+
+  .dashboard-stats-grid,
+  .tesoreria-summary-grid,
+  .cuotas-summary-grid,
+  .formularios-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 920px) {
+  :root {
+    --admin-shell-header: 0px;
+    --admin-shell-gutter: clamp(14px, 3.5vw, 24px);
+  }
+
+  body {
+    background-attachment: scroll !important;
+  }
+
+  body.admin-mobile-menu-open {
+    overflow: hidden !important;
+  }
+
+  .admin-dashboard {
+    display: block !important;
+    width: 100% !important;
+    min-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .admin-sidebar {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    z-index: 120 !important;
+    width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+    padding: 9px var(--admin-shell-gutter) !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 0 16px 16px !important;
+    background: rgba(250, 248, 242, 0.985) !important;
+    box-shadow: 0 8px 30px rgba(20, 42, 29, 0.18) !important;
+    transition: max-height 180ms ease, height 180ms ease;
+  }
+
+  .admin-sidebar.is-mobile-open {
+    height: min(100dvh, 760px) !important;
+    max-height: min(100dvh, 760px) !important;
+    overflow-y: auto !important;
+  }
+
+  .sidebar-brand {
+    min-height: 50px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    display: grid !important;
+    grid-template-columns: 40px minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+  }
+
+  .sidebar-logo {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 11px !important;
+  }
+
+  .sidebar-brand p {
+    font-size: 0.64rem !important;
+  }
+
+  .sidebar-brand h1 {
+    font-size: 0.96rem !important;
+  }
+
+  .admin-mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 88px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid rgba(31, 61, 43, 0.18);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #1f3d2b;
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+
+  .admin-mobile-menu-toggle span,
+  .admin-mobile-menu-toggle span::before,
+  .admin-mobile-menu-toggle span::after {
+    width: 18px;
+    height: 2px;
+    display: block;
+    border-radius: 99px;
+    background: currentColor;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+
+  .admin-mobile-menu-toggle span {
+    position: relative;
+  }
+
+  .admin-mobile-menu-toggle span::before,
+  .admin-mobile-menu-toggle span::after {
+    position: absolute;
+    left: 0;
+    content: '';
+  }
+
+  .admin-mobile-menu-toggle span::before { transform: translateY(-6px); }
+  .admin-mobile-menu-toggle span::after { transform: translateY(6px); }
+  .admin-sidebar.is-mobile-open .admin-mobile-menu-toggle span { background: transparent; }
+  .admin-sidebar.is-mobile-open .admin-mobile-menu-toggle span::before { transform: rotate(45deg); }
+  .admin-sidebar.is-mobile-open .admin-mobile-menu-toggle span::after { transform: rotate(-45deg); }
+
+  .sidebar-nav,
+  .sidebar-footer {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-8px);
+    transition: opacity 140ms ease, transform 180ms ease;
+  }
+
+  .admin-sidebar.is-mobile-open .sidebar-nav,
+  .admin-sidebar.is-mobile-open .sidebar-footer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none;
+  }
+
+  .sidebar-nav {
+    display: grid !important;
+    max-height: none !important;
+    margin-top: 14px;
+    padding: 8px 0 16px !important;
+    overflow: visible !important;
+  }
+
+  .sidebar-footer {
+    display: grid !important;
+    margin-top: 8px !important;
+    padding-bottom: 14px;
+  }
+
+  .admin-mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: rgba(8, 24, 15, 0.46);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  body.admin-mobile-menu-open .admin-mobile-backdrop {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .admin-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-top: 68px !important;
+  }
+
+  .admin-header {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 20px var(--admin-shell-gutter) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    border-radius: 0 !important;
+  }
+
+  .admin-header .section-tag {
+    display: none;
+  }
+
+  #admin-view-description {
+    white-space: normal;
+  }
+
+  .admin-session-card {
+    max-width: 190px !important;
+    align-self: center;
+  }
+
+  .admin-view.is-active {
+    padding: 18px var(--admin-shell-gutter) 36px !important;
+  }
+
+  .dashboard-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-widget,
+  .dashboard-widget:first-child,
+  .dashboard-treasury-widget {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .admin-header {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .admin-session-card {
+    width: 100% !important;
+    max-width: none !important;
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .admin-session-card strong {
+    white-space: normal;
+  }
+
+  .admin-topbar,
+  .admin-topbar.compact,
+  .panel-heading-row,
+  .formularios-heading-row,
+  .member-heading-row,
+  .tesoreria-heading-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+  }
+
+  .admin-topbar button,
+  .admin-actions button,
+  .admin-actions a,
+  .formulario-actions button,
+  .formulario-actions a,
+  .member-request-actions button,
+  .tesoreria-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .form-row.two-columns,
+  .user-admin-form .form-row,
+  .tesoreria-form-grid,
+  .member-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .post-admin-card,
+  .post-admin-card:not(:has(.post-admin-thumb)) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .post-admin-thumb {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+  }
+
+  .post-admin-actions {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .dashboard-stats-grid,
+  .tesoreria-summary-grid,
+  .cuotas-summary-grid,
+  .formularios-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-mobile-menu-toggle {
+    min-width: 44px;
+    padding-inline: 11px;
+  }
+
+  .admin-mobile-menu-toggle strong {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .admin-panel,
+  .members-card,
+  .tesoreria-panel,
+  .formularios-panel,
+  .actas-panel {
+    padding: 15px !important;
+  }
+
+  .post-admin-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

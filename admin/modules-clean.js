@@ -39,3 +39,4 @@ import './miembros-delete.js?v=20260703-clean';
 import './miembros-admin.js?v=20260710-fast';
 import './miembros-edit-panel.js?v=20260707';
 import './miembros-quick-create.js?v=20260706';
+import './admin-responsive.js?v=20260921';
