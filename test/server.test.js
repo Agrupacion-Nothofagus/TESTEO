@@ -29,6 +29,9 @@ test('sirve la página pública y /admin', async () => {
     assert.equal(response.status, 200, pathname);
     assert.match(response.headers.get('content-type'), /text\/html/);
   }
+  const redirect = await fetch(baseUrl + '/admin?vista=cuotas', { redirect: 'manual' });
+  assert.equal(redirect.status, 308);
+  assert.equal(redirect.headers.get('location'), '/admin/?vista=cuotas');
 });
 
 test('ejecuta una Pages Function mediante /api', async () => {

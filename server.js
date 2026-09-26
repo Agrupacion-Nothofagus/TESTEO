@@ -124,6 +124,15 @@ async function handleStatic(incoming, outgoing, url) {
 
   let fileStat = await stat(filePath).catch(() => null);
   if (fileStat?.isDirectory()) {
+    if (!url.pathname.endsWith('/')) {
+      outgoing.writeHead(308, {
+        Location: `${url.pathname}/${url.search}`,
+        'Cache-Control': 'no-cache',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      outgoing.end();
+      return;
+    }
     filePath = path.join(filePath, 'index.html');
     fileStat = await stat(filePath).catch(() => null);
   }
