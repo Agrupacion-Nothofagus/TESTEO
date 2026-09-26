@@ -20,15 +20,30 @@
   background: transparent;
 }
 
-.principios-diagrama {
-  display: block;
+.principios-diagrama-stage {
+  position: relative;
   width: min(100%, 1180px);
-  height: auto;
   margin: 0 auto;
 }
 
+.principios-diagrama {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.principios-diagrama-logo {
+  position: absolute;
+  top: 51%;
+  left: 50%;
+  width: 13.333%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 10px 12px rgba(19, 37, 27, 0.26));
+}
+
 @media (max-width: 920px) {
-  .principios-diagrama {
+  .principios-diagrama-stage {
     min-width: 980px;
   }
 }

@@ -21,7 +21,7 @@
   if (!document.querySelector('link[data-visual-colors-restore]')) {
     const colors = document.createElement('link');
     colors.rel = 'stylesheet';
-    colors.href = '../visual-colors-restore.css?v=20260706-logo';
+    colors.href = '../visual-colors-restore.css?v=20260926-new-logo';
     colors.dataset.visualColorsRestore = 'true';
     document.head.appendChild(colors);
   }

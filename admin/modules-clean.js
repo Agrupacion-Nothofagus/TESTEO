@@ -1,4 +1,4 @@
-import './admin-visual-optimization-loader.js?v=20260704-visual';
+import './admin-visual-optimization-loader.js?v=20260926-new-logo';
 import './admin-fixed-sidebar-loader.js?v=20260707';
 import './admin-compact-header-loader.js?v=20260707';
 import './admin-no-header-cuotas-layout-loader.js?v=20260708';
@@ -26,7 +26,7 @@ import './tesoreria-cuotas-activos-layout-loader.js?v=20260710-activos-matrix-vi
 import './dashboard-admin-panel-update.js?v=20260924-pending-forms';
 import './tesoreria-alignment-loader.js?v=20260703-clean';
 import './actas-supabase-sync.js?v=20260703-clean';
-import './actas-admin.js?v=20260703-clean';
+import './actas-admin.js?v=20260926-new-logo';
 import './actas-new-reset-fix.js?v=20260703-clean';
 import './actas-sidebar-default.js?v=20260703-clean';
 import './actas-registro-bar.js?v=20260703-clean';

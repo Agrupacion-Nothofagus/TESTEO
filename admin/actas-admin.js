@@ -10,11 +10,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   Mantener validación de roles también en backend.
 
   Ruta editable del logo usado en PDF:
-  LOGO_PDF_URL = '../logo-nothofagus.png'
+  LOGO_PDF_URL = '../logo-nothofagus-20260926.png'
 */
 
 const STORAGE_KEY = 'nothofagus_registro_actas_v1';
-const LOGO_PDF_URL = '../logo-nothofagus.png';
+const LOGO_PDF_URL = '../logo-nothofagus-20260926.png';
 const ORGANIZACION = 'Agrupación Nothofagus';
 const ROLES_VER_ACTAS = ['administrador', 'admin', 'secretario', 'secretaria', 'secretariado', 'gestor_miembros'];
 const ROLES_ADMIN_ACTAS = ['administrador', 'admin'];
