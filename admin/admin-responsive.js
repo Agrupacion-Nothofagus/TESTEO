@@ -11,7 +11,7 @@
 
   const stylesheet = document.querySelector('link[data-admin-responsive]') || document.createElement('link');
   stylesheet.rel ||= 'stylesheet';
-  stylesheet.href ||= 'admin-responsive.css?v=20260921-3';
+  stylesheet.href = 'admin-responsive.css?v=20260921-scroll-1';
   stylesheet.dataset.adminResponsive = 'true';
   // Reinsert the already loaded stylesheet after module-specific styles.
   document.head.appendChild(stylesheet);
@@ -34,6 +34,10 @@
   backdrop.tabIndex = -1;
   document.body.appendChild(backdrop);
 
+  // A restored browser tab can preserve the class that locks the document
+  // even though the mobile menu itself is no longer open.
+  setMenuOpen(false);
+
   toggle.addEventListener('click', () => setMenuOpen(!sidebar.classList.contains('is-mobile-open')));
   backdrop.addEventListener('click', () => setMenuOpen(false));
 
@@ -51,6 +55,7 @@
   });
 
   mobileQuery.addEventListener('change', () => setMenuOpen(false));
+  window.addEventListener('pageshow', () => setMenuOpen(false));
   window.addEventListener('nothofagus:admin-view', () => {
     setMenuOpen(false);
     syncActiveNavigation();
@@ -60,6 +65,35 @@
   const activeObserver = new MutationObserver(syncActiveNavigation);
   activeObserver.observe(navigation, { subtree: true, attributes: true, attributeFilter: ['class'] });
   syncActiveNavigation();
+
+  // Fixed sidebars and horizontally scrollable tables are separate scroll
+  // containers. Forward a vertical wheel gesture to the page only when that
+  // inner container cannot continue vertically.
+  document.addEventListener('wheel', (event) => {
+    if (event.ctrlKey || document.body.classList.contains('admin-mobile-menu-open')) return;
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+
+    const scrollTrap = event.target.closest(
+      '.sidebar-nav, .admin-sidebar, .cuotas-table-wrap, .table-responsive, .users-table-wrap, .admin-table-wrap, .tesoreria-table-wrap, .actas-table-wrap'
+    );
+    if (!scrollTrap) return;
+
+    const canScrollUp = scrollTrap.scrollTop > 0;
+    const canScrollDown = scrollTrap.scrollTop + scrollTrap.clientHeight < scrollTrap.scrollHeight - 1;
+    if ((event.deltaY < 0 && canScrollUp) || (event.deltaY > 0 && canScrollDown)) return;
+
+    const page = document.scrollingElement;
+    if (!page || page.scrollHeight <= page.clientHeight) return;
+
+    const previousTop = page.scrollTop;
+    const deltaMultiplier = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+      ? 40
+      : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? window.innerHeight
+        : 1;
+    page.scrollTop += event.deltaY * deltaMultiplier;
+    if (page.scrollTop !== previousTop) event.preventDefault();
+  }, { passive: false });
 
   function setMenuOpen(open) {
     const enabled = Boolean(open && mobileQuery.matches);

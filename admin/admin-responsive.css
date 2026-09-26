@@ -9,13 +9,19 @@
 }
 
 html {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: auto !important;
   scroll-padding-top: calc(var(--admin-shell-header) + 18px);
 }
 
 body {
   min-width: 320px;
+  min-height: 100vh !important;
+  height: auto !important;
   overflow-x: hidden !important;
-  overscroll-behavior-y: none;
+  overflow-y: visible !important;
+  overscroll-behavior-y: auto;
   text-rendering: optimizeLegibility;
 }
 
@@ -35,6 +41,9 @@ body {
 .admin-content {
   margin-left: var(--admin-shell-sidebar) !important;
   padding-top: var(--admin-shell-header) !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 .admin-sidebar {
@@ -84,6 +93,9 @@ body {
 
 .admin-view.is-active {
   width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: visible !important;
   padding: clamp(20px, 2.6vw, 36px) var(--admin-shell-gutter) 48px !important;
 }
 
