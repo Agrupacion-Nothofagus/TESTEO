@@ -308,14 +308,30 @@
 #dashboard-view [data-dashboard-membership-status] footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   margin-top: 14px;
+  width: 100%;
+  min-height: 0;
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px solid rgba(16, 37, 26, 0.09);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: #66756d;
   font-weight: 780;
 }
 
+#dashboard-view [data-dashboard-membership-status] footer span {
+  color: #66756d;
+}
+
 #dashboard-view [data-dashboard-membership-status] footer strong {
+  display: inline-block;
   color: #10251a;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 #dashboard-view .dashboard-reference-list {

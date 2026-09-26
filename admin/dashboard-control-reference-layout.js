@@ -321,7 +321,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
   }
 
   function loadStyles() {
-    const href = 'dashboard-control-reference-layout.css?v=20260710-panel-ref';
+    const href = 'dashboard-control-reference-layout.css?v=20260921-footer-fix';
     const existing = document.querySelector('link[data-dashboard-reference-layout]');
     if (existing) { existing.href = href; return; }
     const link = document.createElement('link');
