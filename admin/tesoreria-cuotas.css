@@ -181,6 +181,7 @@
 
 .cuotas-button.danger,
 .cuotas-actions button.danger,
+.cuotas-modal-actions button.danger,
 .cuotas-history button.danger {
   background: #9b2c2c;
 }

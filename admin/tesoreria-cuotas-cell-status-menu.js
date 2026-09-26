@@ -68,6 +68,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
       <button type="button" data-status-choice="${dot.dataset.cuotasPaymentId ? 'editar_pago' : 'pagado'}">${dot.dataset.cuotasPaymentId ? 'Editar pago registrado' : 'Registrar pago'}</button>
+      ${dot.dataset.cuotasPaymentId ? '<button type="button" data-status-choice="eliminar_pago">Eliminar pago</button>' : ''}
       <button type="button" data-status-choice="pendiente">Pendiente</button>
       <button type="button" data-status-choice="atrasado">Atrasado</button>
       <button type="button" data-status-choice="sin_registro">N/A</button>
@@ -100,6 +101,15 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const info = getDotInfo(dot);
       closeMenu();
       window.dispatchEvent(new CustomEvent('nothofagus:cuotas-edit-payment', {
+        detail: { paymentId: dot.dataset.cuotasPaymentId || '', memberId: info.memberId, month: info.month, anio: info.anio }
+      }));
+      return;
+    }
+    if (choice === 'eliminar_pago') {
+      const dot = activeDot;
+      const info = getDotInfo(dot);
+      closeMenu();
+      window.dispatchEvent(new CustomEvent('nothofagus:cuotas-delete-payment', {
         detail: { paymentId: dot.dataset.cuotasPaymentId || '', memberId: info.memberId, month: info.month, anio: info.anio }
       }));
       return;
@@ -267,7 +277,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   function getMonthName(month) { return ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][month] || 'Mes'; }
   function showStatus(message, ok) { const status = document.querySelector('#tesoreria-cuotas-view [data-cuotas-status]'); if (!status) return; status.textContent = message; status.classList.toggle('success', Boolean(ok)); status.classList.toggle('error', !ok); }
   function loadStyles() {
-    const href = 'tesoreria-cuotas-cell-status-menu.css?v=20260924-audit';
+    const href = 'tesoreria-cuotas-cell-status-menu.css?v=20260924-delete-payment';
     const existing = document.querySelector('link[data-cuotas-cell-status-menu]');
     if (existing) { existing.href = href; return; }
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = href; css.dataset.cuotasCellStatusMenu = 'true'; document.head.appendChild(css);

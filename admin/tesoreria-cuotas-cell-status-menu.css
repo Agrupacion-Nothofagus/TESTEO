@@ -116,6 +116,15 @@
 }
 
 #tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='pagado']::before { background: #4f7d4a; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='editar_pago']::before { background: #4f7d4a; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='eliminar_pago'] {
+  color: #9b2c2c !important;
+}
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='eliminar_pago']::before { background: #b84a3a; }
+#tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='eliminar_pago']:hover {
+  background: rgba(184, 74, 58, 0.12) !important;
+  color: #7f1d1d !important;
+}
 #tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='pendiente']::before { background: #c99637; }
 #tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='atrasado']::before { background: #b84a3a; }
 #tesoreria-cuotas-view .cuotas-status-menu button[data-status-choice='sin_registro']::before { background: #cfd8ce; }
