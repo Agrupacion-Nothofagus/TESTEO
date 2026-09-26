@@ -8,7 +8,7 @@ if (!window.__nothofagusPublicacionesSidebarDropdown) {
 }
 
 function cargarEstilosPublicacionesSidebar() {
-  const href = 'publicaciones-sidebar-dropdown.css?v=20260924-editorial-menu';
+  const href = 'publicaciones-sidebar-dropdown.css?v=20260924-editorial-menu-fix';
   const existing = document.querySelector('link[data-publicaciones-sidebar-style]');
   if (existing) {
     existing.href = href;
@@ -48,7 +48,7 @@ function instalarPublicacionesDropdown() {
   gestionButton.classList.add('publicaciones-sidebar-link');
   nuevaButton.classList.add('publicaciones-sidebar-link');
   prepararAccesoEditorial(nuevaButton, '+', 'Nueva publicación', 'Crear contenido');
-  prepararAccesoEditorial(gestionButton, '▦', 'Administrar publicaciones', 'Revisar y editar');
+  prepararAccesoEditorial(gestionButton, '▦', 'Gestionar', 'Revisar y editar');
 
   menu.appendChild(nuevaButton);
   menu.appendChild(gestionButton);
