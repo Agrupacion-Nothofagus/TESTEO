@@ -101,7 +101,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const statusData = statusResponse?.ok ? await statusResponse.json().catch(() => ({})) : {};
       const deleted = readDeletedQuotaRows();
       cache.general = Array.isArray(generalData.movimientos) ? generalData.movimientos.filter(Boolean) : [];
-      cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData).filter((item) => !deleted[item.sourceId]);
+      cache.cuotas = cuotaPaymentsToIncomeRows(cuotasData);
       cache.cuotasEliminadas = Object.values(deleted).filter((item) => item && Number(item.anio || year) === year);
       cache.estados = statusChangesToRows(statusData);
       renderCuotasAsIncome();

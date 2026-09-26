@@ -41,7 +41,8 @@
       return addFilterNotice(data, 'Filtro de categoría omitido: los integrantes de cuotas no coinciden por correo con Miembros. Se mantiene la nómina editable para evitar bloqueo.');
     }
 
-    const summary = buildSummary(visibleMembers);
+    const historic = Array.isArray(data.pagosHistoricos) ? data.pagosHistoricos : allMembers.flatMap((member) => member.pagos || []);
+    const summary = buildSummary(visibleMembers, historic);
 
     return {
       ...data,
@@ -110,16 +111,18 @@
     return isMember && isActive && isAllowedCategory;
   }
 
-  function buildSummary(members) {
-    return members.reduce((acc, item) => {
+  function buildSummary(members, payments) {
+    const summary = members.reduce((acc, item) => {
       acc.totalMiembros += 1;
       if (item.estadoPago === 'al_dia') acc.alDia += 1;
       if (item.estadoPago === 'atrasado') acc.atrasados += 1;
       if (item.estadoPago === 'pagada_anual') acc.cuotasAnualesPagadas += 1;
-      acc.totalRecaudado += Number(item.totalPagado || 0);
+      acc.esperadoAnual += Number(item.cuotaAnualEsperada || 0);
       acc.saldoPendiente += Number(item.saldoPendiente || 0);
       return acc;
-    }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado: 0, saldoPendiente: 0 });
+    }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado: 0, esperadoAnual: 0, saldoPendiente: 0 });
+    summary.totalRecaudado = payments.reduce((sum, payment) => sum + Number(payment.monto || 0), 0);
+    return summary;
   }
 
   function getAuthorization(input, init) {

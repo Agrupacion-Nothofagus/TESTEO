@@ -64,12 +64,15 @@ function allow(user, cfg) {
 }
 
 async function listUsers(cfg) {
-  const res = await callSupabase(cfg, '/auth/v1/admin/users?per_page=100&page=1');
-  const data = await res.json();
-
-  if (!res.ok) throw fail(data.message || 'No fue posible listar usuarios.', res.status);
-
-  return reply({ users: (data.users || []).map(cleanUser) });
+  const users = [];
+  for (let page = 1; ; page += 1) {
+    const res = await callSupabase(cfg, `/auth/v1/admin/users?per_page=100&page=${page}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !Array.isArray(data.users)) throw fail(data.message || 'No fue posible listar usuarios.', res.ok ? 502 : res.status);
+    users.push(...data.users);
+    if (data.users.length < 100) break;
+  }
+  return reply({ users: users.map(cleanUser) });
 }
 
 async function createUser(request, cfg) {

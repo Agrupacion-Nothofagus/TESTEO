@@ -66,10 +66,15 @@ async function createContactMessage(request, env) {
 }
 
 async function listContactMessages(cfg) {
-  const res = await callSupabase(cfg, '/rest/v1/contacto_mensajes?select=*&order=created_at.desc&limit=500');
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar los formularios de contacto.', res.status);
-  return reply({ mensajes: Array.isArray(data) ? data.map(normalizarMensajeSalida) : [] });
+  const mensajes = [];
+  for (let offset = 0; ; offset += 1000) {
+    const res = await callSupabase(cfg, `/rest/v1/contacto_mensajes?select=*&order=created_at.desc,id.desc&limit=1000&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || 'No fue posible listar los formularios de contacto.', res.ok ? 502 : res.status);
+    mensajes.push(...data);
+    if (data.length < 1000) break;
+  }
+  return reply({ mensajes: mensajes.map(normalizarMensajeSalida) });
 }
 
 async function updateContactMessage(request, cfg) {

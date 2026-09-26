@@ -47,7 +47,7 @@
     const year = getSelectedYear(view);
     const summary = rows.reduce((acc, row) => {
       const rowCalc = recalculateRow(row, selectedMonth);
-      acc.integrantesActivos += 1;
+      if (row.dataset.estadoCuenta !== 'inactivo') acc.integrantesActivos += 1;
       acc.esperadoMes += rowCalc.expectedByMonth[selectedMonth] || 0;
       acc.recibidoMes += rowCalc.paidByMonth[selectedMonth] || 0;
       acc.totalRecaudado += rowCalc.totalPaid;
@@ -68,30 +68,27 @@
 
   function recalculateRow(row, selectedMonth) {
     const cuota = parseMoney(row.querySelector('[data-label="Cuota mensual"]')?.textContent || '0');
-    const dots = Array.from(row.querySelectorAll('[data-cuotas-payment-month]'));
+    const dots = Array.from(row.querySelectorAll('.payment-status-dot[data-month]'));
     const totalCell = row.querySelector('[data-label="Total pagado"] strong') || row.querySelector('[data-label="Total pagado"]');
     const saldoCell = row.querySelector('[data-label="Saldo pendiente"] strong') || row.querySelector('[data-label="Saldo pendiente"]');
     const officialTotalPaid = getOriginalAmount(row, 'originalTotalPagado', totalCell);
-    const officialPending = getOriginalAmount(row, 'originalSaldoPendiente', saldoCell);
     const paidByMonth = {};
     const expectedByMonth = {};
-    let visualTotalPaid = 0;
     let expectedAnnual = 0;
 
     dots.forEach((dot) => {
       const month = Number(dot.dataset.month || 0);
       const status = statusOf(dot);
-      const expected = status === 'sin_registro' ? 0 : cuota;
-      const paid = status === 'pagado' ? cuota : 0;
+      const expected = status === 'sin_registro' || row.dataset.estadoCuenta === 'inactivo' || row.dataset.exento === 'true' ? 0 : cuota;
+      const paid = dot.dataset.cuotasPaymentId ? Number(dot.dataset.paymentAmount || 0) : 0;
       expectedByMonth[month] = expected;
       paidByMonth[month] = paid;
       expectedAnnual += expected;
-      visualTotalPaid += paid;
       enrichDotTitle(dot, month, status, paid, expected);
     });
 
-    const totalPaid = officialTotalPaid > 0 ? Math.max(officialTotalPaid, Math.min(visualTotalPaid, officialTotalPaid)) : visualTotalPaid;
-    const pendingAnnual = officialTotalPaid > 0 && officialPending >= 0 ? Math.max(expectedAnnual - totalPaid, 0) : Math.max(expectedAnnual - totalPaid, 0);
+    const totalPaid = officialTotalPaid;
+    const pendingAnnual = Math.max(expectedAnnual - totalPaid, 0);
     if (totalCell) flashText(totalCell, money(totalPaid));
     if (saldoCell) {
       flashText(saldoCell, money(pendingAnnual));
@@ -101,7 +98,6 @@
     row.dataset.manualExpectedMonth = String(expectedByMonth[selectedMonth] || 0);
     row.dataset.manualPaidMonth = String(paidByMonth[selectedMonth] || 0);
     row.dataset.manualTotalPaid = String(totalPaid);
-    row.dataset.manualVisualTotalPaid = String(visualTotalPaid);
     row.dataset.manualPendingAnnual = String(pendingAnnual);
     return { cuota, paidByMonth, expectedByMonth, totalPaid, expectedAnnual, pendingAnnual };
   }
@@ -118,7 +114,7 @@
     setCard(cards[1], money(summary.esperadoMes), 'Según estados del mes');
     setCard(cards[2], money(summary.recibidoMes), `${summary.porcentajeMes}% del esperado`);
     setCard(cards[3], money(summary.pendienteMes), 'Del mes seleccionado');
-    setCard(cards[4], money(summary.totalRecaudado), 'Según pagos registrados y estados visibles');
+    setCard(cards[4], money(summary.totalRecaudado), 'Solo pagos reales registrados');
     setCard(cards[5], money(summary.saldoPendiente), 'Pendiente por cobrar');
   }
 
@@ -141,7 +137,8 @@
   function updateAnnualSummary(view, summary) {
     const box = view.querySelector('[data-cuotas-annual-summary]');
     if (!box) return;
-    box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-chart-fake"><span style="height:78%"></span><span style="height:68%"></span><span style="height:72%"></span><span style="height:70%"></span><span style="height:76%"></span><span style="height:74%"></span></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${money(summary.esperadoAnual)}</strong></div><div><span>Recaudado anual</span><strong>${money(summary.totalRecaudado)}</strong></div><div><span>Saldo pendiente anual</span><strong>${money(summary.saldoPendiente)}</strong></div></div>`;
+    const progress = summary.esperadoAnual > 0 ? Math.min(100, Math.round(summary.totalRecaudado / summary.esperadoAnual * 100)) : 0;
+    box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-annual-progress"><div><span>Avance de recaudación</span><strong>${progress}%</strong></div><div class="cuotas-progress" role="progressbar" aria-label="Avance de recaudación anual" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${money(summary.esperadoAnual)}</strong></div><div><span>Recaudado anual</span><strong>${money(summary.totalRecaudado)}</strong></div><div><span>Saldo pendiente anual</span><strong>${money(summary.saldoPendiente)}</strong></div></div>`;
   }
 
   function enrichDotTitle(dot, month, status, paid, expected) {

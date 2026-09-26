@@ -1,6 +1,7 @@
 const headers = { 'content-type': 'application/json; charset=utf-8' };
 const MEMBERS_TABLE = 'tesoreria_cuotas_miembros';
 const PAYMENTS_TABLE = 'tesoreria_cuotas_pagos';
+const STATUS_TABLE = 'tesoreria_cuotas_estados';
 const MEMBER_REGISTRY_TABLE = 'solicitudes_miembros';
 const BUCKET = 'tesoreria-comprobantes';
 const MEMBER_STATES = ['estudiante', 'trabajador', 'cesante', 'benefactor'];
@@ -57,10 +58,11 @@ async function listCuotas(request, cfg, user, permisos) {
 
   const members = await listMembers(cfg, user, permisos);
   const payments = await listPayments(cfg, year);
+  const notApplicable = await listNotApplicableMonths(cfg, year);
   const allowedIds = new Set(members.map((item) => item.id));
   const normalizedPayments = await Promise.all(payments.filter((item) => allowedIds.has(item.member_id)).map((item) => fromPaymentDb(item, cfg, includeFiles)));
   const byMember = groupPayments(normalizedPayments);
-  const items = members.map((member) => withFinancialSummary(fromMemberDb(member), byMember.get(member.id) || [], year));
+  const items = members.map((member) => withFinancialSummary(fromMemberDb(member), byMember.get(member.id) || [], year, notApplicable.get(String(member.id)) || new Set()));
 
   return reply({
     anio: year,
@@ -296,18 +298,12 @@ async function syncActiveRegistryMembers(cfg, user, year) {
 }
 
 async function listActiveRegistryMembers(cfg) {
-  const query = `/rest/v1/${MEMBER_REGISTRY_TABLE}?select=*&estado=eq.miembro&or=(estado_socio.eq.activo,estado_socio.is.null)&order=nombre.asc&limit=1000`;
-  const res = await supabaseFetch(cfg, query);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible revisar los socios activos.', res.status);
-  return Array.isArray(data) ? data : [];
+  const query = `/rest/v1/${MEMBER_REGISTRY_TABLE}?select=*&estado=eq.miembro&or=(estado_socio.eq.activo,estado_socio.is.null)&order=nombre.asc,id.asc`;
+  return listAllPages(cfg, query, 'No fue posible revisar los socios activos.');
 }
 
 async function listAllCuotasMembers(cfg) {
-  const res = await supabaseFetch(cfg, `/rest/v1/${MEMBERS_TABLE}?select=*&order=nombre.asc&limit=1000`);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar miembros de cuotas.', res.status);
-  return Array.isArray(data) ? data : [];
+  return listAllPages(cfg, `/rest/v1/${MEMBERS_TABLE}?select=*&order=nombre.asc,id.asc`, 'No fue posible listar miembros de cuotas.');
 }
 
 function registryMemberToCuotasDb(socio, existing, user, year) {
@@ -356,17 +352,43 @@ function memberPayloadChanged(existing = {}, payload = {}) {
 
 async function listMembers(cfg, user, permisos) {
   const ownFilter = permisos.ownOnly ? `&correo=eq.${encodeURIComponent(String(user.email || '').toLowerCase())}` : '';
-  const res = await supabaseFetch(cfg, `/rest/v1/${MEMBERS_TABLE}?select=*&order=nombre.asc&limit=1000${ownFilter}`);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar miembros de cuotas.', res.status);
-  return Array.isArray(data) ? data : [];
+  return listAllPages(cfg, `/rest/v1/${MEMBERS_TABLE}?select=*&order=nombre.asc,id.asc${ownFilter}`, 'No fue posible listar miembros de cuotas.');
 }
 
 async function listPayments(cfg, year) {
-  const res = await supabaseFetch(cfg, `/rest/v1/${PAYMENTS_TABLE}?select=*&anio=eq.${encodeURIComponent(year)}&order=fecha_pago.desc&order=created_at.desc&limit=5000`);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar pagos de cuotas.', res.status);
-  return Array.isArray(data) ? data : [];
+  return listAllPages(cfg, `/rest/v1/${PAYMENTS_TABLE}?select=*&anio=eq.${encodeURIComponent(year)}&order=fecha_pago.desc,created_at.desc,id.desc`, 'No fue posible listar pagos de cuotas.');
+}
+
+async function listNotApplicableMonths(cfg, year) {
+  const rows = await listAllPages(cfg, `/rest/v1/${STATUS_TABLE}?select=member_id,mes,estado_nuevo,eliminado&anio=eq.${encodeURIComponent(year)}&order=created_at.desc,id.desc`, 'No fue posible revisar los estados mensuales de cuotas.');
+  const latest = new Map();
+  for (const row of rows) {
+    if (row.eliminado || !row.member_id || !Number.isInteger(Number(row.mes))) continue;
+    const month = Number(row.mes);
+    if (month < 1 || month > 12) continue;
+    const key = `${row.member_id}:${month}`;
+    if (!latest.has(key)) latest.set(key, row.estado_nuevo);
+  }
+  const result = new Map();
+  for (const [key, status] of latest) {
+    if (status !== 'sin_registro') continue;
+    const [memberId, month] = key.split(':');
+    if (!result.has(memberId)) result.set(memberId, new Set());
+    result.get(memberId).add(Number(month));
+  }
+  return result;
+}
+
+async function listAllPages(cfg, query, errorMessage) {
+  const pageSize = 1000;
+  const result = [];
+  for (let offset = 0; ; offset += pageSize) {
+    const res = await supabaseFetch(cfg, `${query}&limit=${pageSize}&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || errorMessage, res.ok ? 502 : res.status);
+    result.push(...data);
+    if (data.length < pageSize) return result;
+  }
 }
 
 async function getMemberById(cfg, id) {
@@ -397,7 +419,7 @@ function memberToDb(item, user, partial) {
 
   if (!partial && !nombre) throw fail('El nombre completo es obligatorio.', 400);
   if (!partial && !correo) throw fail('El correo es obligatorio.', 400);
-  if (!partial && cuota < 0) throw fail('La cuota mensual no puede ser negativa.', 400);
+  if (!Number.isSafeInteger(cuota) || cuota < 0) throw fail('La cuota mensual debe ser un monto entero no negativo.', 400);
   if (correo && !isEmail(correo)) throw fail('El correo no es válido.', 400);
 
   const payload = {
@@ -427,7 +449,7 @@ function paymentToDb(item, user, archivo, member) {
   const monto = Number(item.monto || 0);
   const metodo = normalizePaymentMethod(item.metodo_pago || item.metodoPago || 'transferencia');
 
-  if (!monto || monto <= 0) throw fail('El monto del pago debe ser mayor a 0.', 400);
+  if (!Number.isSafeInteger(monto) || monto <= 0) throw fail('El monto del pago debe ser un monto entero mayor a 0.', 400);
 
   return {
     member_id: member.id,
@@ -549,30 +571,33 @@ async function fromPaymentDb(row = {}, cfg, includeFiles = true) {
   };
 }
 
-function withFinancialSummary(member, payments, year) {
+function withFinancialSummary(member, payments, year, notApplicable = new Set()) {
   const inactive = String(member.estadoCuenta || '').toLowerCase() === 'inactivo';
-  const cuotaAnualEsperada = member.exento || inactive ? 0 : Number(member.cuotaMensual || 0) * 12;
   const paymentsForYear = payments.filter((pago) => Number(pago.anio) === Number(year));
+  const paidMonths = new Set(paymentsForYear.filter((pago) => Number(pago.mes) >= 1 && Number(pago.mes) <= 12 && Number(pago.monto) > 0).map((pago) => Number(pago.mes)));
+  const applicableExclusions = new Set([...notApplicable].filter((month) => !paidMonths.has(month)));
+  const mesesNoAplican = [...applicableExclusions].sort((a, b) => a - b);
+  const cuotaAnualEsperada = member.exento || inactive ? 0 : Number(member.cuotaMensual || 0) * (12 - mesesNoAplican.length);
   const totalPagado = paymentsForYear.reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
   const saldoPendiente = Math.max(cuotaAnualEsperada - totalPagado, 0);
-  const months = new Set(paymentsForYear.filter((pago) => Number(pago.mes) >= 1 && Number(pago.mes) <= 12 && Number(pago.monto) > 0).map((pago) => Number(pago.mes)));
-  const tienePagoAnual = paymentsForYear.some((pago) => pago.tipoPago === 'anual' || Number(pago.mes) === 0);
-  const mesesPagados = totalPagado >= cuotaAnualEsperada && cuotaAnualEsperada > 0 ? 12 : months.size;
-  const estadoPago = getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, tienePagoAnual);
+  const mesesPagados = totalPagado >= cuotaAnualEsperada && cuotaAnualEsperada > 0 ? 12 : paidMonths.size;
+  const estadoPago = getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, applicableExclusions);
 
-  return { ...member, pagos: paymentsForYear, cuotaAnualEsperada, totalPagado, saldoPendiente, mesesPagados, estadoPago, estadoCuotaAnual: estadoPago === 'pagada_anual' ? 'Pagada anual' : labelStatus(estadoPago) };
+  return { ...member, pagos: paymentsForYear, mesesNoAplican, cuotaAnualEsperada, totalPagado, saldoPendiente, mesesPagados, estadoPago, estadoCuotaAnual: estadoPago === 'pagada_anual' ? 'Pagada anual' : labelStatus(estadoPago) };
 }
 
-function getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, tienePagoAnual) {
+function getPaymentStatus(member, totalPagado, cuotaAnualEsperada, year, notApplicable) {
   if (String(member.estadoCuenta || '').toLowerCase() === 'inactivo') return 'inactivo';
   if (member.exento || cuotaAnualEsperada === 0) return 'exento';
-  if (totalPagado >= cuotaAnualEsperada || tienePagoAnual) return 'pagada_anual';
+  if (totalPagado >= cuotaAnualEsperada) return 'pagada_anual';
 
   const now = new Date();
   const currentYear = now.getFullYear();
   const dueMonth = Number(year) < currentYear ? 12 : Number(year) > currentYear ? 0 : now.getMonth() + 1;
-  const expectedDue = Number(member.cuotaMensual || 0) * dueMonth;
+  const applicableDue = Array.from({ length: dueMonth }, (_, index) => index + 1).filter((month) => !notApplicable.has(month)).length;
+  const expectedDue = Number(member.cuotaMensual || 0) * applicableDue;
 
+  if (expectedDue === 0) return 'al_dia';
   if (dueMonth > 0 && totalPagado < expectedDue) return 'atrasado';
   if (totalPagado > 0) return totalPagado >= expectedDue ? 'al_dia' : 'parcial';
   return dueMonth === 0 ? 'parcial' : 'atrasado';

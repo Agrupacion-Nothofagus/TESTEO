@@ -39,11 +39,16 @@ function getConfig(env) {
 
 async function listMovimientos(request, cfg) {
   const includeFiles = new URL(request.url).searchParams.get('include_files') !== '0';
-  const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?select=*&order=fecha.desc&order=created_at.desc&limit=1000`);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar movimientos de Tesorería.', res.status);
-
-  const movimientos = await Promise.all((data || []).map((row) => fromDb(row, cfg, includeFiles)));
+  const rows = [];
+  const pageSize = 1000;
+  for (let offset = 0; ; offset += pageSize) {
+    const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?select=*&order=fecha.desc,created_at.desc,id.desc&limit=${pageSize}&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || 'No fue posible listar movimientos de Tesorería.', res.ok ? 502 : res.status);
+    rows.push(...data);
+    if (data.length < pageSize) break;
+  }
+  const movimientos = await Promise.all(rows.map((row) => fromDb(row, cfg, includeFiles)));
   return reply({ movimientos });
 }
 
@@ -53,8 +58,9 @@ async function saveMovimiento(request, cfg, user) {
     ? await readMultipart(request)
     : { fields: await request.json().catch(() => ({})), file: null };
 
+  const movimiento = toDb(fields, user, null);
   const archivo = file ? await uploadComprobante(cfg, file, fields.tipo) : null;
-  const movimiento = toDb(fields, user, archivo);
+  if (archivo) Object.assign(movimiento, archivo);
 
   const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}`, {
     method: 'POST',
@@ -216,7 +222,7 @@ function toDb(item, user, archivo = null) {
   const monto = Number(item.monto || 0);
   const descripcion = limpiar(item.descripcion);
   if (!tipo) throw fail('Tipo de movimiento inválido.', 400);
-  if (!monto || monto <= 0) throw fail('El monto debe ser mayor a 0.', 400);
+  if (!Number.isSafeInteger(monto) || monto <= 0) throw fail('El monto debe ser un monto entero mayor a 0.', 400);
   if (!descripcion) throw fail('La descripción es obligatoria.', 400);
   if (descripcion.length > 180) throw fail('La descripción no puede superar 180 caracteres.', 400);
 

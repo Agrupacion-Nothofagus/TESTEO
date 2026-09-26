@@ -1,6 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts/supabase-config.js';
-import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesoreria-calculos.js?v=20260921-integral-1';
+import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesoreria-calculos.js?v=20260924-final-audit-1';
 
 (() => {
   if (window.__nothofagusTreasurySaasGeneral) return;
@@ -88,10 +88,9 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
     if (!token) throw new Error('Sesión no disponible para Tesorería.');
     const nonce = force ? Date.now() : 0;
     const options = { cache: 'no-store', headers: { authorization: 'Bearer ' + token, 'cache-control': 'no-cache', pragma: 'no-cache' } };
-    const generalUrl = `/api/tesoreria${nonce ? `?_=${nonce}` : ''}`;
-    const quotasQuery = new URLSearchParams({ anio: String(year) });
+    const generalUrl = `/api/tesoreria?include_files=0${nonce ? `&_=${nonce}` : ''}`;
+    const quotasQuery = new URLSearchParams({ anio: String(year), include_files: '0', sync: force ? '1' : '0' });
     if (force) {
-      quotasQuery.set('sync', '1');
       quotasQuery.set('_', String(nonce));
     }
     const [generalResult, quotasResult] = await Promise.allSettled([
@@ -114,7 +113,7 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
     const manualDeleted = allMovements.filter((item) => getYear(item.fecha) === year && item.eliminado).map((item) => normalizeManualMovement(item, true));
     const deletedQuotaMap = readJson(DELETED_QUOTAS_KEY, {});
     const quotaRowsAll = buildQuotaPaymentRows(quotasData, year);
-    const activeQuotaRows = quotaRowsAll.filter((row) => !deletedQuotaMap[row.sourceId]);
+    const activeQuotaRows = quotaRowsAll;
     const deletedQuotaRows = Object.values(deletedQuotaMap)
       .filter((row) => row && Number(row.anio || getYear(row.fecha)) === year)
       .map((row) => ({ ...row, eliminado: true, source: 'Cuota eliminada', sourceKind: 'cuota' }));
@@ -192,7 +191,9 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
         tipo: 'ingreso',
         source: 'Cuota registrada',
         sourceKind: 'cuota',
-        fecha: payment.fechaPago || payment.fecha_pago || `${paymentYear}-${String(Math.max(month, 1)).padStart(2, '0')}-01`,
+        fecha: getYear(payment.fechaPago || payment.fecha_pago) === paymentYear
+          ? (payment.fechaPago || payment.fecha_pago)
+          : `${paymentYear}-${String(Math.max(month, 1)).padStart(2, '0')}-01`,
         anio: paymentYear,
         descripcion: type === 'anual' || month === 0 ? `Cuota anual · ${name}` : `Cuota mensual ${monthName(month)} · ${name}`,
         monto: paymentAmount,
@@ -249,9 +250,9 @@ import { buildMonthlySeries, buildQuotaMetrics, summarizeLedger } from './tesore
         <div class="treasury-equation"><b>${money(data.incomeManual)}</b><small>Ingresos manuales</small><i>+</i><b>${money(data.quotasPaid)}</b><small>Cuotas reales</small><i>=</i><b>${money(data.totalIncome)}</b><small>Ingresos totales</small></div>
       </section>
       <div class="treasury-saas-grid">
-        <section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><div><h4>Flujo mensual de caja</h4><p>Fecha efectiva de cada ingreso y egreso</p></div><span>${data.year}</span></div><div class="treasury-chart-legend"><span><i class="income"></i>Ingresos</span><span><i class="expense"></i>Egresos</span></div><div class="treasury-saas-chart">${bars(data.monthly)}</div></section>
+        <section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><div><h4>Movimientos mensuales</h4><p>Cuotas del año seleccionado y movimientos por fecha</p></div><span>${data.year}</span></div><div class="treasury-chart-legend"><span><i class="income"></i>Ingresos</span><span><i class="expense"></i>Egresos</span></div><div class="treasury-saas-chart">${bars(data.monthly)}</div></section>
         <aside class="treasury-saas-side">
-          <section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Estado de cuotas</h4><span>${metrics.activeMembers} activos</span></div><div class="treasury-saas-health">${health('Esperado mensual', money(metrics.monthlyExpected), `${metrics.chargeableMembers} integrantes cobrables`)}${health('Esperado a la fecha', money(metrics.expectedToDate), `Enero a ${data.focusMonth}`)}${health('Vencido pendiente', money(metrics.overdueToDate), 'Esperado a la fecha − recaudado')}${health('Cumplimiento', metrics.recoveryToDate + '%', `${money(metrics.collected)} recaudados`)}</div><div class="treasury-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${metrics.recoveryToDate}"><span style="width:${metrics.recoveryToDate}%"></span></div></section>
+          <section class="treasury-saas-panel"><div class="treasury-saas-chart-title"><h4>Estado de cuotas</h4><span>${metrics.activeMembers} activos</span></div><div class="treasury-saas-health">${health('Esperado mensual', money(metrics.monthlyExpected), `${metrics.chargeableMembers} integrantes cobrables`)}${health('Esperado a la fecha', money(metrics.expectedToDate), `Enero a ${data.focusMonth}`)}${health('Vencido pendiente', money(metrics.overdueToDate), 'Deuda vencida por integrante')}${health('Cumplimiento', metrics.recoveryToDate + '%', `${money(metrics.collected)} recaudados`)}</div><div class="treasury-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${metrics.recoveryToDate}"><span style="width:${metrics.recoveryToDate}%"></span></div></section>
           <section class="treasury-saas-panel treasury-period-card"><div class="treasury-saas-chart-title"><h4>${data.focusMonth}</h4><span>Caja del mes</span></div><div class="treasury-period-values"><div><span>Ingresos</span><strong>${money(data.currentIncome)}</strong></div><div><span>Egresos</span><strong>${money(data.currentExpense)}</strong></div></div></section>
         </aside>
       </div>

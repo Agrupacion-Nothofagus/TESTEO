@@ -157,11 +157,11 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
     const incomeManual = sumByType(activeMovements, 'ingreso');
     const expenseManual = sumByType(activeMovements, 'egreso');
     const cuotasSummary = cuotas.resumen || {};
-    const cuotaIncome = Number(cuotasSummary.totalRecaudado || cuotasSummary.totalPagado || cuotasSummary.recaudado || 0);
+    const quotaPayments = getQuotaPayments(cuotas);
+    const cuotaIncome = quotaPayments.reduce((sum, payment) => sum + Number(payment.monto || 0), 0);
     const cuotaPending = Number(cuotasSummary.saldoPendiente || 0);
     const totalIncome = incomeManual + cuotaIncome;
     const balance = totalIncome - expenseManual;
-    const quotaPayments = getQuotaPayments(cuotas);
     const monthly = buildMonthlySeries(activeMovements, quotaPayments);
     const roleCounts = users.reduce((acc, item) => {
       const role = normalizeText(item.rol || 'sin rol').replaceAll(' ', '_');
@@ -231,7 +231,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
 
     payments.forEach((payment) => {
       const paymentDate = payment.fechaPago || payment.fecha_pago || '';
-      const index = getMonth(paymentDate) >= 0 ? getMonth(paymentDate) : Number(payment.mes || 0) - 1;
+      const index = getYear(paymentDate) === currentYear && getMonth(paymentDate) >= 0 ? getMonth(paymentDate) : Number(payment.mes || 0) - 1;
       if (index >= 0 && index < 12) series[index].ingresos += Number(payment.monto || 0);
     });
 
@@ -369,7 +369,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE_PUBLICACIONES, supabase
   }
 
   function renderAdminOverview(model) {
-    const box = document.querySelector('[data-dashboard-admin-overview]');
+    const box = document.querySelector('#dashboard-view .dashboard-reference [data-dashboard-admin-overview]');
     if (!box) return;
     const sources = model.sourceStatus;
     const rows = [

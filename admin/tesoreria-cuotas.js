@@ -319,7 +319,7 @@ function renderTable(items) {
 
 function renderRow(member) {
   const write = Boolean(state.permisos.write);
-  return `<tr>
+  return `<tr data-estado-cuenta="${escapeAttr(member.estadoCuenta || '')}" data-exento="${member.exento ? 'true' : 'false'}">
     <td data-label="Integrante"><div class="cuotas-member-name"><span class="avatar-mini">${initials(member.nombre)}</span><div><strong>${escapeHTML(member.nombre)}</strong><small>${escapeHTML(member.correo || 'Sin correo')} · ${escapeHTML(member.rut || 'RUT opcional')}</small></div></div></td>
     <td data-label="Estado"><span class="cuotas-member-state">${labelMemberState(member.estadoMiembro)}</span></td>
     <td data-label="Cuota mensual"><strong>${formatCLP(member.cuotaMensual)}</strong></td>
@@ -334,7 +334,7 @@ function renderMonthCell(member, month) {
   const status = getMonthStatus(member, month);
   const payment = getMonthPayment(member, month);
   const title = `${monthNames[month]} · ${labelMonthStatus(status)}${payment ? ` · ${formatCLP(payment.monto)} · ${formatDate(payment.fechaPago)}${payment.comprobanteUrl ? ' · Con comprobante' : ''}` : ''}`;
-  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${payment?.id ? `data-cuotas-payment-id="${escapeAttr(payment.id)}"` : ''} ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}" data-month="${month}"` : ''}></button></td>`;
+  return `<td data-label="${monthShort[month - 1]}" class="month-cell"><button type="button" class="payment-status-dot ${escapeAttr(status)}" data-month="${month}" data-member-id="${escapeAttr(member.id)}" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" ${payment?.id ? `data-cuotas-payment-id="${escapeAttr(payment.id)}" data-payment-amount="${escapeAttr(payment.monto)}"` : ''} ${state.permisos.write ? `data-cuotas-payment-month="${escapeAttr(member.id)}"` : ''}></button></td>`;
 }
 
 function renderActions(member, write) {
@@ -386,11 +386,11 @@ function renderAnnualSummary(resumen) {
 function buildDashboardSummary(items) {
   const activos = items.filter((item) => item.estadoCuenta !== 'inactivo');
   const cobrables = activos.filter((item) => !item.exento);
-  const esperadoMes = cobrables.reduce((sum, item) => sum + Number(item.cuotaMensual || 0), 0);
+  const esperadoMes = cobrables.reduce((sum, item) => sum + ((item.mesesNoAplican || []).includes(state.mes) ? 0 : Number(item.cuotaMensual || 0)), 0);
   const recibidoMes = items.reduce((sum, item) => sum + getPaymentsForMonth(item, state.mes).reduce((acc, payment) => acc + Number(payment.monto || 0), 0), 0);
   const totalRecaudado = items.reduce((sum, item) => sum + Number(item.totalPagado || 0), 0);
-  const esperadoAnual = cobrables.reduce((sum, item) => sum + Number(item.cuotaMensual || 0) * 12, 0);
-  const saldoPendiente = Math.max(esperadoAnual - totalRecaudado, 0);
+  const esperadoAnual = cobrables.reduce((sum, item) => sum + Number(item.cuotaAnualEsperada ?? Number(item.cuotaMensual || 0) * 12), 0);
+  const saldoPendiente = cobrables.reduce((sum, item) => sum + Number(item.saldoPendiente || 0), 0);
   return { integrantesActivos: activos.length, esperadoMes, recibidoMes, pendienteMes: Math.max(esperadoMes - recibidoMes, 0), totalRecaudado, esperadoAnual, saldoPendiente, porcentajeMes: esperadoMes > 0 ? Math.round((recibidoMes / esperadoMes) * 1000) / 10 : 0, alDia: items.filter((item) => ['al_dia', 'pagada_anual', 'exento'].includes(item.estadoPago)).length, atrasados: items.filter((item) => item.estadoPago === 'atrasado').length };
 }
 
@@ -558,7 +558,7 @@ function exportExcel() {
 
 function generatePdfReport() { exportExcel(); }
 function renderEmpty(message) { document.querySelector('[data-cuotas-table]') && (document.querySelector('[data-cuotas-table]').innerHTML = `<p class="cuotas-empty">${escapeHTML(message)}</p>`); renderSummary(buildDashboardSummary([])); }
-function getMonthStatus(member, month) { if (member.exento || member.estadoCuenta === 'inactivo') return 'sin_registro'; if (hasAnnualPayment(member)) return 'pagado'; if (getMonthPayment(member, month)) return 'pagado'; if (Number(state.anio) < currentYear) return 'atrasado'; if (Number(state.anio) > currentYear) return 'pendiente'; return month < currentMonth ? 'atrasado' : 'pendiente'; }
+function getMonthStatus(member, month) { if (member.exento || member.estadoCuenta === 'inactivo') return 'sin_registro'; if (getMonthPayment(member, month)) return 'pagado'; if ((member.mesesNoAplican || []).includes(month)) return 'sin_registro'; if (hasAnnualPayment(member) && Number(member.totalPagado || 0) >= Number(member.cuotaAnualEsperada || 0)) return 'pagado'; if (Number(state.anio) < currentYear) return 'atrasado'; if (Number(state.anio) > currentYear) return 'pendiente'; return month < currentMonth ? 'atrasado' : 'pendiente'; }
 function getMonthPayment(member, month) { return (member.pagos || []).find((p) => Number(p.mes) === Number(month) && p.tipoPago !== 'anual'); }
 function getPaymentsForMonth(member, month) { return (member.pagos || []).filter((p) => Number(p.mes) === Number(month) && p.tipoPago !== 'anual'); }
 function hasAnnualPayment(member) { return (member.pagos || []).some((p) => p.tipoPago === 'anual' || Number(p.mes) === 0); }

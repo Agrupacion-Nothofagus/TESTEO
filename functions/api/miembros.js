@@ -108,11 +108,15 @@ async function createSolicitud(request, cfg) {
 }
 
 async function listSolicitudes(cfg) {
-  const res = await callSupabase(cfg, '/rest/v1/solicitudes_miembros?select=*&order=created_at.desc&limit=300');
-  const data = await res.json();
-  if (!res.ok) throw fail(data.message || 'No fue posible listar solicitudes.', res.status);
-
-  return reply({ solicitudes: (data || []).map(normalizarRegistroSalida) });
+  const solicitudes = [];
+  for (let offset = 0; ; offset += 1000) {
+    const res = await callSupabase(cfg, `/rest/v1/solicitudes_miembros?select=*&order=created_at.desc,id.desc&limit=1000&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || 'No fue posible listar solicitudes.', res.ok ? 502 : res.status);
+    solicitudes.push(...data);
+    if (data.length < 1000) break;
+  }
+  return reply({ solicitudes: solicitudes.map(normalizarRegistroSalida) });
 }
 
 async function updateSolicitud(request, cfg) {

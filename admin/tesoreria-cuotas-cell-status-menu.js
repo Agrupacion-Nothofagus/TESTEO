@@ -210,7 +210,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const key = makeKey(record.memberId, record.anio, record.mes);
       if (!latest.has(key)) latest.set(key, record);
     });
-    document.querySelectorAll('#tesoreria-cuotas-view [data-cuotas-payment-month]').forEach((dot) => {
+    document.querySelectorAll('#tesoreria-cuotas-view .payment-status-dot[data-month]').forEach((dot) => {
       if (dot.dataset.cuotasPaymentId) return;
       const info = getDotInfo(dot);
       const record = latest.get(makeKey(info.memberId, info.anio, info.month));
@@ -222,7 +222,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   function getDotInfo(dot) {
     const row = dot.closest('tr');
     const month = Number(dot.dataset.month || 0);
-    const memberId = String(dot.dataset.cuotasPaymentMonth || '');
+    const memberId = String(dot.dataset.memberId || dot.dataset.cuotasPaymentMonth || '');
     const memberName = row?.querySelector('[data-label="Integrante"] strong')?.textContent?.trim() || 'Integrante';
     const cuota = row?.querySelector('[data-label="Cuota mensual"]')?.textContent?.trim() || '—';
     const currentStatus = getCurrentStatus(dot);

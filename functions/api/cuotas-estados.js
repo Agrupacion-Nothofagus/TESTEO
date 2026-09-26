@@ -42,10 +42,15 @@ async function listChanges(request, cfg, user, permissions) {
     if (!member?.id) return reply({ anio: year, cambios: [] });
     memberFilter = `&member_id=eq.${encodeURIComponent(member.id)}`;
   }
-  const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?select=*&anio=eq.${year}${memberFilter}&order=created_at.desc&limit=2000`);
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar el historial de estados.', res.status);
-  return reply({ anio: year, cambios: (data || []).map(fromDb) });
+  const cambios = [];
+  for (let offset = 0; ; offset += 1000) {
+    const res = await supabaseFetch(cfg, `/rest/v1/${TABLE}?select=*&anio=eq.${year}${memberFilter}&order=created_at.desc,id.desc&limit=1000&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || 'No fue posible listar el historial de estados.', res.ok ? 502 : res.status);
+    cambios.push(...data);
+    if (data.length < 1000) break;
+  }
+  return reply({ anio: year, cambios: cambios.map(fromDb) });
 }
 
 async function createChange(request, cfg, user) {

@@ -33,10 +33,15 @@ function config(env) {
 }
 
 async function listActas(cfg) {
-  const res = await callSupabase(cfg, '/rest/v1/actas?select=*&order=fecha.desc.nullslast&order=updated_at.desc&limit=500');
-  const data = await res.json().catch(() => []);
-  if (!res.ok) throw fail(data.message || 'No fue posible listar actas.', res.status);
-  return reply({ actas: (data || []).map(fromDbActa) });
+  const actas = [];
+  for (let offset = 0; ; offset += 1000) {
+    const res = await callSupabase(cfg, `/rest/v1/actas?select=*&order=fecha.desc.nullslast,updated_at.desc,id.desc&limit=1000&offset=${offset}`);
+    const data = await res.json().catch(() => []);
+    if (!res.ok || !Array.isArray(data)) throw fail(data.message || 'No fue posible listar actas.', res.ok ? 502 : res.status);
+    actas.push(...data);
+    if (data.length < 1000) break;
+  }
+  return reply({ actas: actas.map(fromDbActa) });
 }
 
 async function upsertActa(request, cfg, user, permisos) {

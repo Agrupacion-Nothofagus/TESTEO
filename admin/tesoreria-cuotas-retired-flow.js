@@ -78,9 +78,10 @@
       if (item.estadoPago === 'al_dia') acc.alDia += 1;
       if (item.estadoPago === 'atrasado') acc.atrasados += 1;
       if (item.estadoPago === 'pagada_anual') acc.cuotasAnualesPagadas += 1;
+      acc.esperadoAnual += Number(item.cuotaAnualEsperada || 0);
       acc.saldoPendiente += Number(item.saldoPendiente || 0);
       return acc;
-    }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado, saldoPendiente: 0 });
+    }, { totalMiembros: 0, alDia: 0, atrasados: 0, cuotasAnualesPagadas: 0, totalRecaudado, esperadoAnual: 0, saldoPendiente: 0 });
   }
 
   function bindRetirementActions() {
