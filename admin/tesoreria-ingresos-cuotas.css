@@ -5,18 +5,13 @@
   background: linear-gradient(135deg, rgba(79, 125, 74, 0.08), rgba(250, 248, 242, 0.92)) !important;
 }
 
-.tesoreria-row.is-cuota-income strong::before {
-  content: 'Cuota · ';
-  color: #4f7d4a;
-  font-weight: 950;
-}
-
 .tesoreria-cuota-actions {
   display: flex !important;
   justify-content: flex-end !important;
   align-items: center !important;
   gap: 8px !important;
   flex-wrap: wrap !important;
+  grid-column: span 2;
 }
 
 .tesoreria-cuota-badge,
@@ -46,5 +41,6 @@
 @media (max-width: 720px) {
   .tesoreria-cuota-actions {
     justify-content: flex-start !important;
+    grid-column: auto;
   }
 }

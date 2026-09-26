@@ -7,6 +7,10 @@ const client = supabaseConfigurado() ? createClient(SUPABASE_URL, SUPABASE_ANON_
 
 let movimientos = [];
 let movimientosLocalesIniciales = [];
+let filtrosMovimientos = { tipo: 'todos', mes: 'todos', busqueda: '', eliminados: false };
+
+const TIPOS_ARCHIVO_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'];
+const MAX_ARCHIVO_BYTES = 10 * 1024 * 1024;
 
 if (!window.__nothofagusTesoreriaAdmin) {
   window.__nothofagusTesoreriaAdmin = true;
@@ -30,8 +34,9 @@ async function initTesoreria() {
   await cargarMovimientosRemotos();
 
   if (location.hash === '#tesoreria') activarVistaTesoreria('general');
-  if (location.hash === '#tesoreria-ingresos') activarVistaTesoreria('ingresos');
-  if (location.hash === '#tesoreria-egresos') activarVistaTesoreria('egresos');
+  if (location.hash === '#tesoreria-movimientos') activarVistaTesoreria('movimientos');
+  if (location.hash === '#tesoreria-ingresos') activarVistaTesoreria('movimientos', 'ingreso');
+  if (location.hash === '#tesoreria-egresos') activarVistaTesoreria('movimientos', 'egreso');
 }
 
 function cargarEstilosTesoreria() {
@@ -62,11 +67,12 @@ async function apiTesoreria(path = '/api/tesoreria', options = {}) {
   const token = await getToken();
   if (!token) throw new Error('Sesión no disponible para Tesorería.');
 
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(path, {
     ...options,
     headers: {
       authorization: `Bearer ${token}`,
-      'content-type': 'application/json; charset=utf-8',
+      ...(isFormData ? {} : { 'content-type': 'application/json; charset=utf-8' }),
       ...(options.headers || {})
     }
   });
@@ -78,7 +84,7 @@ async function apiTesoreria(path = '/api/tesoreria', options = {}) {
 
 async function cargarMovimientosRemotos() {
   try {
-    mostrarEstadoTesoreria('ingreso', 'Cargando movimientos desde Supabase...', true);
+    mostrarEstadoTesoreria('movimiento', 'Cargando movimientos desde Supabase...', true);
     const data = await apiTesoreria();
     const remotos = Array.isArray(data.movimientos) ? data.movimientos.filter(Boolean) : [];
 
@@ -88,8 +94,7 @@ async function cargarMovimientosRemotos() {
       movimientos = Array.isArray(recarga.movimientos) ? recarga.movimientos.filter(Boolean) : [];
       guardarMovimientosLocales(movimientos);
       renderTesoreria();
-      mostrarEstadoTesoreria('ingreso', 'Movimientos locales migrados a Supabase.', true);
-      mostrarEstadoTesoreria('egreso', 'Movimientos locales migrados a Supabase.', true);
+      mostrarEstadoTesoreria('movimiento', 'Movimientos locales migrados a Supabase.', true);
       return;
     }
 
@@ -98,8 +103,7 @@ async function cargarMovimientosRemotos() {
     renderTesoreria();
     limpiarEstadosTesoreria();
   } catch (error) {
-    mostrarEstadoTesoreria('ingreso', error.message || 'No fue posible cargar Tesorería desde Supabase.', false);
-    mostrarEstadoTesoreria('egreso', error.message || 'No fue posible cargar Tesorería desde Supabase.', false);
+    mostrarEstadoTesoreria('movimiento', error.message || 'No fue posible cargar Tesorería desde Supabase.', false);
   }
 }
 
@@ -134,8 +138,7 @@ function instalarSidebarTesoreria() {
     </button>
     <div class="tesoreria-sidebar-menu is-collapsed" id="tesoreria-sidebar-menu" data-tesoreria-menu>
       <button type="button" class="sidebar-link tesoreria-sidebar-link" data-tesoreria-open="general"><span>📊</span>General</button>
-      <button type="button" class="sidebar-link tesoreria-sidebar-link" data-tesoreria-open="ingresos"><span>📥</span>Ingresos</button>
-      <button type="button" class="sidebar-link tesoreria-sidebar-link" data-tesoreria-open="egresos"><span>📤</span>Egresos</button>
+      <button type="button" class="sidebar-link tesoreria-sidebar-link" data-tesoreria-open="movimientos"><span>↕️</span>Movimientos</button>
     </div>
   `;
 
@@ -151,8 +154,7 @@ function instalarVistasTesoreria() {
   if (!content || document.querySelector('#tesoreria-general-view')) return;
 
   content.appendChild(crearVistaTesoreria('tesoreria-general-view', 'Tesorería general', 'Resumen automático de ingresos, egresos y saldo institucional.', getGeneralTemplate()));
-  content.appendChild(crearVistaTesoreria('tesoreria-ingresos-view', 'Ingresos', 'Registra entradas de dinero con descripción y monto.', getMovimientoTemplate('ingreso')));
-  content.appendChild(crearVistaTesoreria('tesoreria-egresos-view', 'Egresos', 'Registra salidas de dinero con descripción y monto.', getMovimientoTemplate('egreso')));
+  content.appendChild(crearVistaTesoreria('tesoreria-movimientos-view', 'Movimientos', 'Registra, consulta y filtra ingresos y egresos en un solo libro.', getMovimientoTemplate()));
 }
 
 function crearVistaTesoreria(id, title, description, template) {
@@ -175,8 +177,8 @@ function getGeneralTemplate() {
           <p>Resumen automático de ingresos, egresos y saldo disponible según los movimientos registrados.</p>
         </div>
         <div class="tesoreria-actions-row">
-          <button type="button" data-tesoreria-go="ingresos">Registrar ingreso</button>
-          <button type="button" data-tesoreria-go="egresos">Registrar egreso</button>
+          <button type="button" data-tesoreria-go="movimientos" data-tesoreria-type="ingreso">Registrar ingreso</button>
+          <button type="button" data-tesoreria-go="movimientos" data-tesoreria-type="egreso">Registrar egreso</button>
         </div>
       </div>
       <div class="tesoreria-summary-grid">
@@ -192,34 +194,39 @@ function getGeneralTemplate() {
   `;
 }
 
-function getMovimientoTemplate(tipo) {
-  const label = tipo === 'ingreso' ? 'Ingresos' : 'Egresos';
-  const action = tipo === 'ingreso' ? 'Registrar ingreso' : 'Registrar egreso';
-  const text = tipo === 'ingreso' ? 'entrada de dinero' : 'salida de dinero';
-
+function getMovimientoTemplate() {
   return `
     <div class="admin-panel tesoreria-panel">
       <div class="tesoreria-topbar">
         <div>
           <p class="section-tag">Tesorería</p>
-          <h3>${label}</h3>
-          <p>Registra cada ${text} con una descripción y un monto.</p>
+          <h3>Movimientos</h3>
+          <p>Libro único de ingresos y egresos. Cada registro conserva su tipo, fecha, responsable y comprobante.</p>
         </div>
         <div class="tesoreria-actions-row"><button type="button" data-tesoreria-go="general">Ver general</button></div>
       </div>
       <section class="tesoreria-form-card">
-        <h4>${action}</h4>
-        <form class="tesoreria-form" data-tesoreria-form="${tipo}">
+        <h4>Registrar movimiento</h4>
+        <form class="tesoreria-form" data-tesoreria-form="movimiento">
+          <label>Tipo<select name="tipo" required><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select></label>
           <label>Fecha<input name="fecha" type="date" required></label>
-          <label>Descripción<input name="descripcion" type="text" placeholder="Ej: cuota socio, compra de insumos" required></label>
+          <label>Descripción<input name="descripcion" type="text" maxlength="180" placeholder="Ej: aporte, compra de insumos" required></label>
           <label>Monto<input name="monto" type="number" min="1" step="1" placeholder="0" required></label>
+          <label class="tesoreria-file-label">Comprobante<input name="archivo" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"><small>PDF, JPG o PNG · Máx. 10 MB</small></label>
           <button type="submit">Guardar</button>
         </form>
-        <p class="admin-status tesoreria-status" data-tesoreria-status="${tipo}" aria-live="polite"></p>
+        <p class="admin-status tesoreria-status" data-tesoreria-status="movimiento" aria-live="polite"></p>
       </section>
       <section class="tesoreria-list-card">
-        <h4>Registro de ${label.toLowerCase()}</h4>
-        <div class="tesoreria-list" data-tesoreria-list="${tipo}"></div>
+        <div class="tesoreria-list-heading"><div><h4>Libro de movimientos</h4><p data-tesoreria-results>0 registros</p></div></div>
+        <div class="tesoreria-filters" aria-label="Filtros de movimientos">
+          <label>Tipo<select data-tesoreria-filter="tipo"><option value="todos">Todos</option><option value="ingreso">Ingresos</option><option value="egreso">Egresos</option></select></label>
+          <label>Mes<input type="month" data-tesoreria-filter="mes"></label>
+          <label class="tesoreria-search">Buscar<input type="search" data-tesoreria-filter="busqueda" placeholder="Descripción o responsable"></label>
+          <label class="tesoreria-check"><input type="checkbox" data-tesoreria-filter="eliminados"> Mostrar eliminados</label>
+          <button type="button" class="tesoreria-clear-filters" data-tesoreria-clear>Limpiar filtros</button>
+        </div>
+        <div class="tesoreria-list" data-tesoreria-list="movimiento"></div>
       </section>
     </div>
   `;
@@ -232,8 +239,14 @@ function instalarEventosTesoreria() {
   });
 
   document.querySelectorAll('[data-tesoreria-go]').forEach((button) => {
-    button.addEventListener('click', () => activarVistaTesoreria(button.dataset.tesoreriaGo));
+    button.addEventListener('click', () => activarVistaTesoreria(button.dataset.tesoreriaGo, button.dataset.tesoreriaType));
   });
+
+  document.querySelectorAll('[data-tesoreria-filter]').forEach((control) => {
+    control.addEventListener('input', actualizarFiltrosMovimientos);
+    control.addEventListener('change', actualizarFiltrosMovimientos);
+  });
+  document.querySelector('[data-tesoreria-clear]')?.addEventListener('click', limpiarFiltrosMovimientos);
 
   document.addEventListener('click', (event) => {
     const deleteButton = event.target.closest('[data-tesoreria-delete]');
@@ -247,21 +260,35 @@ function instalarEventosTesoreria() {
 async function guardarMovimiento(event) {
   event.preventDefault();
   const form = event.currentTarget;
-  const tipo = form.dataset.tesoreriaForm;
+  const tipo = form.elements.tipo?.value || '';
   const descripcion = form.descripcion.value.trim();
   const monto = Number(form.monto.value);
   const fecha = form.fecha.value;
+  const archivo = form.archivo?.files?.[0] || null;
 
   if (!descripcion || !monto || monto <= 0) {
-    mostrarEstadoTesoreria(tipo, 'Completa descripción y monto válido.', false);
+    mostrarEstadoTesoreria('movimiento', 'Completa la descripción y un monto válido.', false);
     return;
   }
 
+  if (!['ingreso', 'egreso'].includes(tipo)) {
+    mostrarEstadoTesoreria('movimiento', 'Selecciona si el movimiento es un ingreso o egreso.', false);
+    return;
+  }
+
+  if (archivo && !validarArchivo(archivo)) return;
+
   try {
-    mostrarEstadoTesoreria(tipo, 'Guardando movimiento en Supabase...', true);
+    mostrarEstadoTesoreria('movimiento', archivo ? 'Subiendo comprobante y guardando...' : 'Guardando movimiento...', true);
+    const body = new FormData();
+    body.append('tipo', tipo);
+    body.append('descripcion', descripcion);
+    body.append('monto', String(monto));
+    body.append('fecha', fecha);
+    if (archivo) body.append('archivo', archivo);
     const data = await apiTesoreria('/api/tesoreria', {
       method: 'POST',
-      body: JSON.stringify({ tipo, descripcion, monto, fecha })
+      body
     });
 
     if (data.movimiento) movimientos.unshift(data.movimiento);
@@ -269,10 +296,24 @@ async function guardarMovimiento(event) {
     form.reset();
     form.fecha.valueAsDate = new Date();
     renderTesoreria();
-    mostrarEstadoTesoreria(tipo, `${tipo === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado correctamente.`, true);
+    mostrarEstadoTesoreria('movimiento', `${tipo === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado correctamente.`, true);
+    window.dispatchEvent(new CustomEvent('nothofagus:tesoreria-updated'));
   } catch (error) {
-    mostrarEstadoTesoreria(tipo, error.message || 'No fue posible guardar el movimiento.', false);
+    mostrarEstadoTesoreria('movimiento', error.message || 'No fue posible guardar el movimiento.', false);
   }
+}
+
+function validarArchivo(file) {
+  const tipo = String(file.type || '').toLowerCase();
+  if (!TIPOS_ARCHIVO_PERMITIDOS.includes(tipo)) {
+    mostrarEstadoTesoreria('movimiento', 'El comprobante debe ser PDF, JPG o PNG.', false);
+    return false;
+  }
+  if (Number(file.size || 0) > MAX_ARCHIVO_BYTES) {
+    mostrarEstadoTesoreria('movimiento', 'El comprobante no puede superar 10 MB.', false);
+    return false;
+  }
+  return true;
 }
 
 async function eliminarMovimiento(id) {
@@ -285,13 +326,22 @@ async function eliminarMovimiento(id) {
     if (data.movimiento) movimientos = movimientos.map((mov) => mov.id === id ? data.movimiento : mov);
     guardarMovimientosLocales(movimientos);
     renderTesoreria();
-    mostrarEstadoTesoreria(item.tipo, 'Movimiento marcado como eliminado con auditoría.', true);
+    mostrarEstadoTesoreria('movimiento', 'Movimiento marcado como eliminado con auditoría.', true);
+    window.dispatchEvent(new CustomEvent('nothofagus:tesoreria-updated'));
   } catch (error) {
-    mostrarEstadoTesoreria(item.tipo, error.message || 'No fue posible marcar el movimiento como eliminado.', false);
+    mostrarEstadoTesoreria('movimiento', error.message || 'No fue posible marcar el movimiento como eliminado.', false);
   }
 }
 
-function activarVistaTesoreria(tipo) {
+function activarVistaTesoreria(tipo, presetType = '') {
+  if (tipo === 'ingresos' || tipo === 'ingreso') {
+    tipo = 'movimientos';
+    presetType = 'ingreso';
+  }
+  if (tipo === 'egresos' || tipo === 'egreso') {
+    tipo = 'movimientos';
+    presetType = 'egreso';
+  }
   const viewId = `tesoreria-${tipo}-view`;
   const view = document.querySelector(`#${viewId}`);
   if (!view) return;
@@ -309,6 +359,14 @@ function activarVistaTesoreria(tipo) {
   if (title) title.textContent = view.dataset.viewTitle || 'Tesorería';
   if (description) description.textContent = view.dataset.viewDescription || '';
 
+  if (tipo === 'movimientos' && presetType) {
+    const formType = view.querySelector('select[name="tipo"]');
+    const filterType = view.querySelector('[data-tesoreria-filter="tipo"]');
+    if (formType) formType.value = presetType;
+    if (filterType) filterType.value = presetType;
+    filtrosMovimientos.tipo = presetType;
+  }
+
   location.hash = tipo === 'general' ? 'tesoreria' : `tesoreria-${tipo}`;
   renderTesoreria();
 }
@@ -324,9 +382,45 @@ function renderTesoreria() {
   setText('[data-tesoreria-total="saldo"]', formatCLP(saldo));
   document.querySelector('[data-tesoreria-saldo-card]')?.classList.toggle('negative', saldo < 0);
 
-  renderLista('general', movimientos.slice(0, 8));
-  renderLista('ingreso', movimientos.filter((item) => item.tipo === 'ingreso'));
-  renderLista('egreso', movimientos.filter((item) => item.tipo === 'egreso'));
+  renderLista('general', movimientos.filter((item) => !item.eliminado).slice(0, 8));
+  renderLista('movimiento', filtrarMovimientos(movimientos));
+}
+
+function actualizarFiltrosMovimientos() {
+  const tipo = document.querySelector('[data-tesoreria-filter="tipo"]');
+  const mes = document.querySelector('[data-tesoreria-filter="mes"]');
+  const busqueda = document.querySelector('[data-tesoreria-filter="busqueda"]');
+  const eliminados = document.querySelector('[data-tesoreria-filter="eliminados"]');
+  filtrosMovimientos = {
+    tipo: tipo?.value || 'todos',
+    mes: mes?.value || 'todos',
+    busqueda: busqueda?.value?.trim().toLowerCase() || '',
+    eliminados: Boolean(eliminados?.checked)
+  };
+  renderLista('movimiento', filtrarMovimientos(movimientos));
+}
+
+function limpiarFiltrosMovimientos() {
+  document.querySelectorAll('[data-tesoreria-filter]').forEach((control) => {
+    if (control.type === 'checkbox') control.checked = false;
+    else if (control.dataset.tesoreriaFilter === 'tipo') control.value = 'todos';
+    else control.value = '';
+  });
+  filtrosMovimientos = { tipo: 'todos', mes: 'todos', busqueda: '', eliminados: false };
+  renderLista('movimiento', filtrarMovimientos(movimientos));
+}
+
+function filtrarMovimientos(items) {
+  return items.filter((item) => {
+    if (!filtrosMovimientos.eliminados && item.eliminado) return false;
+    if (filtrosMovimientos.tipo !== 'todos' && item.tipo !== filtrosMovimientos.tipo) return false;
+    if (filtrosMovimientos.mes !== 'todos' && filtrosMovimientos.mes && !String(item.fecha || '').startsWith(filtrosMovimientos.mes)) return false;
+    if (filtrosMovimientos.busqueda) {
+      const text = `${item.descripcion || ''} ${item.creadoPor || ''} ${item.observaciones || ''}`.toLowerCase();
+      if (!text.includes(filtrosMovimientos.busqueda)) return false;
+    }
+    return true;
+  });
 }
 
 function renderLista(tipo, items) {
@@ -334,21 +428,32 @@ function renderLista(tipo, items) {
   if (!list) return;
 
   if (!items.length) {
-    list.innerHTML = '<p class="tesoreria-empty">No hay movimientos registrados.</p>';
+    list.innerHTML = tipo === 'movimiento'
+      ? '<div class="tesoreria-empty"><strong>No hay movimientos para estos filtros.</strong><span>Registra un ingreso o egreso, o limpia los filtros para ver todo el libro.</span></div>'
+      : '<div class="tesoreria-empty"><strong>Aún no hay actividad contable.</strong><span>Los ingresos y egresos aparecerán aquí al registrarlos.</span></div>';
+    setText('[data-tesoreria-results]', '0 registros');
     return;
   }
+
+  if (tipo === 'movimiento') setText('[data-tesoreria-results]', `${items.length} ${items.length === 1 ? 'registro' : 'registros'}`);
 
   list.innerHTML = items.map((item) => {
     const deleted = Boolean(item.eliminado);
     return `
       <article class="tesoreria-row ${escapeAttr(item.tipo)} ${deleted ? 'is-deleted' : ''}">
         <small>${formatDate(item.fecha)}</small>
-        <strong>${escapeHTML(item.descripcion)}</strong>
+        <div class="tesoreria-row-description"><span class="tesoreria-type-badge">${item.tipo === 'egreso' ? 'Egreso' : 'Ingreso'}</span><strong>${escapeHTML(item.descripcion)}</strong></div>
         <em>${item.tipo === 'egreso' ? '-' : '+'}${formatCLP(item.monto)}</em>
+        ${renderArchivoLink(item)}
         ${deleted ? renderDeletedBadge(item) : `<button type="button" class="tesoreria-delete-button" data-tesoreria-delete="${escapeAttr(item.id)}">Eliminar</button>`}
       </article>
     `;
   }).join('');
+}
+
+function renderArchivoLink(item) {
+  if (!item?.archivoUrl) return '<span class="tesoreria-no-file">Sin comprobante</span>';
+  return `<a class="tesoreria-file-link" href="${escapeAttr(item.archivoUrl)}" target="_blank" rel="noopener noreferrer">📎 ${escapeHTML(item.archivoNombre || 'Comprobante')}</a>`;
 }
 
 function renderDeletedBadge(item) {

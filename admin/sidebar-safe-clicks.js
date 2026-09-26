@@ -83,8 +83,9 @@
       'crear-acta-view': '[data-actas-open="crear"]',
       'registro-actas-view': '[data-actas-open="registro"]',
       'tesoreria-general-view': '[data-tesoreria-open="general"]',
-      'tesoreria-ingresos-view': '[data-tesoreria-open="ingresos"]',
-      'tesoreria-egresos-view': '[data-tesoreria-open="egresos"]',
+      'tesoreria-movimientos-view': '[data-tesoreria-open="movimientos"]',
+      'tesoreria-ingresos-view': '[data-tesoreria-open="movimientos"]',
+      'tesoreria-egresos-view': '[data-tesoreria-open="movimientos"]',
       'tesoreria-cuotas-view': '[data-tesoreria-open="cuotas"]'
     };
 

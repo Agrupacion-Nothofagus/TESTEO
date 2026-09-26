@@ -291,14 +291,15 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   function renderAnnual(totals) {
     const box = document.querySelector('[data-b-annual]');
     if (!box) return;
-    box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-chart-fake"><span style="height:78%"></span><span style="height:68%"></span><span style="height:72%"></span><span style="height:70%"></span><span style="height:76%"></span><span style="height:74%"></span></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${money(totals.anual)}</strong></div><div><span>Recaudado anual</span><strong>${money(totals.total)}</strong></div><div><span>Saldo pendiente anual</span><strong>${money(totals.saldo)}</strong></div></div>`;
+    const progress = totals.anual > 0 ? Math.min(100, Math.round((Number(totals.total || 0) / Number(totals.anual)) * 100)) : 0;
+    box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-annual-progress"><div><span>Avance de recaudación</span><strong>${progress}%</strong></div><div class="cuotas-progress" role="progressbar" aria-label="Avance de recaudación anual" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${money(totals.anual)}</strong></div><div><span>Recaudado anual</span><strong>${money(totals.total)}</strong></div><div><span>Saldo pendiente anual</span><strong>${money(totals.saldo)}</strong></div></div>`;
   }
 
   function renderRecent(items) {
     const box = document.querySelector('[data-b-recent]');
     if (!box) return;
     const payments = items.flatMap((member) => (member.pagos || []).map((payment) => ({ ...payment, nombre: member.nombre }))).sort((a, b) => String(b.fechaPago || '').localeCompare(String(a.fechaPago || ''))).slice(0, 5);
-    box.innerHTML = `<h4>Últimos movimientos</h4><div class="cuotas-recent-list">${payments.length ? payments.map((payment) => `<article><span class="recent-icon">↗</span><div><strong>${payment.tipoPago === 'anual' ? 'Cuota anual' : 'Pago mensual'} - ${esc(payment.nombre)}</strong><small>${esc(months[Number(payment.mes || 0)] || 'Pago')}</small></div><em>+${money(payment.monto)}</em></article>`).join('') : '<p class="cuotas-empty compact">No hay movimientos registrados.</p>'}</div>`;
+    box.innerHTML = `<h4>Últimos movimientos</h4><div class="cuotas-recent-list">${payments.length ? payments.map((payment) => `<article><span class="recent-icon">↗</span><div><strong>${payment.tipoPago === 'anual' ? 'Cuota anual' : 'Pago mensual'} - ${esc(payment.nombre)}</strong><small>${esc(months[Number(payment.mes || 0)] || 'Pago')}</small></div><em>+${money(payment.monto)}</em></article>`).join('') : '<div class="cuotas-empty-state"><strong>Aún no hay pagos registrados</strong><span>Usa “Registrar pago” para incorporar el primer comprobante.</span></div>'}</div>`;
   }
 
   function openNomina() {

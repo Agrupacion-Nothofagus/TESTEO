@@ -131,6 +131,40 @@ test('la API editorial usa Supabase sin requerir Cloudflare D1', async () => {
   }
 });
 
+test('Tesorería rechaza movimientos sin descripción antes de escribir en Supabase', async () => {
+  const module = await import('../functions/api/tesoreria.js');
+  const originalFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = async (url) => {
+    requests += 1;
+    assert.match(String(url), /\/auth\/v1\/user$/);
+    return Response.json({ email: 'tesoreria@example.cl', user_metadata: { rol: 'tesorero' } });
+  };
+
+  try {
+    const response = await module.onRequest({
+      request: new Request('http://localhost/api/tesoreria', {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer token-tesoreria',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ tipo: 'ingreso', fecha: '2026-09-21', descripcion: '   ', monto: 1000 })
+      }),
+      env: {
+        SUPABASE_URL: 'https://proyecto-prueba.supabase.co',
+        SUPABASE_ADMIN_KEY: 'sb_secret_prueba'
+      }
+    });
+
+    assert.equal(response.status, 400);
+    assert.equal((await response.json()).error, 'La descripción es obligatoria.');
+    assert.equal(requests, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('devuelve 404 JSON para APIs inexistentes', async () => {
   const response = await fetch(baseUrl + '/api/no-existe');
   assert.equal(response.status, 404);

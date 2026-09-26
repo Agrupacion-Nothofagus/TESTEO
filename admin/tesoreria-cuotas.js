@@ -352,13 +352,14 @@ function renderRecentMovements(items) {
   const box = document.querySelector('[data-cuotas-recent-movements]');
   if (!box) return;
   const payments = items.flatMap((member) => (member.pagos || []).map((payment) => ({ ...payment, nombre: member.nombre }))).sort((a, b) => String(b.fechaPago || '').localeCompare(String(a.fechaPago || ''))).slice(0, 5);
-  box.innerHTML = `<h4>Últimos movimientos</h4><div class="cuotas-recent-list">${payments.length ? payments.map((payment) => `<article><span class="recent-icon">↗</span><div><strong>${payment.tipoPago === 'anual' ? 'Cuota anual' : 'Pago mensual'} - ${escapeHTML(payment.nombre)}</strong><small>${escapeHTML(monthNames[Number(payment.mes || 0)] || 'Pago')} · ${formatDate(payment.fechaPago)}</small></div><em>+${formatCLP(payment.monto)}</em></article>`).join('') : '<p class="cuotas-empty compact">No hay movimientos registrados.</p>'}</div>`;
+  box.innerHTML = `<h4>Últimos movimientos</h4><div class="cuotas-recent-list">${payments.length ? payments.map((payment) => `<article><span class="recent-icon">↗</span><div><strong>${payment.tipoPago === 'anual' ? 'Cuota anual' : 'Pago mensual'} - ${escapeHTML(payment.nombre)}</strong><small>${escapeHTML(monthNames[Number(payment.mes || 0)] || 'Pago')} · ${formatDate(payment.fechaPago)}</small></div><em>+${formatCLP(payment.monto)}</em></article>`).join('') : '<div class="cuotas-empty-state"><strong>Aún no hay pagos registrados</strong><span>Usa “Registrar pago” para incorporar el primer comprobante.</span></div>'}</div>`;
 }
 
 function renderAnnualSummary(resumen) {
   const box = document.querySelector('[data-cuotas-annual-summary]');
   if (!box) return;
-  box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-chart-fake"><span style="height:78%"></span><span style="height:68%"></span><span style="height:72%"></span><span style="height:70%"></span><span style="height:76%"></span><span style="height:74%"></span></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${formatCLP(resumen.esperadoAnual)}</strong></div><div><span>Recaudado anual</span><strong>${formatCLP(resumen.totalRecaudado)}</strong></div><div><span>Saldo pendiente anual</span><strong>${formatCLP(resumen.saldoPendiente)}</strong></div></div>`;
+  const progress = resumen.esperadoAnual > 0 ? Math.min(100, Math.round((Number(resumen.totalRecaudado || 0) / Number(resumen.esperadoAnual)) * 100)) : 0;
+  box.innerHTML = `<h4>Resumen anual</h4><div class="cuotas-annual-progress"><div><span>Avance de recaudación</span><strong>${progress}%</strong></div><div class="cuotas-progress" role="progressbar" aria-label="Avance de recaudación anual" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div></div><div class="cuotas-annual-bars"><div><span>Esperado anual</span><strong>${formatCLP(resumen.esperadoAnual)}</strong></div><div><span>Recaudado anual</span><strong>${formatCLP(resumen.totalRecaudado)}</strong></div><div><span>Saldo pendiente anual</span><strong>${formatCLP(resumen.saldoPendiente)}</strong></div></div>`;
 }
 
 function buildDashboardSummary(items) {

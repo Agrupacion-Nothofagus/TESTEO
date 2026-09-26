@@ -15,9 +15,9 @@ export async function onRequest({ request, env }) {
 
     if (!permisos.tesoreria) throw fail('No autorizado para acceder a Tesorería.', 403);
 
-    if (request.method === 'GET') return listMovimientos(cfg);
-    if (request.method === 'POST') return saveMovimiento(request, cfg, user);
-    if (request.method === 'DELETE') return deleteMovimiento(request, cfg, user);
+    if (request.method === 'GET') return await listMovimientos(cfg);
+    if (request.method === 'POST') return await saveMovimiento(request, cfg, user);
+    if (request.method === 'DELETE') return await deleteMovimiento(request, cfg, user);
 
     return reply({ error: 'Método no permitido.' }, 405);
   } catch (error) {
@@ -213,15 +213,18 @@ function getPermisos(user, cfg) {
 function toDb(item, user, archivo = null) {
   const tipo = normalizarTipo(item.tipo);
   const monto = Number(item.monto || 0);
+  const descripcion = limpiar(item.descripcion);
   if (!tipo) throw fail('Tipo de movimiento inválido.', 400);
   if (!monto || monto <= 0) throw fail('El monto debe ser mayor a 0.', 400);
+  if (!descripcion) throw fail('La descripción es obligatoria.', 400);
+  if (descripcion.length > 180) throw fail('La descripción no puede superar 180 caracteres.', 400);
 
   const nombre = getNombreUsuario(user);
 
   return {
     tipo,
     fecha: limpiar(item.fecha) || new Date().toISOString().slice(0, 10),
-    descripcion: limpiar(item.descripcion) || 'Movimiento sin descripción',
+    descripcion,
     monto,
     observaciones: limpiar(item.observaciones),
     archivo_path: archivo?.archivo_path || null,

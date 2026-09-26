@@ -316,6 +316,46 @@
   height: 130px !important;
 }
 
+#tesoreria-cuotas-view .cuotas-annual-progress,
+#tesoreria-benefactores-view .cuotas-annual-progress {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(79, 125, 74, 0.07);
+}
+
+#tesoreria-cuotas-view .cuotas-annual-progress > div:first-child,
+#tesoreria-benefactores-view .cuotas-annual-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--verde-bosque);
+  font-weight: 900;
+}
+
+#tesoreria-cuotas-view .cuotas-empty-state,
+#tesoreria-benefactores-view .cuotas-empty-state {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(79, 125, 74, 0.07);
+  color: var(--texto-suave);
+}
+
+#tesoreria-cuotas-view .cuotas-empty-state strong,
+#tesoreria-benefactores-view .cuotas-empty-state strong {
+  color: var(--verde-bosque);
+}
+
+#tesoreria-cuotas-view .cuotas-empty-state span,
+#tesoreria-benefactores-view .cuotas-empty-state span {
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
 #tesoreria-cuotas-view .cuotas-recent-list article {
   grid-template-columns: 36px minmax(0, 1fr) auto !important;
 }

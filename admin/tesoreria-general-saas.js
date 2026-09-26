@@ -20,6 +20,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   window.addEventListener('storage', scheduleRender);
   window.addEventListener('nothofagus:cuotas-status-changed', scheduleRender);
   window.addEventListener('nothofagus:cuotas-manual-status-calculated', scheduleRender);
+  window.addEventListener('nothofagus:tesoreria-updated', scheduleRender);
   document.addEventListener('nothofagus:cuotas-status-changed', scheduleRender);
   document.addEventListener('nothofagus:cuotas-manual-status-calculated', scheduleRender);
   document.addEventListener('click', (event) => {
@@ -278,7 +279,20 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       const button = event.target.closest?.('[data-saas-treasury-go]');
       if (!button) return;
       event.preventDefault();
-      document.querySelector('[data-tesoreria-open="' + button.dataset.saasTreasuryGo + '"]')?.click();
+      const destination = button.dataset.saasTreasuryGo;
+      if (destination === 'ingresos' || destination === 'egresos') {
+        document.querySelector('[data-tesoreria-open="movimientos"]')?.click();
+        const type = destination === 'ingresos' ? 'ingreso' : 'egreso';
+        const formType = document.querySelector('#tesoreria-movimientos-view select[name="tipo"]');
+        const filterType = document.querySelector('#tesoreria-movimientos-view [data-tesoreria-filter="tipo"]');
+        if (formType) formType.value = type;
+        if (filterType) {
+          filterType.value = type;
+          filterType.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        return;
+      }
+      document.querySelector('[data-tesoreria-open="' + destination + '"]')?.click();
     });
   }
 

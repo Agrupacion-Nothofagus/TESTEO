@@ -17,8 +17,16 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   queueRefresh();
   document.addEventListener('DOMContentLoaded', queueRefresh);
   window.addEventListener('hashchange', queueRefresh);
+  window.addEventListener('nothofagus:tesoreria-updated', queueRefresh);
   document.addEventListener('click', (event) => {
     if (event.target.closest?.('[data-tesoreria-open], [data-tesoreria-go]')) window.setTimeout(queueRefresh, 160);
+    if (event.target.closest?.('[data-tesoreria-clear]')) window.setTimeout(queueRender, 0);
+  }, true);
+  document.addEventListener('input', (event) => {
+    if (event.target.closest?.('[data-tesoreria-filter]')) window.setTimeout(queueRender, 0);
+  }, true);
+  document.addEventListener('change', (event) => {
+    if (event.target.closest?.('[data-tesoreria-filter]')) window.setTimeout(queueRender, 0);
   }, true);
   window.setTimeout(queueRefresh, 700);
   window.setTimeout(queueRefresh, 1800);
@@ -52,7 +60,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
 
   async function refreshData() {
     if (loading) return;
-    if (!document.querySelector('#tesoreria-ingresos-view, #tesoreria-general-view')) return;
+    if (!document.querySelector('#tesoreria-movimientos-view, #tesoreria-general-view')) return;
     try {
       loading = true;
       const token = await getToken();
@@ -113,13 +121,12 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
   }
 
   function renderCuotasAsIncome() {
-    if (!document.querySelector('#tesoreria-ingresos-view, #tesoreria-general-view')) return;
+    if (!document.querySelector('#tesoreria-movimientos-view, #tesoreria-general-view')) return;
     const activeManual = cache.general.filter((item) => !item.eliminado);
     const baseIncome = activeManual.filter((item) => item.tipo === 'ingreso');
     const baseExpense = activeManual.filter((item) => item.tipo === 'egreso');
-    const ingresoManualRows = cache.general.filter((item) => item.tipo === 'ingreso');
-    const mergedIncome = sortRows([...ingresoManualRows, ...cache.cuotas, ...cache.cuotasEliminadas]);
-    const mergedGeneral = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas]).slice(0, 8);
+    const mergedAll = sortRows([...cache.general, ...cache.cuotas, ...cache.cuotasEliminadas]);
+    const mergedGeneral = mergedAll.filter((item) => !item.eliminado).slice(0, 8);
     const totalIncome = [...baseIncome, ...cache.cuotas].reduce((sum, item) => sum + Number(item.monto || 0), 0);
     const totalExpense = baseExpense.reduce((sum, item) => sum + Number(item.monto || 0), 0);
 
@@ -128,9 +135,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     setText('[data-tesoreria-total="saldo"]', money(totalIncome - totalExpense));
     document.querySelector('[data-tesoreria-saldo-card]')?.classList.toggle('negative', totalIncome - totalExpense < 0);
 
-    renderList('ingreso', mergedIncome, true);
+    renderList('movimiento', filterMovementRows(mergedAll), false);
     renderList('general', mergedGeneral, false);
-    annotateIncomePanel(mergedIncome.length, cache.cuotas.length);
+    annotateMovementPanel(mergedAll.length, cache.cuotas.length);
   }
 
   function renderList(type, items, onlyIncome) {
@@ -138,16 +145,24 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     if (!list) return;
     const rows = onlyIncome ? items.filter((item) => item.tipo === 'ingreso') : items;
     if (!rows.length) {
-      list.innerHTML = '<p class="tesoreria-empty">No hay movimientos registrados.</p>';
+      list.innerHTML = type === 'movimiento'
+        ? '<div class="tesoreria-empty"><strong>No hay movimientos para estos filtros.</strong><span>Registra un ingreso o egreso, o limpia los filtros para ver todo el libro.</span></div>'
+        : '<div class="tesoreria-empty"><strong>Aún no hay actividad contable.</strong><span>Los ingresos y egresos aparecerán aquí al registrarlos.</span></div>';
+      if (type === 'movimiento') setText('[data-tesoreria-results]', '0 registros');
       return;
     }
+    if (type === 'movimiento') setText('[data-tesoreria-results]', `${rows.length} ${rows.length === 1 ? 'registro' : 'registros'}`);
     list.innerHTML = rows.map(rowTemplate).join('');
   }
 
   function rowTemplate(item) {
     const isQuota = item.origen === 'cuota';
     const deleted = Boolean(item.eliminado);
-    const comprobante = isQuota && item.comprobanteUrl ? `<a class="tesoreria-cuota-receipt" href="${escapeAttr(item.comprobanteUrl)}" target="_blank" rel="noopener">Comprobante</a>` : '';
+    const fileUrl = item.comprobanteUrl || item.archivoUrl || '';
+    const fileName = item.comprobanteNombre || item.archivoNombre || 'Comprobante';
+    const comprobante = fileUrl
+      ? `<a class="tesoreria-file-link" href="${escapeAttr(fileUrl)}" target="_blank" rel="noopener noreferrer">📎 ${escapeHTML(fileName)}</a>`
+      : '<span class="tesoreria-no-file">Sin comprobante</span>';
     const action = isQuota
       ? deleted
         ? deletedBadge(item)
@@ -158,7 +173,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     return `
       <article class="tesoreria-row ${escapeAttr(item.tipo)} ${isQuota ? 'is-cuota-income' : ''} ${deleted ? 'is-deleted' : ''}">
         <small>${formatDate(item.fecha)}</small>
-        <strong>${escapeHTML(item.descripcion)}</strong>
+        <div class="tesoreria-row-description"><span class="tesoreria-type-badge">${item.tipo === 'egreso' ? 'Egreso' : isQuota ? 'Ingreso · cuota' : 'Ingreso'}</span><strong>${escapeHTML(item.descripcion)}</strong></div>
         <em>${item.tipo === 'egreso' ? '-' : '+'}${money(item.monto)}</em>
         <div class="tesoreria-cuota-actions">${comprobante}${action}</div>
       </article>
@@ -174,7 +189,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
       button.disabled = true;
       const token = await getToken();
       if (!token) throw new Error('Sesión no disponible.');
-      await fetch('/api/cuotas-miembros?payment_id=' + encodeURIComponent(sourceId), { method: 'DELETE', headers: { authorization: 'Bearer ' + token } }).catch(() => null);
+       const response = await fetch('/api/cuotas-miembros?payment_id=' + encodeURIComponent(sourceId), { method: 'DELETE', headers: { authorization: 'Bearer ' + token } });
+       const result = await response.json().catch(() => ({}));
+       if (!response.ok) throw new Error(result.error || 'La API no pudo eliminar el pago. No se modificó el registro local.');
       const audit = await getAuditUser();
       const deleted = readDeletedQuotaRows();
       deleted[sourceId] = { ...item, eliminado: true, eliminadoPor: audit.name, eliminadoEmail: audit.email, eliminadoEn: new Date().toISOString() };
@@ -202,10 +219,28 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, supabaseConfigurado } from '../scripts
     return `<span class="tesoreria-deleted-badge">Eliminado por ${escapeHTML(user)} · ${escapeHTML(date)}</span>`;
   }
 
-  function annotateIncomePanel(totalRows, cuotaRows) {
-    const panel = document.querySelector('#tesoreria-ingresos-view .tesoreria-list-card h4');
-    if (!panel) return;
-    panel.textContent = `Registro de ingresos (${totalRows} movimientos, ${cuotaRows} cuotas pagadas)`;
+  function annotateMovementPanel(totalRows, cuotaRows) {
+    const result = document.querySelector('#tesoreria-movimientos-view [data-tesoreria-results]');
+    if (!result) return;
+    const filtered = document.querySelectorAll('#tesoreria-movimientos-view [data-tesoreria-list="movimiento"] .tesoreria-row').length;
+    result.textContent = `${filtered} de ${totalRows} registros · ${cuotaRows} pagos de cuotas`;
+  }
+
+  function filterMovementRows(items) {
+    const type = document.querySelector('[data-tesoreria-filter="tipo"]')?.value || 'todos';
+    const month = document.querySelector('[data-tesoreria-filter="mes"]')?.value || '';
+    const search = document.querySelector('[data-tesoreria-filter="busqueda"]')?.value?.trim().toLowerCase() || '';
+    const showDeleted = Boolean(document.querySelector('[data-tesoreria-filter="eliminados"]')?.checked);
+    return items.filter((item) => {
+      if (!showDeleted && item.eliminado) return false;
+      if (type !== 'todos' && item.tipo !== type) return false;
+      if (month && !String(item.fecha || '').startsWith(month)) return false;
+      if (search) {
+        const text = `${item.descripcion || ''} ${item.creadoPor || ''} ${item.observaciones || ''}`.toLowerCase();
+        if (!text.includes(search)) return false;
+      }
+      return true;
+    });
   }
 
   async function getToken() {

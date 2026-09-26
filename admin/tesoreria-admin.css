@@ -151,7 +151,10 @@
   font-weight: 900;
 }
 
-.tesoreria-form input {
+.tesoreria-form input,
+.tesoreria-form select,
+.tesoreria-filters input,
+.tesoreria-filters select {
   width: 100%;
   border: 1px solid rgba(31, 61, 43, 0.16);
   border-radius: 14px;
@@ -173,7 +176,10 @@
   font-weight: 800;
 }
 
-.tesoreria-form input:focus {
+.tesoreria-form input:focus,
+.tesoreria-form select:focus,
+.tesoreria-filters input:focus,
+.tesoreria-filters select:focus {
   outline: 3px solid rgba(79, 125, 74, 0.18);
   border-color: var(--verde-hoja);
 }
@@ -302,12 +308,109 @@
 }
 
 .tesoreria-empty {
+  display: grid;
+  gap: 5px;
   margin: 0;
-  padding: 16px;
+  padding: 20px;
   border-radius: 16px;
   background: rgba(79, 125, 74, 0.08);
   color: var(--texto-suave);
   font-weight: 900;
+}
+
+.tesoreria-empty strong {
+  color: var(--verde-bosque);
+}
+
+.tesoreria-empty span {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.tesoreria-list-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.tesoreria-list-heading h4,
+.tesoreria-list-heading p {
+  margin: 0;
+}
+
+.tesoreria-list-heading p {
+  margin-top: 4px;
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.tesoreria-filters {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.6fr) minmax(160px, 0.7fr) minmax(220px, 1.3fr) auto auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(79, 125, 74, 0.07);
+}
+
+.tesoreria-filters label {
+  display: grid;
+  gap: 6px;
+  color: var(--texto);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.tesoreria-filters input,
+.tesoreria-filters select {
+  min-height: 42px;
+}
+
+.tesoreria-filters .tesoreria-check {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.tesoreria-check input {
+  width: 17px;
+  min-height: 17px;
+}
+
+.tesoreria-clear-filters {
+  min-height: 42px;
+  background: rgba(31, 61, 43, 0.1) !important;
+  color: var(--verde-bosque) !important;
+}
+
+.tesoreria-row-description {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.tesoreria-type-badge {
+  justify-self: start;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(46, 125, 50, 0.1);
+  color: #276749;
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tesoreria-row.egreso .tesoreria-type-badge {
+  background: rgba(155, 44, 44, 0.1);
+  color: #8b2424;
 }
 
 .tesoreria-status {
@@ -315,7 +418,7 @@
 }
 
 .tesoreria-form-card .tesoreria-form {
-  grid-template-columns: minmax(145px, 0.78fr) minmax(260px, 1.45fr) minmax(130px, 0.68fr) minmax(230px, 1fr) minmax(92px, auto) !important;
+  grid-template-columns: minmax(120px, 0.55fr) minmax(145px, 0.72fr) minmax(230px, 1.35fr) minmax(125px, 0.62fr) minmax(210px, 0.95fr) minmax(92px, auto) !important;
   align-items: start !important;
   column-gap: 12px;
   row-gap: 12px;
@@ -335,6 +438,11 @@
 }
 
 .tesoreria-form-card .tesoreria-form input:not([type="file"]) {
+  height: 46px;
+  min-height: 46px;
+}
+
+.tesoreria-form-card .tesoreria-form select {
   height: 46px;
   min-height: 46px;
 }
@@ -374,6 +482,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
+  .tesoreria-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .tesoreria-form button,
   .tesoreria-delete-button,
   .tesoreria-deleted-badge {
@@ -388,5 +500,25 @@
 @media (max-width: 1100px) {
   .tesoreria-summary-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .tesoreria-form,
+  .tesoreria-row,
+  .tesoreria-form-card .tesoreria-form,
+  .tesoreria-filters {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tesoreria-panel,
+  .tesoreria-form-card,
+  .tesoreria-list-card {
+    padding: 14px;
+  }
+
+  .tesoreria-form-card .tesoreria-form > button[type="submit"] {
+    width: 100%;
+    margin-top: 0;
   }
 }
